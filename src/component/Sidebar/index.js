@@ -1,5 +1,5 @@
-import React from "react";
-import { css } from "@emotion/react";
+import React from 'react';
+import { css } from '@emotion/react';
 /** @jsxImportSource @emotion/react */
 
 const sidebarContainer = css`
@@ -30,7 +30,7 @@ const groupBox = css`
     margin-top: 20px;
   }
 `;
-const sideBarLabel = (selected) => css`
+const sideBarLabel = () => css`
   width: 200px;
   height: 40px;
   padding: 10px 0;
@@ -41,7 +41,7 @@ const sideBarLabel = (selected) => css`
   justify-content: center;
   border-radius: 8px;
   font-size: 1.2rem;
-  font-family: "Pretendard-Bold";
+  font-family: 'Pretendard-Bold';
   color: #6f6257;
   cursor: pointer;
 `;
@@ -52,14 +52,14 @@ const imageBox = css`
   position: absolute;
   top: 0;
   left: 0;
-  background-image: url("/assets/images/logo.png");
+  background-image: url('/assets/images/logo.png');
   background-size: cover;
   img {
     width: 100%;
   }
 `;
 
-function Sidebar(props) {
+function Sidebar() {
   return (
     <div css={sidebarContainer}>
       <div css={imageBox} />
