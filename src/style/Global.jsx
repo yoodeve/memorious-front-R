@@ -1,53 +1,53 @@
-import React from "react";
-import { Global, css } from "@emotion/react";
+import React from 'react';
+import { Global, css } from '@emotion/react';
 /** @jsxImportSource @emotion/react */
 
-function GlobalStyle(props) {
+function GlobalStyle() {
   const globalStyle = css`
     @font-face {
-      font-family: "Pretendard-Thin";
+      font-family: 'Pretendard-Thin';
       font-weight: 100;
-      src: url("/assets/font/Pretendard-Thin.otf");
+      src: url('/assets/font/Pretendard-Thin.otf');
     }
     @font-face {
-      font-family: "Pretendard-ExtraLight";
+      font-family: 'Pretendard-ExtraLight';
       font-weight: 200;
-      src: url("/assets/font/Pretendard-ExtraLight.otf");
+      src: url('/assets/font/Pretendard-ExtraLight.otf');
     }
     @font-face {
-      font-family: "Pretendard-Light";
+      font-family: 'Pretendard-Light';
       font-weight: 300;
-      src: url("/assets/font/Pretendard-Light.otf");
+      src: url('/assets/font/Pretendard-Light.otf');
     }
     @font-face {
-      font-family: "Pretendard-Medium";
+      font-family: 'Pretendard-Medium';
       font-weight: 400;
-      src: url("/assets/font/Pretendard-Medium.otf");
+      src: url('/assets/font/Pretendard-Medium.otf');
     }
     @font-face {
-      font-family: "Pretendard-Regular";
+      font-family: 'Pretendard-Regular';
       font-weight: 500;
-      src: url("/assets/font/Pretendard-Regular.otf");
+      src: url('/assets/font/Pretendard-Regular.otf');
     }
     @font-face {
-      font-family: "Pretendard-SemiBold";
+      font-family: 'Pretendard-SemiBold';
       font-weight: 600;
-      src: url("/assets/font/Pretendard-SemiBold.otf");
+      src: url('/assets/font/Pretendard-SemiBold.otf');
     }
     @font-face {
-      font-family: "Pretendard-Bold";
+      font-family: 'Pretendard-Bold';
       font-weight: 700;
-      src: url("/assets/font/Pretendard-Bold.otf");
+      src: url('/assets/font/Pretendard-Bold.otf');
     }
     @font-face {
-      font-family: "Pretendard-ExtraBold";
+      font-family: 'Pretendard-ExtraBold';
       font-weight: 800;
-      src: url("/assets/font/Pretendard-ExtraBold.otf");
+      src: url('/assets/font/Pretendard-ExtraBold.otf');
     }
     @font-face {
-      font-family: "Pretendard-Black";
+      font-family: 'Pretendard-Black';
       font-weight: 900;
-      src: url("/assets/font/Pretendard-Black.otf");
+      src: url('/assets/font/Pretendard-Black.otf');
     }
   `;
   return <Global styles={globalStyle} />;
