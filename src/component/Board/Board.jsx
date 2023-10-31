@@ -1,6 +1,6 @@
 import React from 'react';
 
-function SideBarContainer(props) {
+function Board(props) {
   return (
     <div>
       
@@ -8,4 +8,4 @@ function SideBarContainer(props) {
   );
 }
 
-export default SideBarContainer;
+export default Board;
