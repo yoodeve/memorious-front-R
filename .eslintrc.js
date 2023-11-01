@@ -32,7 +32,7 @@ module.exports = {
             "error",
             {
                 singleQuote: false,
-                endOfLine: "",
+                endOfLine: "auto",
                 useTabs: false,
             },
         ],
