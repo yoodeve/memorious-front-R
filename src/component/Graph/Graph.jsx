@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 
 function Graph() {
-  return <div>{'   '}</div>;
+    return <div>{"   "}</div>;
 }
 
 export default Graph;
