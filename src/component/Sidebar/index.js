@@ -29,7 +29,7 @@ function Sidebar() {
                 </div>
             </div>
             <div css={bottomSettingMenuBox}>
-                <span className="my-label">마이프로필</span>
+                <span className="my-label">My프로필</span>
                 <div className="right-titles">
                     <span>설정</span>
                     <span>로그아웃</span>
