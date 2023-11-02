@@ -1,8 +1,8 @@
 export const sidebarMenuList = [
-    { title: "Calendar", route: "/calendar", selected: true },
-    { title: "Memo", route: "/memo", selected: false },
-    { title: "Board", route: "/board", selected: false },
-    { title: "Check List", route: "/check-list", selected: false },
-    { title: "Graph", route: "/chart", selected: false },
-    { title: "Map", route: "/map", selected: false },
+    { title: "Calendar", route: "/calendar" },
+    { title: "Memo", route: "/memo" },
+    { title: "Board", route: "/board" },
+    { title: "Check List", route: "/check-list" },
+    { title: "Graph", route: "/chart" },
+    { title: "Map", route: "/map" },
 ];

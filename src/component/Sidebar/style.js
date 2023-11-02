@@ -44,7 +44,7 @@ export const groupBox = css`
     }
 `;
 
-export const sideBarLabel = () => css`
+export const sideBarLabel = css`
     width: 200px;
     height: 40px;
     padding: 10px 0;
