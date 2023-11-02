@@ -1,81 +1,40 @@
-import React from "react";
-import { css } from "@emotion/react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { sidebarMenuList } from "./sidebarMenu";
+import { bottomSettingMenuBox, groupBox, groupBoxWrapper, imageBox, sideBarLabel, sidebarContainer } from "./style";
 /** @jsxImportSource @emotion/react */
 
-const sidebarContainer = css`
-    position: relative;
-    width: 240px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #fffbf5;
-`;
-
-const groupBoxWrapper = css`
-    margin-top: 100px;
-`;
-
-const groupBox = css`
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    align-items: baseline;
-    height: fit-content;
-    background-color: #f5efe6;
-    padding: 20px;
-    border-radius: 8px;
-    &:nth-last-child(1) {
-        margin-top: 20px;
-    }
-`;
-const sideBarLabel = () => css`
-    width: 200px;
-    height: 40px;
-    padding: 10px 0;
-    border: 1px solid #6f6257;
-    margin: 10px 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    font-size: 1.2rem;
-    font-family: "Pretendard-Bold";
-    color: #6f6257;
-    cursor: pointer;
-`;
-
-const imageBox = css`
-    width: 100%;
-    height: 90px;
-    position: absolute;
-    top: 0;
-    left: 0;
-    background-image: url("/assets/images/logo.png");
-    background-size: cover;
-    img {
-        width: 100%;
-    }
-`;
-
 function Sidebar() {
+    const [selected, setSelected] = useState(0);
+
+    const navigate = useNavigate();
+
+    const navigateToPage = (route, index) => () => {
+        setSelected(index);
+        navigate(route);
+    };
+
     return (
         <div css={sidebarContainer}>
             <div css={imageBox} />
             <div css={groupBoxWrapper}>
                 <div css={groupBox}>
-                    <div css={sideBarLabel}>캘린더</div>
-                    <div css={sideBarLabel}>메모</div>
-                    <div css={sideBarLabel}>게시판</div>
-                    <div css={sideBarLabel}>체크리스트</div>
-                </div>
-                <div css={groupBox}>
-                    <div css={sideBarLabel}>그래프</div>
-                    <div css={sideBarLabel}>지도</div>
+                    {sidebarMenuList.map((e, index) => (
+                        <div key={e.title} className="group-box">
+                            <div className={index === selected ? "filled" : ""} onClick={navigateToPage(e.route, index)} css={sideBarLabel}>
+                                {e.title}
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
-            <div>설정, 로그아웃</div>
+            <div css={bottomSettingMenuBox}>
+                <span className="my-label">마이프로필</span>
+                <div className="right-titles">
+                    <span>설정</span>
+                    <span>로그아웃</span>
+                </div>
+            </div>
         </div>
     );
 }
