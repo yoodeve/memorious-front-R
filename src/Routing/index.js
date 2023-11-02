@@ -11,7 +11,12 @@ function Routing() {
             <BrowserRouter>
                 <Routes>
                     <Route path="/" element={<SideBar />}>
-                        <Route path="/" element={<Main />} />
+                        <Route path="/calendar" element={<Main />} />
+                        <Route path="/memo" element={<>메모</>} />
+                        <Route path="/board" element={<>게시판</>} />
+                        <Route path="/check-list" element={<>체크</>} />
+                        <Route path="/chart" element={<>차트</>} />
+                        <Route path="/map" element={<>맵</>} />
                     </Route>
                 </Routes>
             </BrowserRouter>
