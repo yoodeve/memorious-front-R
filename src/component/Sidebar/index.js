@@ -30,7 +30,7 @@ function Sidebar() {
             </div>
             <div css={bottomSettingMenuBox}>
                 <span className="my-label">마이프로필</span>
-                <div className="right-titles">
+                <div className="right-titles" onClick={navigate("/setting/mypage")}>
                     <span>설정</span>
                     <span>로그아웃</span>
                 </div>
