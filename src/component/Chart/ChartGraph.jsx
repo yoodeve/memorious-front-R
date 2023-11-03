@@ -7,8 +7,8 @@ function ChartGraph() {
     const chartRef = useRef();
     useEffect(() => {
         const bloodSugarData = chartGraphDummyDataObj.bloodSugar.map(e => e.data);
-        const w = 400;
-        const h = 300;
+        const w = 350; // 고정
+        const h = 120;
         const svg = d3.select(chartRef.current).attr("width", w).attr("height", h).style("background", "#fff").style("margin", 50).style("overflow", "visible");
         const xScale = d3
             .scaleLinear()
