@@ -5,7 +5,7 @@ import * as S from "./Style";
 function Mypage() {
     return (
         <>
-            <div css={S.SMainContainer}>한유정 천재.^^</div>
+            <div css={S.SMainContainer}>한유정 천재.^_^</div>
         </>
     );
 }
