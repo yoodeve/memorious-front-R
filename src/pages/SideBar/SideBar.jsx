@@ -5,7 +5,7 @@ import { Reset } from "styled-reset";
 import Sidebar from "../../component/Sidebar";
 /** @jsxImportSource @emotion/react */
 
-const mainContainer = css`
+export const mainContainer = css`
     display: flex;
     justify-content: flex-start;
     width: 70%;
