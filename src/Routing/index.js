@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Main from "../pages/Main/Main";
 import SideBar from "../pages/SideBar/SideBar";
 import GlobalStyle from "../style/Global";
+import SettingRoute from "./SettingRoute";
 
 function Routing() {
     return (
@@ -17,6 +18,7 @@ function Routing() {
                         <Route path="/check-list" element={<>체크</>} />
                         <Route path="/chart" element={<>차트</>} />
                         <Route path="/map" element={<>맵</>} />
+                        <Route path="/setting/*" element={<SettingRoute />} />
                     </Route>
                 </Routes>
             </BrowserRouter>
