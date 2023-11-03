@@ -8,6 +8,7 @@ import Sidebar from "../../component/Sidebar";
 const mainContainer = css`
     display: flex;
     justify-content: flex-start;
+    min-width: 900px;
     width: 70%;
     min-height: 100vh;
     margin: 0 auto;
