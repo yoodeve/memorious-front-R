@@ -21,7 +21,7 @@ function Routing() {
                         <Route path="/map" element={<>맵</>} />
                         <Route path="/setting/*" element={<SettingRoute />} />
                     </Route>
-                    <Route path="/oauth2route" element={<OAuth2Signin />} />
+                    <Route path="/oauth2signin" element={<OAuth2Signin />} />
                 </Routes>
             </BrowserRouter>
         </>
