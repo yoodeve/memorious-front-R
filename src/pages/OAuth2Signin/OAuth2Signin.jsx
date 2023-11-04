@@ -5,7 +5,7 @@ import { css } from "@emotion/react";
 
 const mainLayout = css`
     display: grid;
-    place-items: center; //자기의 내부 요소가 1개일 경우에만 적용가능
+    place-items: center; //자기 요소의 내부 요소가 1개일 경우에만 적용가능
     width: 70%;
     min-height: 100vh;
     margin: 0 auto;
@@ -44,7 +44,6 @@ const imgBox = css`
 `;
 
 const introText = css`
-    /* width: 100%; */
     padding: 70px 0;
     text-align: center;
     color: #6f6257;
@@ -55,7 +54,6 @@ const introText = css`
 `;
 
 const line = css`
-    /* position: absolute; */
     width: 400px;
     border-top: 2px solid #eee;
 `;
@@ -63,7 +61,6 @@ const line = css`
 const loginButton = css`
     margin-top: 30px;
     width: 200px;
-    /*  */
     & img {
         margin-top: 8px;
         width: 100%;
