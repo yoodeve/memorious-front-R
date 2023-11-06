@@ -4,6 +4,7 @@ import Main from "../pages/Main/Main";
 import SideBar from "../pages/SideBar/SideBar";
 import GlobalStyle from "../style/Global";
 import ChartRoute from "./ChartRoute";
+import MemoRoute from "./MemoRoute";
 
 function Routing() {
     return (
@@ -13,7 +14,7 @@ function Routing() {
                 <Routes>
                     <Route path="/" element={<SideBar />}>
                         <Route path="/calendar" element={<Main />} />
-                        <Route path="/memo" element={<>메모</>} />
+                        <Route path="/memo/*" element={<MemoRoute />} />
                         <Route path="/board" element={<>게시판</>} />
                         <Route path="/check-list" element={<>체크</>} />
                         <Route path="/chart/*" element={<ChartRoute />} />
