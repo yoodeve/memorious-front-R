@@ -58,25 +58,33 @@ export const memoHeaderContainer = css`
 export const memoWrapper = css`
     display: flex;
     justify-content: center;
+    flex-direction: column;
     align-items: center;
     width: 100%;
-    height: 100%;
+    height: 550px;
     padding: 0 50px 50px 50px;
 `;
 
 export const memoBoard = css`
+    display: flex;
+    flex-direction: column;
     width: 100%;
-    height: 100%;
+    overflow-y: auto;
+    height: calc(100% + 1);
     background-color: #6f6257;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    gap: 10px;
-    padding: 10px;
+    .memo-scroll-board {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+        gap: 10px;
+        padding: 10px;
+    }
 `;
 
 export const memoContent = index => css`
     width: 100%;
+    height: 180px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -103,6 +111,13 @@ export const memoContent = index => css`
 
 export const ModalContainer = styled(Modal)`
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+    .ant-modal-content {
+        width: 400px;
+    }
+    .text-area {
+        width: 100%;
+    }
 `;
