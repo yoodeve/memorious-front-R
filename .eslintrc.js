@@ -68,5 +68,6 @@ module.exports = {
         "react/no-this-in-sfc": "off",
         "react/destructuring-assignment": [0, "always"],
         "consistent-return": "off",
+        "import/no-extraneous-dependencies": ["error", { devDependencies: false, optionalDependencies: false, peerDependencies: false }],
     },
 };
