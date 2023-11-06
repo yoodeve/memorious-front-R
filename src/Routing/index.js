@@ -5,6 +5,7 @@ import SideBar from "../pages/SideBar/SideBar";
 import GlobalStyle from "../style/Global";
 import SettingRoute from "./SettingRoute";
 import OAuth2Signin from "../pages/OAuth2Signin/OAuth2Signin";
+import OAuth2Signup from "../pages/OAuth2Signup/OAuth2Signup";
 
 function Routing() {
     return (
@@ -21,7 +22,8 @@ function Routing() {
                         <Route path="/map" element={<>맵</>} />
                         <Route path="/setting/*" element={<SettingRoute />} />
                     </Route>
-                    <Route path="/oauth2signin" element={<OAuth2Signin />} />
+                    <Route path="/signinoauth2" element={<OAuth2Signin />} />
+                    <Route path="/signupoauth2" element={<OAuth2Signup />} />
                 </Routes>
             </BrowserRouter>
         </>

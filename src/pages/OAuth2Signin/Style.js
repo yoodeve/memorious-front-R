@@ -32,7 +32,7 @@ export const mainContainer = css`
     box-shadow: 0px 4px 4px 4px rgba(0, 0, 0, 0.25);
 `;
 
-export const imgBox = css`
+export const logoBox = css`
     width: 300px;
     margin: 0 auto;
     margin-top: 70px;
