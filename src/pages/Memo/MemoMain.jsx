@@ -1,14 +1,14 @@
 /* eslint-disable no-unused-vars */
-import React, { useRef, useState } from "react";
+import { debounce } from "lodash";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { css } from "@emotion/react";
 /** @jsxImportSource @emotion/react */
 import { useQuery } from "react-query";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { useInView } from "react-intersection-observer";
 import MemoHeader from "../../component/Memo/MemoHeader";
 import MemoContainer from "../../component/Memo/MemoContainer";
+import { rcMemoList, rcMemoPage } from "../../store/atoms/memoAtoms";
 import { instance } from "../../config";
-import { rcMemoPage } from "../../store/atoms/memoAtoms";
 
 const memoMainContainer = css`
     width: 100%;
@@ -20,30 +20,27 @@ const memoMainContainer = css`
 `;
 
 function MemoMain() {
-    const [memoList, setMemoList] = useState([]);
-    const [pageNum, setPageNum] = useRecoilState(rcMemoPage);
-    const [ref, inView] = useInView();
-    const memo = useQuery(
-        ["getMemo", pageNum, inView],
-        async () => {
-            const response = await instance.get(`/api/memo/${pageNum}`);
-            setMemoList(response.data);
+    const pageNum = useRecoilValue(rcMemoPage);
+    const [memoList, setMemoList] = useRecoilState(rcMemoList);
+    const [totalCount, setTotalCount] = useState(0);
 
-            if (inView) {
-                setPageNum(pageNum + 1);
-                setMemoList([...memoList, memo?.data]);
-            }
-        },
-        {
-            refetchOnMount: true,
-            refetchOnWindowFocus: false,
-        },
-    );
+    const fetchMemo = async () => {
+        const response = await instance.get(`/api/memo/${pageNum}`);
+        setMemoList(prevMemoList => {
+            return pageNum ? [...response.data.memoList, ...prevMemoList] : [...response.data.memoList];
+        });
+        setTotalCount(response.data.totalCount);
+    };
+
+    const getMemo = useQuery(["getMemo", pageNum], fetchMemo, {
+        retryOnMount: true,
+        refetchOnWindowFocus: false,
+    });
 
     return (
         <div css={memoMainContainer}>
-            <MemoHeader memoList={memoList} ref={ref} />
-            <MemoContainer />
+            <MemoHeader />
+            <MemoContainer totalCount={totalCount} memoList={memoList} />
         </div>
     );
 }

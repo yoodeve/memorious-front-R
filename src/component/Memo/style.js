@@ -70,7 +70,7 @@ export const memoBoard = css`
     flex-direction: column;
     width: 100%;
     overflow-y: auto;
-    height: calc(100% + 1);
+    height: calc(100% + 1px);
     background-color: #6f6257;
     .memo-scroll-board {
         width: 100%;
@@ -110,6 +110,19 @@ export const memoContent = index => css`
 `;
 
 export const ModalContainer = styled(Modal)`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    .ant-modal-content {
+        width: 400px;
+    }
+    .text-area {
+        width: 100%;
+    }
+`;
+
+export const EditModalContainer = styled(Modal)`
     display: flex;
     flex-direction: column;
     justify-content: center;
