@@ -5,7 +5,10 @@ import * as S from "./Style";
 
 function OAuth2Signin() {
     const handleKakaoLoginClick = () => {};
-    const handleNaverLoginClick = () => {};
+    const handleNaverLoginClick = () => {
+        window.location.href = "http://localhost:8080/oauth2/authorization/naver";
+    };
+
     return (
         <>
             <Reset />
