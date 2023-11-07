@@ -31,7 +31,7 @@ function SideBar() {
     return (
         <>
             <Reset />
-            <div css={mainContainer}>
+            <div id="parent-container" css={mainContainer}>
                 <Sidebar />
                 <div css={contentsContainer}>
                     <Outlet />
