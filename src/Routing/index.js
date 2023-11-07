@@ -1,10 +1,11 @@
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Main from "../pages/Main/Main";
 import SideBar from "../pages/SideBar/SideBar";
 import GlobalStyle from "../style/Global";
+import CalendarPage from "../pages/Calendar/CalendarPage";
 import ChartRoute from "./ChartRoute";
 import MemoRoute from "./MemoRoute";
+
 
 function Routing() {
     return (
@@ -13,6 +14,8 @@ function Routing() {
             <BrowserRouter>
                 <Routes>
                     <Route path="/" element={<SideBar />}>
+                        <Route path="/calendar/*" element={<CalendarPage />} />
+                        <Route path="/memo" element={<>메모</>} />
                         <Route path="/calendar" element={<Main />} />
                         <Route path="/memo/*" element={<MemoRoute />} />
                         <Route path="/board" element={<>게시판</>} />
