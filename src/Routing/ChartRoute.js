@@ -1,7 +1,7 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 import ChartDetail from "../pages/ChartDetail/ChartDetail";
-import ChartMain from "../component/Chart/ChartMain";
+import ChartMain from "../pages/ChartMain/ChartMain";
 
 function ChartRoute() {
     return (

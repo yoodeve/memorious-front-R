@@ -82,14 +82,6 @@ export const profileWrapper = css`
         background-color: #fff;
     }
     button {
-        background-color: #fffbf5;
-        color: #6f6257;
-        outline: none;
-        border: none;
-        border-radius: 4px;
-        &:active {
-            background-color: #e6a156;
-        }
     }
 `;
 
@@ -110,6 +102,7 @@ export const chartMainContainer = css`
         display: flex;
         justify-content: flex-end;
         align-items: center;
+        padding: 50px 10px 0;
         button {
             padding: 5px;
             margin-right: 15px;
@@ -121,7 +114,14 @@ export const chartMainContainer = css`
         }
     }
 `;
-// export const ChartSidebar = css``;
+export const userSelectedButton = buttonColor => css`
+    background-color: ${buttonColor ? "#e6a156" : "#fffbf5"};
+    color: #6f6257;
+    outline: none;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+`;
 // export const ChartSidebar = css``;
 // export const ChartSidebar = css``;
 // export const ChartSidebar = css``;

@@ -1,8 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { chartMainContainer } from "./style";
-import ChartGraph from "./ChartGraph";
-import Chart from "./Chart";
+import { chartMainContainer } from "../../component/Chart/style";
+import ChartGraph from "../../component/Chart/ChartGraph";
+import Chart from "../../component/Chart/Chart";
 /** @jsxImportSource @emotion/react */
 
 function ChartMain() {

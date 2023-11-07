@@ -13,7 +13,7 @@ function ChartDetail() {
         <Chart>
             <ChartTableContainer>
                 <h1>내건강데이터 입력하기</h1>
-                <Table headerColor="#6F6257" dataSource={chartTableDummyData} columns={tableColumns} style={tableCss} position="bottomCenter" />
+                <Table headerColor="#6F6257" dataSource={chartTableDummyData.reverse()} columns={tableColumns} style={tableCss} position="bottomCenter" />
             </ChartTableContainer>
         </Chart>
     );

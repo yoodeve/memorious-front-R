@@ -23,6 +23,7 @@ export const firstRowDateInput = css`
 `;
 
 export const firstRowInput = css`
+    text-align: center;
     width: 60px;
     border: none;
     outline: none;
