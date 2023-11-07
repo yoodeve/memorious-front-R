@@ -1,16 +1,23 @@
-import React from "react";
+/* eslint-disable no-unused-vars */
+import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Dropdown } from "antd";
 import { sidebarMenuList } from "./sidebarMenu";
 import { bottomSettingMenuBox, groupBox, groupBoxWrapper, imageBox, sideBarLabel, sidebarContainer } from "./style";
+import InviteModal from "../Invite/InviteModal";
 /** @jsxImportSource @emotion/react */
 
 function Sidebar() {
     const { pathname } = useLocation();
     const navigate = useNavigate();
+    const [open, setOpen] = useState(false);
 
     const navigateToPage = route => () => {
         navigate(route);
+    };
+
+    const handleInviteClick = () => {
+        setOpen(true);
     };
 
     const items = [
@@ -24,7 +31,7 @@ function Sidebar() {
         },
         {
             key: "3",
-            label: <span>가족초대하기</span>,
+            label: <span onClick={handleInviteClick}>가족초대하기</span>,
         },
     ];
 
@@ -48,6 +55,7 @@ function Sidebar() {
                     <Dropdown menu={{ items }} placement="topRight" arrow={{ pointAtCenter: true }}>
                         <span>설정</span>
                     </Dropdown>
+                    <InviteModal open={open} setOpen={setOpen} />
                     <span>로그아웃</span>
                 </div>
             </div>
