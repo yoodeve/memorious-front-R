@@ -1,11 +1,23 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import React, { useMemo } from "react";
 import styled from "styled-components";
-import { Badge, Calendar } from "antd";
-
+import { Badge, Button, Calendar } from "antd";
 /** @jsxImportSource @emotion/react */
 import { SMainContainer } from "./Style";
 
-// import "./CalendarPage.css";
+const HeaderRender = ({ value, onChange }) => {
+    return (
+        <div style={{ display: "flex", justifyContent: "space-between", margin: "0 20px" }}>
+            <span style={{ fontSize: "1.5rem" }}>{value.year()}</span>
+            <div>
+                <Button onClick={() => onChange(value.clone().subtract(1, "years"))}>이전달</Button>
+                <Button type="primary" onClick={() => onChange(value.clone().add(1, "years"))}>
+                    다음달
+                </Button>
+            </div>
+        </div>
+    );
+};
 
 function CalendarPage() {
     const getMonthData = value => {
@@ -19,12 +31,16 @@ function CalendarPage() {
             case 15:
                 listData = [
                     {
-                        type: "warning",
+                        type: "#213978",
                         content: "This is warning event",
                     },
 
                     {
-                        type: "error",
+                        type: "red",
+                        content: "This is error event 1.",
+                    },
+                    {
+                        type: "#666",
                         content: "This is error event 1.",
                     },
                 ];
@@ -32,7 +48,7 @@ function CalendarPage() {
             case 14:
                 listData = [
                     {
-                        type: "success",
+                        type: "#888",
                         content: "zzz",
                     },
                 ];
@@ -59,26 +75,28 @@ function CalendarPage() {
     const dateCellRender = value => {
         const listData = getListData(value);
         return (
-            <ul className="events">
-                {listData.map(item => (
-                    <li key={item.content}>
-                        <Badge status={item.type} text={item.content} />
-                    </li>
-                ))}
-            </ul>
+            <div>
+                <ul className="events">
+                    {listData.map(item => {
+                        return (
+                            <li key={item.content}>
+                                <Badge color={item.type} text={item.content} />
+                            </li>
+                        );
+                    })}
+                </ul>
+            </div>
         );
     };
 
     const cellRender = (current, info) => {
-        console.log(current);
-        // console.log(info);
         if (info.type === "date") return dateCellRender(current);
         if (info.type === "month") return monthCellRender(current);
         return info.originNode;
     };
 
     const tableCss = useMemo(() => {
-        return { width: "1102px" };
+        return { width: "100%", height: "max-content" };
     }, []);
 
     const SCalendar = styled(Calendar)`
@@ -89,10 +107,19 @@ function CalendarPage() {
 
         .ant-picker-calendar-header {
             display: flex;
-            justify-content: space-around;
+            justify-content: flex-end;
+            position: relative;
+            .ant-select {
+                &:nth-of-type(1) {
+                    margin-left: 10px;
+                }
+                &:nth-of-type(2) {
+                    margin-right: 800px;
+                }
+            }
         }
         /* 요일 표시 중앙으로  */
-        .ant-picker-calendar&.ant-picker-calendar-full &.ant-picker-panel {
+        .ant-picker-calendar .ant-picker-calendar-full .ant-picker-panel {
         }
 
         .css-1rclprt-SideBar * {
@@ -111,14 +138,14 @@ function CalendarPage() {
         .ant-picker-cell ant-picker-cell-in-view {
             height: 135px;
         }
-        .ant-picker-calendar-date-content {
-            height: 135px;
+        tbody tr td .ant-picker-cell-inner.ant-picker-calendar-date .ant-picker-calendar-date-content {
+            height: 110px;
         }
     `;
 
     return (
         <div css={SMainContainer}>
-            <SCalendar onPanelChange={onPanelChange} cellRender={cellRender} style={tableCss} />
+            <SCalendar headerRender={HeaderRender} dateCellRender={dateCellRender} onPanelChange={onPanelChange} cellRender={cellRender} style={tableCss} />
             {/* <Calendar onPanelChange={onPanelChange} cellRender={cellRender} style={tableCss} /> */}
         </div>
     );

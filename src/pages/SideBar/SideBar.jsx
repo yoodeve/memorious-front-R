@@ -8,6 +8,7 @@ import Sidebar from "../../component/Sidebar";
 const mainContainer = css`
     display: flex;
     justify-content: flex-start;
+    max-width: 1100px;
     width: 70%;
     min-height: 100vh;
     margin: 0 auto;
@@ -23,7 +24,7 @@ const mainContainer = css`
 `;
 
 const contentsContainer = css`
-    flex-grow: 1;
+    width: 860px;
 `;
 
 function SideBar() {
