@@ -4,8 +4,10 @@ import { Reset } from "styled-reset";
 import * as S from "./Style";
 
 function OAuth2Signin() {
-    const handleKakaoLoginClick = () => {};
-    const handleNaverLoginClick = () => {
+    const handleKakaoLogin = () => {
+        window.location.href = "http://localhost:8080/oauth2/authorization/kakao";
+    };
+    const handleNaverLogin = () => {
         window.location.href = "http://localhost:8080/oauth2/authorization/naver";
     };
 
@@ -26,10 +28,10 @@ function OAuth2Signin() {
                     </div>
                     <div css={S.line} />
                     <div css={S.loginButtonBox}>
-                        <div css={S.loginButton} onClick={handleKakaoLoginClick}>
+                        <div css={S.loginButton} onClick={handleKakaoLogin}>
                             <img src="/assets/images/kakao_login_logo.png" alt="" />
                         </div>
-                        <div css={S.loginButton} onClick={handleNaverLoginClick}>
+                        <div css={S.loginButton} onClick={handleNaverLogin}>
                             <img src="/assets/images/naver_login_logo.png" alt="" />
                         </div>
                     </div>

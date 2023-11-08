@@ -3,12 +3,21 @@ import React, { useState } from "react";
 /** @jsxImportSource @emotion/react */
 import { mainContainer, mainLayout } from "../OAuth2Signin/Style";
 import * as S from "./Style";
+import { instance } from "../../config";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 function OAuth2Signup() {
-    const [signupUser, setSignupUser] = useState({
+    const [searchParams, setSearchParams] = useSearchParams();
+    const navigate = useNavigate();
+
+    const user = {
         email: "",
         nickname: "",
-    });
+        oauth2Id: searchParams.get("oauth2Id"),
+        provider: searchParams.get("provider"),
+    };
+
+    const [signupUser, setSignupUser] = useState(user);
 
     const handleInputChange = e => {
         setSignupUser({
@@ -17,7 +26,19 @@ function OAuth2Signup() {
         });
     };
 
-    const handleSignupSubmit = () => {};
+    const handleSignupSubmit = async () => {
+        try {
+            console.log(signupUser);
+            
+            const response = await instance.post("/api/auth/oauth2/signup", signupUser);
+            // console.log(response);
+            
+            alert("회원가입 성공");
+            navigate("/")
+        } catch (error) {
+            console.error(error.response);
+        }
+    };
 
     return (
         <>

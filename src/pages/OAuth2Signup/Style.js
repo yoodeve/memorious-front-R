@@ -57,6 +57,7 @@ export const inputBox = css`
 `;
 
 export const signupButton = css`
+    cursor: pointer;
     margin-top: 50px;
     border: none;
     border-radius: 10px;
