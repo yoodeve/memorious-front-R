@@ -7,35 +7,45 @@ export const SHeaderContainer = css`
     margin: 15px 30px;
 `;
 
-export const SHeaderLeft = css`
+export const SFlex = css`
     display: flex;
     align-items: center;
+
+    & > button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 `;
+
 export const STodayBtn = css`
     width: 60px;
     height: 40px;
     margin-right: 20px;
 `;
-export const Sbtn = css`
-    display: flex;
-    justify-content: center;
-    align-items: center;
+
+export const SMonthbtn = css`
     width: 40px;
     height: 40px;
     border-radius: 50%;
     border: 0px;
-    margin-right: 20px;
     background-color: transparent;
 
     & > span {
         font-family: "Pretendard-ExtraBold";
         font-size: 1.2rem;
     }
-    :hover {
-        background-color: #f9f9f9;
-    }
+`;
+export const SheaderDisplay = css`
+    font-size: 28px;
+    margin: 0px 10px;
 `;
 
-export const SheaderDisplay = css`
-    font-size: 26px;
+export const SAddBtn = css`
+    height: 40px;
+    margin-left: 20px;
+    font-size: 24px;
+    & > span {
+        font-size: 16px;
+    }
 `;

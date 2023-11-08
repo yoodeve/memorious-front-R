@@ -18,8 +18,10 @@ export const SBox = css`
     display: flex;
     align-items: center;
     cursor: pointer;
+    transition: background-color 0.3s;
     :hover {
-        background-color: #f1f3f4;
+        background-color: #f1f3f490;
+        filter: brightness(95%);
     }
     & > li {
         overflow: hidden;

@@ -2,7 +2,8 @@ import { Button, Col, Select } from "antd";
 import dayjs from "dayjs";
 import React from "react";
 /** @jsxImportSource @emotion/react */
-import { SHeaderContainer, SHeaderLeft, STodayBtn, Sbtn, SheaderDisplay } from "./Style";
+import ScheduleAddModal from "../Modal/EditScheduleModal";
+import { SAddBtn, SFlex, SHeaderContainer, SMonthbtn, STodayBtn, SheaderDisplay } from "./style";
 
 function Header({ value, onChange }) {
     const year = value.year();
@@ -20,31 +21,36 @@ function Header({ value, onChange }) {
 
     return (
         <div css={SHeaderContainer}>
-            <div css={SHeaderLeft}>
+            <div css={SFlex}>
                 <Button css={STodayBtn} onClick={() => onChange(now)}>
                     오늘
                 </Button>
-                <Button css={Sbtn} onClick={() => onChange(current.subtract(1, "months"))} style={{ marginRight: "10px" }}>
+                <Button css={SMonthbtn} onClick={() => onChange(current.subtract(1, "months"))} style={{ marginRight: "10px" }}>
                     {"<"}
                 </Button>
-                <Button css={Sbtn} onClick={() => onChange(current.add(1, "months"))}>
+                <Button css={SMonthbtn} onClick={() => onChange(current.add(1, "months"))}>
                     {">"}
                 </Button>
                 <span css={SheaderDisplay}>
                     {year}년 {month + 1}월
                 </span>
             </div>
-            <Col>
-                <Select
-                    size="large"
-                    value={year}
-                    onChange={newYear => {
-                        onChange(current.year(newYear));
-                    }}
-                >
-                    {options}
-                </Select>
-            </Col>
+            <div css={SFlex}>
+                <Col>
+                    <Select
+                        size="large"
+                        value={year}
+                        onChange={newYear => {
+                            onChange(current.year(newYear));
+                        }}
+                    >
+                        {options}
+                    </Select>
+                </Col>
+                <Button css={SAddBtn} onClick={ScheduleAddModal}>
+                    + 일정 추가
+                </Button>
+            </div>
         </div>
     );
 }
