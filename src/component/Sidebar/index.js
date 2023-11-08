@@ -1,16 +1,15 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { sidebarMenuList } from "./sidebarMenu";
 import { bottomSettingMenuBox, groupBox, groupBoxWrapper, imageBox, sideBarLabel, sidebarContainer } from "./style";
 /** @jsxImportSource @emotion/react */
 
 function Sidebar() {
-    const [selected, setSelected] = useState(0);
+    const { pathname } = useLocation();
 
     const navigate = useNavigate();
 
-    const navigateToPage = (route, index) => () => {
-        setSelected(index);
+    const navigateToPage = route => () => {
         navigate(route);
     };
 
@@ -19,9 +18,9 @@ function Sidebar() {
             <div css={imageBox} />
             <div css={groupBoxWrapper}>
                 <div css={groupBox}>
-                    {sidebarMenuList.map((e, index) => (
+                    {sidebarMenuList.map(e => (
                         <div key={e.title} className="group-box">
-                            <div className={index === selected ? "filled" : ""} onClick={navigateToPage(e.route, index)} css={sideBarLabel}>
+                            <div className={e.route === pathname ? "filled" : ""} onClick={navigateToPage(e.route)} css={sideBarLabel}>
                                 {e.title}
                             </div>
                         </div>
