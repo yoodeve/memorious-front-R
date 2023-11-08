@@ -1,125 +1,49 @@
-import React, { useMemo } from "react";
-import styled from "styled-components";
-import { Badge, Calendar } from "antd";
-
+import React from "react";
 /** @jsxImportSource @emotion/react */
-import { SMainContainer } from "./Style";
-
-// import "./CalendarPage.css";
+import { SBox, SMainContainer, SScheduleText } from "./Style";
+import StyledCalendar from "../../component/Calendar/StyledCalendar/StyledCalendar";
+import { ScheduleData } from "./SchduleData";
+import Badge from "../../component/Calendar/Badge";
 
 function CalendarPage() {
-    const getMonthData = value => {
-        if (value.month() === 3) {
-            return 1;
-        }
-    };
-    const getListData = value => {
-        let listData;
-        switch (value.date()) {
-            case 15:
-                listData = [
-                    {
-                        type: "warning",
-                        content: "This is warning event",
-                    },
+    // 데이터 필터링
+    const getFiteredData = value => {
+        const dateFormat = value.format("YYYYMMDD");
 
-                    {
-                        type: "error",
-                        content: "This is error event 1.",
-                    },
-                ];
-                break;
-            case 14:
-                listData = [
-                    {
-                        type: "success",
-                        content: "zzz",
-                    },
-                ];
-                break;
-            default:
-        }
-        return listData || [];
+        const dayAllData = ScheduleData.filter(item => item.date === dateFormat && item.isDayAll === 1);
+        const nonAllDayData = ScheduleData.filter(item => item.date === dateFormat && item.isDayAll === 0);
+
+        const allData = dayAllData.concat(nonAllDayData);
+        return allData;
     };
 
-    const onPanelChange = (value, mode) => {
-        console.log(value.format("YYYY-MM-DD"), mode);
+    // Schedule 클릭시 일정추가Modal
+    const handleScheduleClick = (data, e) => {
+        console.log("data", data);
+        console.log("e", e);
     };
+    // 각 날짜의 cell 안을 정의(일정)
+    const cellRender = value => {
+        const schedule = getFiteredData(value);
 
-    const monthCellRender = value => {
-        const num = getMonthData(value);
-        return num ? (
-            <div className="notes-month">
-                <section>{num}</section>
-                <span>Backlog number</span>
-            </div>
-        ) : null;
-    };
-
-    const dateCellRender = value => {
-        const listData = getListData(value);
         return (
             <ul className="events">
-                {listData.map(item => (
-                    <li key={item.content}>
-                        <Badge status={item.type} text={item.content} />
-                    </li>
+                {schedule.map(data => (
+                    <div onClick={e => handleScheduleClick(data, e)} css={SBox}>
+                        {/* 종일이 아니면 뱃지 먼저 */}
+                        {data.isDayAll === 0 ? <Badge color={data.color} /> : <></>}
+                        <li css={SScheduleText(data.color, data.isDayAll)} key={data.date}>
+                            {data.subject}
+                        </li>
+                    </div>
                 ))}
             </ul>
         );
     };
 
-    const cellRender = (current, info) => {
-        console.log(current);
-        // console.log(info);
-        if (info.type === "date") return dateCellRender(current);
-        if (info.type === "month") return monthCellRender(current);
-        return info.originNode;
-    };
-
-    const tableCss = useMemo(() => {
-        return { width: "1102px" };
-    }, []);
-
-    const SCalendar = styled(Calendar)`
-        thead tr th {
-            font-size: 24px;
-            text-align: center;
-        }
-
-        .ant-picker-calendar-header {
-            display: flex;
-            justify-content: space-around;
-        }
-        /* 요일 표시 중앙으로  */
-        .ant-picker-calendar&.ant-picker-calendar-full &.ant-picker-panel {
-        }
-
-        .css-1rclprt-SideBar * {
-            font-size: 24px;
-        }
-
-        .ant-picker-calendar-date {
-            height: 130px;
-        }
-
-        .ant-picker-calendar-date-value {
-            text-align: center;
-            font-family: "Pretendard-Bold";
-        }
-
-        .ant-picker-cell ant-picker-cell-in-view {
-            height: 135px;
-        }
-        .ant-picker-calendar-date-content {
-            height: 135px;
-        }
-    `;
-
     return (
         <div css={SMainContainer}>
-            <SCalendar onPanelChange={onPanelChange} cellRender={cellRender} style={tableCss} />
-            {/* <Calendar onPanelChange={onPanelChange} cellRender={cellRender} style={tableCss} /> */}
+            <StyledCalendar cellRender={cellRender} />
         </div>
     );
 }
