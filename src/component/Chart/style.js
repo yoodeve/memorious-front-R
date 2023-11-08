@@ -114,13 +114,21 @@ export const chartMainContainer = css`
         }
     }
 `;
-export const userSelectedButton = buttonColor => css`
-    background-color: ${buttonColor ? "#e6a156" : "#fffbf5"};
-    color: #6f6257;
-    outline: none;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+export const userSelectedButton = css`
+    input {
+        display: none;
+    }
+    label::before {
+        content: "적용하기";
+        cursor: pointer;
+        padding: 5px;
+        border-radius: 4px;
+        background-color: #fffbf5;
+        color: #6f6257;
+    }
+    input:checked + label::before {
+        background-color: #e6a156;
+    }
 `;
 // export const ChartSidebar = css``;
 // export const ChartSidebar = css``;
@@ -129,7 +137,7 @@ export const userSelectedButton = buttonColor => css`
 // export const ChartSidebar = css``;
 // export const ChartSidebar = css``;
 // export const ChartSidebar = css``;
-// export const ChartSidebar = css``;
+// export const ChartSidebar = css``;"#"
 // export const ChartSidebar = css``;
 // export const ChartSidebar = css``;
 // export const ChartSidebar = css``;

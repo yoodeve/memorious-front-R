@@ -2,7 +2,7 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import { css } from "@emotion/react";
 import { Reset } from "styled-reset";
-import Sidebar from "../../component/Sidebar";
+import SidebarContainer from "../../component/Sidebar";
 /** @jsxImportSource @emotion/react */
 
 const mainContainer = css`
@@ -32,7 +32,7 @@ function SideBar() {
         <>
             <Reset />
             <div id="parent-container" css={mainContainer}>
-                <Sidebar />
+                <SidebarContainer />
                 <div css={contentsContainer}>
                     <Outlet />
                 </div>

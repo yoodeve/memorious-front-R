@@ -1,19 +1,32 @@
-import React, { useCallback, useState } from "react";
-import { useSetRecoilState } from "recoil";
+import React, { useCallback, useLayoutEffect, useState } from "react";
+import { useRecoilState } from "recoil";
 import { profileContainer, profileWrapper, userSelectedButton } from "./style";
-import { rcChartLabelList } from "../../store/atoms/chartAtoms";
+import { rcUserOnChartArray } from "../../store/atoms/chartAtoms";
+
 /** @jsxImportSource @emotion/react */
 
-function ChartProfileArea({ profileName, imgSrc }) {
-    const [isBtnSelected, setIsBtnSelected] = useState(false);
-    const setChartLabel = useSetRecoilState(rcChartLabelList);
-    const onAddLabelList = useCallback(() => {
-        setIsBtnSelected(b => !b);
+function ChartProfileArea({ index, profileName, imgSrc }) {
+    const [chartLabel, setChartLabel] = useRecoilState(rcUserOnChartArray);
+    const [checked, setChecked] = useState(false);
+
+    useLayoutEffect(() => {
+        setChartLabel(["유정", "정어리"]);
     }, []);
 
-    const onAddList = user => {
-        setChartLabel(chartLabel => (chartLabel.includes(user) ? chartLabel.filter(e => e !== user) : [...chartLabel, user]));
-    };
+    const onAddLabelList = useCallback(
+        profile => () => {
+            setChartLabel(prevLabels => {
+                const updatedLabels = prevLabels.includes(profile) ? prevLabels.filter(e => e !== profile) : [...prevLabels, profile];
+                return updatedLabels;
+            });
+            setChecked(chartLabel.includes(profileName));
+        },
+        [checked],
+    );
+
+    useLayoutEffect(() => {
+        setChecked(chartLabel.includes(profileName));
+    }, [chartLabel]);
 
     return (
         <div css={profileContainer}>
@@ -22,15 +35,10 @@ function ChartProfileArea({ profileName, imgSrc }) {
                     <img src={imgSrc} alt="" />
                 </div>
                 <span>{profileName}</span>
-                <button
-                    onClick={() => {
-                        onAddList(profileName);
-                        onAddLabelList();
-                    }}
-                    css={userSelectedButton(isBtnSelected)}
-                >
-                    상세보기
-                </button>
+                <div css={userSelectedButton}>
+                    <input id={index} type="checkbox" checked={checked} onChange={onAddLabelList(profileName)} />
+                    <label htmlFor={index} />
+                </div>
             </div>
         </div>
     );

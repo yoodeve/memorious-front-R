@@ -4,7 +4,7 @@ import { sidebarMenuList } from "./sidebarMenu";
 import { bottomSettingMenuBox, groupBox, groupBoxWrapper, imageBox, sideBarLabel, sidebarContainer } from "./style";
 /** @jsxImportSource @emotion/react */
 
-function Sidebar() {
+function SidebarContainer() {
     const { pathname } = useLocation();
 
     const navigate = useNavigate();
@@ -38,4 +38,4 @@ function Sidebar() {
     );
 }
 
-export default Sidebar;
+export default SidebarContainer;
