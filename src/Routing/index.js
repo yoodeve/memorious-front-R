@@ -13,9 +13,8 @@ function Routing() {
             <BrowserRouter>
                 <Routes>
                     <Route path="/" element={<SideBar />}>
-                        <Route path="/calendar/*" element={<CalendarPage />} />
+                        <Route index element={<CalendarPage />} />
                         <Route path="/memo" element={<>메모</>} />
-                        <Route path="/calendar" replace to="/calendar" />
                         <Route path="/memo/*" element={<MemoRoute />} />
                         <Route path="/board" element={<>게시판</>} />
                         <Route path="/check-list" element={<>체크</>} />
