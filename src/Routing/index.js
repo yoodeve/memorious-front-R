@@ -12,7 +12,7 @@ function Routing() {
                 <Routes>
                     <Route path="/" element={<SideBar />}>
                         <Route path="/calendar/*" element={<CalendarPage />} />
-                        <Route path="/memo" element={<>메모</>} />
+                        <Route path="/memo" element={<></>} />
                         <Route path="/board" element={<>게시판</>} />
                         <Route path="/check-list" element={<>체크</>} />
                         <Route path="/chart" element={<>차트</>} />

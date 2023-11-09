@@ -4,7 +4,7 @@ export const SHeaderContainer = css`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 15px 30px;
+    margin: 15px 10px;
 `;
 
 export const SFlex = css`

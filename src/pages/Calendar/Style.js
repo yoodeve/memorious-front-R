@@ -5,6 +5,12 @@ export const SMainContainer = css`
     height: 100%;
 `;
 
+export const SdateCell = css`
+    width: 156.1px;
+    height: 109px;
+    cursor: pointer;
+`;
+
 export const SScheduleText = (color, isDayAll) => css`
     background-color: ${isDayAll === 0 ? "transparent" : color};
     border-radius: 5px;

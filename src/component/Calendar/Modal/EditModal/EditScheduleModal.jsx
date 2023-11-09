@@ -1,12 +1,10 @@
+import React from "react";
 import { Modal } from "antd";
-import React, { useState } from "react";
 
-function EditScheduleModal(open, setOpen) {
-    const [title, setTitle] = useState("수정모달");
+function EditScheduleModal({ open, setOpen }) {
+    const title = "일정 수정";
 
     const handleOk = () => {
-        // useState 지우기 싫어서
-        setTitle("초대완료");
         setOpen(false);
     };
 
@@ -17,7 +15,7 @@ function EditScheduleModal(open, setOpen) {
     return (
         <div>
             <Modal centered title={title} open={open} onOk={handleOk} onCancel={handleCancel}>
-                zz
+                aaaa
             </Modal>
         </div>
     );

@@ -1,15 +1,18 @@
-import { Button, Col, Select } from "antd";
+import React, { useState } from "react";
 import dayjs from "dayjs";
-import React from "react";
-/** @jsxImportSource @emotion/react */
-import ScheduleAddModal from "../Modal/EditScheduleModal";
+import { Button, Col, Select } from "antd";
 import { SAddBtn, SFlex, SHeaderContainer, SMonthbtn, STodayBtn, SheaderDisplay } from "./style";
+import AddScheduleModal from "../Modal/AddModal/AddScheduleModal";
+/** @jsxImportSource @emotion/react */
 
 function Header({ value, onChange }) {
+    const [addModalOpen, setAddModalOpen] = useState(false);
+
+    const now = dayjs();
     const year = value.year();
     const month = value.month();
     const current = value.clone();
-    const now = dayjs();
+
     const options = [];
     for (let i = year - 10; i < year + 10; i += 1) {
         options.push(
@@ -18,40 +21,47 @@ function Header({ value, onChange }) {
             </Select.Option>,
         );
     }
+    const handleAddClick = () => {
+        console.log("header");
+        setAddModalOpen(true);
+    };
 
     return (
-        <div css={SHeaderContainer}>
-            <div css={SFlex}>
-                <Button css={STodayBtn} onClick={() => onChange(now)}>
-                    오늘
-                </Button>
-                <Button css={SMonthbtn} onClick={() => onChange(current.subtract(1, "months"))} style={{ marginRight: "10px" }}>
-                    {"<"}
-                </Button>
-                <Button css={SMonthbtn} onClick={() => onChange(current.add(1, "months"))}>
-                    {">"}
-                </Button>
-                <span css={SheaderDisplay}>
-                    {year}년 {month + 1}월
-                </span>
+        <>
+            {addModalOpen ? <AddScheduleModal open={addModalOpen} setOpen={setAddModalOpen} date={now} /> : <></>}
+            <div css={SHeaderContainer}>
+                <div css={SFlex}>
+                    <Button css={STodayBtn} onClick={() => onChange(now)}>
+                        오늘
+                    </Button>
+                    <Button css={SMonthbtn} onClick={() => onChange(current.subtract(1, "months"))} style={{ marginRight: "10px" }}>
+                        {"<"}
+                    </Button>
+                    <Button css={SMonthbtn} onClick={() => onChange(current.add(1, "months"))}>
+                        {">"}
+                    </Button>
+                    <span css={SheaderDisplay}>
+                        {year}년 {month + 1}월
+                    </span>
+                </div>
+                <div css={SFlex}>
+                    <Col>
+                        <Select
+                            size="large"
+                            value={year}
+                            onChange={newYear => {
+                                onChange(current.year(newYear));
+                            }}
+                        >
+                            {options}
+                        </Select>
+                    </Col>
+                    <Button css={SAddBtn} onClick={handleAddClick}>
+                        + 일정 추가
+                    </Button>
+                </div>
             </div>
-            <div css={SFlex}>
-                <Col>
-                    <Select
-                        size="large"
-                        value={year}
-                        onChange={newYear => {
-                            onChange(current.year(newYear));
-                        }}
-                    >
-                        {options}
-                    </Select>
-                </Col>
-                <Button css={SAddBtn} onClick={ScheduleAddModal}>
-                    + 일정 추가
-                </Button>
-            </div>
-        </div>
+        </>
     );
 }
 
