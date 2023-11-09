@@ -1,6 +1,7 @@
-import ChartFirstRowDateInput from "../ChartDetail/ChartFirstRowDateInput";
+import dayjs from "dayjs";
 import ChartTableFirstRowInput from "../ChartDetail/ChartFirstRowInput";
-import ChartDetailAddBtn from "./ChartDetailAddBtn";
+import ChartDetailAddBtn from "../ChartDetail/ChartDetailAddBtn";
+import ChartDetailEditBtn from "../ChartDetail/ChartDetailEditBtn";
 
 /* eslint-disable no-unused-vars */
 export const chartProfileDummyDataObj = [
@@ -30,47 +31,35 @@ export const chartGraphDummyDataObj2 = username => ({
 
 export const chartPeriodArray = ["1달", "3달", "6달"];
 
-export const chartTableDummyData = [
-    { date: "2023-10-23", buttons: "", FBS: 100, step: 10000, pulse: 120 },
-    { date: "2023-10-23", buttons: "", FBS: 110, step: 12000, pulse: 120 },
-    { date: "2023-10-23", buttons: "", FBS: 70, step: 15000, pulse: 120 },
-    { date: "2023-10-23", buttons: "", FBS: 40, step: 5000, pulse: 120 },
-    { date: "2023-10-23", buttons: "", FBS: 50, step: 300, pulse: 120 },
-    { date: "2023-10-23", buttons: "", FBS: 60, step: 3000, pulse: 120 },
-    { date: "2023-10-23", buttons: "", FBS: 63, step: 4000, pulse: 120 },
-    { date: "2023-10-23", buttons: "", FBS: 71, step: 5500, pulse: 120 },
-    { date: "2023-10-23", buttons: "", FBS: 83, step: 6300, pulse: 120 },
-    { date: "2023-10-23", buttons: "", FBS: 92, step: 3200, pulse: 120 },
-    { date: "2023-10-23", buttons: "", FBS: 54, step: 2200, pulse: 120 },
-    { date: "2023-10-23", buttons: "", FBS: 57, step: 2100, pulse: 120 },
-    { date: "2023-10-23", buttons: "", FBS: 59, step: 3000, pulse: 120 },
-    { date: "2023-10-23", buttons: "", FBS: 68, step: 10000, pulse: 120 },
-    { date: "2023-10-23", buttons: "", FBS: 90, step: 11300, pulse: 120 },
-];
-
 export const tableColumns = [
     {
+        key: 1,
+        width: 100,
         title: "날짜",
         dataIndex: "date",
         onHeaderCell: () => ({ style: { background: "#6F6257", color: "#fffbf5", textAlign: "center", fontSize: "16px" } }),
         render: (t, r, i) => {
             if (i === 0) {
-                return <ChartFirstRowDateInput type="date" />;
+                return <ChartTableFirstRowInput type="date" />;
             }
-            return t;
+            return dayjs(t).format("YYYY-MM-DD");
         },
     },
     {
+        key: 2,
+        width: 100,
         title: "수정",
         dataIndex: "buttons",
         onHeaderCell: () => ({ style: { background: "#6F6257", color: "#fffbf5", textAlign: "center", fontSize: "16px" } }),
         render: (t, r, i) => {
-            return i === 0 ? <ChartDetailAddBtn color="primary" type="add" /> : <ChartDetailAddBtn type="edit" />;
+            return i === 0 ? <ChartDetailAddBtn /> : <ChartDetailEditBtn t={t} record={r} />;
         },
     },
     {
+        key: 3,
+        width: 100,
         title: "공복혈당",
-        dataIndex: "FBS",
+        dataIndex: "fbs",
         onHeaderCell: () => ({ style: { background: "#6F6257", color: "#fffbf5", textAlign: "center", fontSize: "16px" } }),
         render: (t, r, i) => {
             if (i === 0) {
@@ -80,6 +69,8 @@ export const tableColumns = [
         },
     },
     {
+        key: 4,
+        width: 100,
         title: "걸음수",
         dataIndex: "step",
         onHeaderCell: () => ({ style: { background: "#6F6257", color: "#fffbf5", textAlign: "center", fontSize: "16px" } }),
@@ -91,6 +82,8 @@ export const tableColumns = [
         },
     },
     {
+        key: 5,
+        width: 100,
         title: "맥박",
         dataIndex: "pulse",
         onHeaderCell: () => ({ style: { background: "#6F6257", color: "#fffbf5", textAlign: "center", fontSize: "16px" } }),

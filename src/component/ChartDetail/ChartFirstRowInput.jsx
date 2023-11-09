@@ -1,15 +1,11 @@
-import React, { useState } from "react";
-import dayjs from "dayjs";
+import React from "react";
+import { useRecoilState } from "recoil";
 import { firstRowInput } from "./style";
+import { rcTableData } from "../../store/atoms/chartTableAtoms";
 /** @jsxImportSource @emotion/react */
 
 function ChartTableFirstRowInput({ type }) {
-    const [healthInfo, setHealthInfo] = useState({
-        step: 0,
-        fbs: 0,
-        date: dayjs().format("YYYY-MM-DD"),
-        pulse: 0,
-    });
+    const [healthInfo, setHealthInfo] = useRecoilState(rcTableData);
 
     const onChange = e => {
         const { value, name } = e.target;
