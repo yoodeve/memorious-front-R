@@ -6,6 +6,7 @@ import GlobalStyle from "../style/Global";
 import SettingRoute from "./SettingRoute";
 import OAuth2Signin from "../pages/OAuth2Signin/OAuth2Signin";
 import OAuth2Signup from "../pages/OAuth2Signup/OAuth2Signup";
+import AccountRoute from "./AccountRoute";
 
 function Routing() {
     return (
@@ -24,6 +25,7 @@ function Routing() {
                     </Route>
                     <Route path="/auth/oauth2/signin" element={<OAuth2Signin />} />
                     <Route path="/auth/oauth2/signup" element={<OAuth2Signup />} />
+                    <Route path="/account" element={<AccountRoute />} />
                 </Routes>
             </BrowserRouter>
         </>
