@@ -4,8 +4,9 @@ import { sidebarMenuList } from "./sidebarMenu";
 import { bottomSettingMenuBox, groupBox, groupBoxWrapper, imageBox, sideBarLabel, sidebarContainer } from "./style";
 /** @jsxImportSource @emotion/react */
 
-function Sidebar() {
+function SidebarContainer() {
     const { pathname } = useLocation();
+
     const navigate = useNavigate();
 
     const navigateToPage = route => () => {
@@ -17,9 +18,9 @@ function Sidebar() {
             <div css={imageBox} />
             <div css={groupBoxWrapper}>
                 <div css={groupBox}>
-                    {sidebarMenuList.map((e, index) => (
+                    {sidebarMenuList.map(e => (
                         <div key={e.title} className="group-box">
-                            <div className={pathname === e.route ? "filled" : ""} onClick={navigateToPage(e.route, index)} css={sideBarLabel}>
+                            <div className={pathname.includes(e.route) ? "filled" : ""} onClick={navigateToPage(e.route)} css={sideBarLabel}>
                                 {e.title}
                             </div>
                         </div>
@@ -27,8 +28,8 @@ function Sidebar() {
                 </div>
             </div>
             <div css={bottomSettingMenuBox}>
-                <span className="my-label">My프로필</span>
-                <div className="right-titles">
+                <span className="my-label">마이프로필</span>
+                <div className="right-titles" onClick={() => navigate("/setting/mypage")}>
                     <span>설정</span>
                     <span>로그아웃</span>
                 </div>
@@ -37,4 +38,4 @@ function Sidebar() {
     );
 }
 
-export default Sidebar;
+export default SidebarContainer;
