@@ -1,13 +1,15 @@
-import React from "react";
-import { Outlet } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
 import { css } from "@emotion/react";
 import { Reset } from "styled-reset";
-import Sidebar from "../../component/Sidebar";
+import SidebarContainer from "../../component/Sidebar";
+import { instance } from "../../config";
 /** @jsxImportSource @emotion/react */
 
-const mainContainer = css`
+export const mainContainer = css`
     display: flex;
     justify-content: flex-start;
+    max-width: 1100px;
     width: 70%;
     min-height: 100vh;
     margin: 0 auto;
@@ -23,15 +25,24 @@ const mainContainer = css`
 `;
 
 const contentsContainer = css`
-    flex-grow: 1;
+    width: 860px;
 `;
 
 function SideBar() {
+    const navigate = useNavigate();
+    useEffect(() => {
+        instance
+            .get("/api/auth/authenticate")
+            .then(() => {})
+            .catch(() => {
+                navigate("/auth/oauth2/signup", { replace: false });
+            });
+    }, []);
     return (
         <>
             <Reset />
-            <div css={mainContainer}>
-                <Sidebar />
+            <div id="parent-container" css={mainContainer}>
+                <SidebarContainer />
                 <div css={contentsContainer}>
                     <Outlet />
                 </div>
