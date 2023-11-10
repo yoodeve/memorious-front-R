@@ -6,7 +6,7 @@ import StyledCalendar from "../../component/Calendar/StyledCalendar/StyledCalend
 import Badge from "../../component/Calendar/Badge";
 import { ScheduleData } from "./SchduleData";
 import AddScheduleModal from "../../component/Calendar/Modal/AddModal/AddScheduleModal";
-import { SBox, SMainContainer, SScheduleText, SdateCell } from "./style";
+import { SMainContainer, SScheduleText, SScheduleBox, SdateCellBox } from "./style";
 
 function CalendarPage() {
     const now = dayjs();
@@ -43,10 +43,10 @@ function CalendarPage() {
     const cellRender = value => {
         const schedule = getFiteredData(value);
         return (
-            <div css={SdateCell} onClick={() => handleAddSchedule(value)}>
+            <div css={SdateCellBox} onClick={() => handleAddSchedule(value)}>
                 <ul className="events">
                     {schedule.map(data => (
-                        <div onClick={e => handleScheduleClick(e, value)} css={SBox}>
+                        <div onClick={e => handleScheduleClick(e, value)} css={SScheduleBox}>
                             {/* 종일이 아니면 뱃지 먼저 */}
                             {data.isDayAll === 0 ? <Badge color={data.color} /> : <></>}
                             <li css={SScheduleText(data.color, data.isDayAll)} key={data.subject}>

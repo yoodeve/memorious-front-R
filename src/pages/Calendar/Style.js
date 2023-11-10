@@ -1,26 +1,20 @@
 import { css } from "@emotion/react";
 
 export const SMainContainer = css`
-    width: 1102.13px;
+    /* width: 98% */
+    /* width: 1102.13px; */
     height: 100%;
 `;
 
-export const SdateCell = css`
-    width: 156.1px;
+//  onClick을 사용하기 위한 div(antd onSelect 버블링 발생)
+export const SdateCellBox = css`
+    width: 157px;
     height: 109px;
     cursor: pointer;
 `;
 
-export const SScheduleText = (color, isDayAll) => css`
-    background-color: ${isDayAll === 0 ? "transparent" : color};
-    border-radius: 5px;
-    color: ${isDayAll === 0 ? "black" : "white"};
-    padding-right: 3px;
-    padding-left: 4px;
-    font-size: 15px;
-`;
-
-export const SBox = css`
+// 일정li를 담는 div
+export const SScheduleBox = css`
     display: flex;
     align-items: center;
     cursor: pointer;
@@ -30,10 +24,21 @@ export const SBox = css`
         filter: brightness(95%);
     }
     & > li {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap; // 아래줄로 내려가는 것을 막기위해
-        word-break: break-all;
-        width: 157.44px;
     }
+`;
+
+// 일정 li
+export const SScheduleText = (color, isDayAll) => css`
+    width: 157.44px; //크기를 지정해 셀 내용 보장
+    padding-right: 3px;
+    padding-left: 4px;
+    border-radius: 5px;
+    background-color: ${isDayAll === 0 ? "transparent" : color};
+    color: ${isDayAll === 0 ? "black" : "white"};
+    font-size: 15px;
+    /* 아래쪽으로 내려가는것을 막음 */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-break: break-all;
 `;
