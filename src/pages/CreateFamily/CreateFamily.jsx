@@ -3,7 +3,7 @@ import React from "react";
 function CreateFamily() {
     return (
         <>
-            <h3>가족 생성 페이지</h3>
+            <h3>우리 가족을 위한 기억 공간을 생성하세</h3>
             <div>
                 <span>가족 이름: </span> <input type="text" />
             </div>

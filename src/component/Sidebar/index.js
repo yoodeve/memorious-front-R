@@ -17,9 +17,9 @@ function Sidebar() {
             <div css={imageBox} />
             <div css={groupBoxWrapper}>
                 <div css={groupBox}>
-                    {sidebarMenuList.map((e, index) => (
+                    {sidebarMenuList.map(e => (
                         <div key={e.title} className="group-box">
-                            <div className={pathname === e.route ? "filled" : ""} onClick={navigateToPage(e.route, index)} css={sideBarLabel}>
+                            <div className={pathname === e.route ? "filled" : ""} onClick={navigateToPage(e.route)} css={sideBarLabel}>
                                 {e.title}
                             </div>
                         </div>
@@ -28,7 +28,7 @@ function Sidebar() {
             </div>
             <div css={bottomSettingMenuBox}>
                 <span className="my-label">마이프로필</span>
-                <div className="right-titles" onClick={navigate("/setting/mypage")}>
+                <div className="right-titles" onClick={() => navigate("/setting/mypage")}>
                     <span>설정</span>
                     <span>로그아웃</span>
                 </div>
