@@ -2,11 +2,11 @@ import React, { useState } from "react";
 /** @jsxImportSource @emotion/react */
 import dayjs from "dayjs";
 import EditScheduleModal from "../../component/Calendar/Modal/EditModal/EditScheduleModal";
-import StyledCalendar from "../../component/Calendar/StyledCalendar/StyledCalendar";
 import Badge from "../../component/Calendar/Badge";
-import { ScheduleData } from "./SchduleData";
+import { ScheduleData } from "../../constants/Calendar/SchduleData";
 import AddScheduleModal from "../../component/Calendar/Modal/AddModal/AddScheduleModal";
 import { SMainContainer, SScheduleText, SScheduleBox, SdateCellBox } from "./style";
+import StyledCalendar from "../../component/Calendar/Styled/StyledCalendar/StyledCalendar";
 
 function CalendarPage() {
     const now = dayjs();
@@ -16,14 +16,13 @@ function CalendarPage() {
 
     // // 일정 클릭시 수정 Modal
     const handleScheduleClick = (e, data) => {
-        console.log("일정클릭시 넘어오는 값", data);
+        console.log("일정 클릭시 넘어오는 값", data);
         e.stopPropagation();
         setEditModalOpen(true);
     };
 
     // 셀 클릭시 해당 날짜에 일정 추가 Modal
     const handleAddSchedule = date => {
-        console.log("date in CalendarPage", date);
         setAddModalOpen(true);
         setSelectedDate(date);
     };
