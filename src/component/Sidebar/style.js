@@ -95,4 +95,12 @@ export const bottomSettingMenuBox = css`
         display: flex;
         justify-content: space-between;
     }
+
+    & > span {
+        cursor: pointer;
+    }
+
+    & > div > span {
+        cursor: pointer;
+    }
 `;
