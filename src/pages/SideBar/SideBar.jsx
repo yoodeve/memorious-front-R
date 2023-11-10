@@ -1,8 +1,9 @@
-import React from "react";
-import { Outlet } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
 import { css } from "@emotion/react";
 import { Reset } from "styled-reset";
 import SidebarContainer from "../../component/Sidebar";
+import { instance } from "../../config";
 /** @jsxImportSource @emotion/react */
 
 export const mainContainer = css`
@@ -28,6 +29,15 @@ const contentsContainer = css`
 `;
 
 function SideBar() {
+    const navigate = useNavigate();
+    useEffect(() => {
+        instance
+            .get("/api/auth/authenticate")
+            .then(() => {})
+            .catch(() => {
+                navigate("/auth/oauth2/signup", { replace: false });
+            });
+    }, []);
     return (
         <>
             <Reset />
