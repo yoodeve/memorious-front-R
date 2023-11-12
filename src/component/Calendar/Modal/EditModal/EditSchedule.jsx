@@ -8,7 +8,7 @@ import { SAttendeeSelect, SCheckbox, SColorPicker, SCycleInput, SCycleSelect, SD
 import { SFlexBox, SPanelBox } from "./style";
 /** @jsxImportSource @emotion/react */
 
-function AddScheduleModal({ open, setOpen, date }) {
+function EditSchedule({ open, setOpen, date }) {
     const defaultStTime = date.set("hour", 12).set("m", 0).format("HH:mm");
     const defaultEndTime = date.set("hour", 13).set("m", 0).format("HH:mm");
     // 가상의 가족 데이터(사이트 로드시 가족 정보를 불러온 값)
@@ -275,4 +275,4 @@ function AddScheduleModal({ open, setOpen, date }) {
     );
 }
 
-export default AddScheduleModal;
+export default EditSchedule;

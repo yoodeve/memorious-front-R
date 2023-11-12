@@ -2,11 +2,11 @@ import { Modal } from "antd";
 import React, { useState } from "react";
 
 function SpecificScheduleModal(open, setOpen) {
-    const [title, setTitle] = useState("초대완료/실패");
+    const [title, setTitle] = useState("일정 조회");
 
     const handleOk = () => {
         // useState 지우기 싫어서
-        setTitle("초대완료");
+        setTitle("일정 조회");
         setOpen(false);
     };
 

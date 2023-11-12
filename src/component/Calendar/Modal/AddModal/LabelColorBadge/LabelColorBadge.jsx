@@ -1,8 +1,8 @@
-import React from "react";
 import { css } from "@emotion/react";
+import React from "react";
 /** @jsxImportSource @emotion/react */
 
-const badge = color => css`
+const badge = ({ color }) => css`
     width: 20px;
     height: 20px;
     border-radius: 50%;
@@ -11,12 +11,8 @@ const badge = color => css`
     cursor: pointer;
 `;
 
-function LabelColorBadge({ color }) {
-    return (
-        <div>
-            <div css={badge(color)} />
-        </div>
-    );
+function LabelColorBadge({ color, onClick }) {
+    return <div css={badge({ color })} onClick={onClick} />;
 }
 
 export default LabelColorBadge;

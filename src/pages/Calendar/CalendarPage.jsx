@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 /** @jsxImportSource @emotion/react */
 import dayjs from "dayjs";
-import EditScheduleModal from "../../component/Calendar/Modal/EditModal/EditScheduleModal";
 import Badge from "../../component/Calendar/Badge";
-import { ScheduleData } from "../../constants/Calendar/SchduleData";
 import AddScheduleModal from "../../component/Calendar/Modal/AddModal/AddScheduleModal";
-import { SMainContainer, SScheduleText, SScheduleBox, SdateCellBox } from "./style";
+import EditScheduleModal from "../../component/Calendar/Modal/EditModal/EditScheduleModal";
 import StyledCalendar from "../../component/Calendar/Styled/StyledCalendar/StyledCalendar";
+import { ScheduleData } from "../../constants/Calendar/SchduleData";
+import { SMainContainer, SScheduleBox, SScheduleText, SdateCellBox } from "./style";
 
 function CalendarPage() {
     const now = dayjs();
@@ -45,10 +45,10 @@ function CalendarPage() {
             <div css={SdateCellBox} onClick={() => handleAddSchedule(value)}>
                 <ul className="events">
                     {schedule.map(data => (
-                        <div onClick={e => handleScheduleClick(e, value)} css={SScheduleBox}>
+                        <div onClick={e => handleScheduleClick(e, value)} css={SScheduleBox} key={data.id}>
                             {/* 종일이 아니면 뱃지 먼저 */}
                             {data.isDayAll === 0 ? <Badge color={data.color} /> : <></>}
-                            <li css={SScheduleText(data.color, data.isDayAll)} key={data.subject}>
+                            <li css={SScheduleText(data.color, data.isDayAll)} key={data.id}>
                                 {data.subject}
                             </li>
                         </div>
