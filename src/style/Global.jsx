@@ -23,15 +23,15 @@ function GlobalStyle() {
             font-display: swap;
         }
         @font-face {
-            font-family: "Pretendard-Medium";
+            font-family: "Pretendard-Regular";
             font-weight: 400;
-            src: url("/assets/font/Pretendard-Medium.otf");
+            src: url("/assets/font/Pretendard-Regular.otf");
             font-display: swap;
         }
         @font-face {
-            font-family: "Pretendard-Regular";
+            font-family: "Pretendard-Medium";
             font-weight: 500;
-            src: url("/assets/font/Pretendard-Regular.otf");
+            src: url("/assets/font/Pretendard-Medium.otf");
             font-display: swap;
         }
         @font-face {

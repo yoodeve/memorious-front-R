@@ -9,9 +9,9 @@ import { instance } from "../../config";
 export const mainContainer = css`
     display: flex;
     justify-content: flex-start;
-    max-width: 1100px;
-    width: 70%;
-    min-height: 100vh;
+    min-width: 1300px;
+    width: 75%;
+    height: 100vh;
     margin: 0 auto;
     box-shadow:
         rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,

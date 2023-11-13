@@ -2,16 +2,25 @@ import { css } from "@emotion/react";
 
 export const sidebarContainer = css`
     position: relative;
-    width: 240px;
+    width: 280px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     background-color: #fffbf5;
+    .img-wrapper {
+        height: 120px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 `;
 
 export const groupBoxWrapper = css`
-    margin-top: 100px;
+    width: 90%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 `;
 
 export const groupBox = css`
@@ -19,7 +28,7 @@ export const groupBox = css`
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
-    align-items: baseline;
+    align-items: center;
     height: fit-content;
     background-color: #f5efe6;
     border-radius: 8px;
@@ -41,11 +50,12 @@ export const groupBox = css`
         display: flex;
         justify-content: center;
         align-items: center;
+        margin: 2px 0;
     }
 `;
 
 export const sideBarLabel = css`
-    width: 200px;
+    width: 220px;
     height: 40px;
     padding: 10px 0;
     border: 1px solid #6f6257;
@@ -54,7 +64,7 @@ export const sideBarLabel = css`
     align-items: center;
     justify-content: center;
     border-radius: 8px;
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     font-family: "Pretendard-Bold";
     color: #6f6257;
     cursor: pointer;
@@ -67,21 +77,22 @@ export const sideBarLabel = css`
 
 export const imageBox = css`
     width: 100%;
-    height: 90px;
+    height: inherit;
+    margin-bottom: 20px;
     position: absolute;
     top: 0;
     left: 0;
     background-image: url("/assets/images/logo.png");
-    background-size: cover;
-    img {
-        width: 100%;
-    }
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 80% 80px;
 `;
 export const bottomSettingMenuBox = css`
-    width: 100%;
+    width: 280px;
     display: flex;
     justify-content: space-between;
-    margin-bottom: 15px;
+    position: absolute;
+    bottom: 25px;
     * {
         color: #6f6257;
         font-size: 11px;
