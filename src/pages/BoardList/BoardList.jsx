@@ -1,20 +1,29 @@
 import React from "react";
 import { Reset } from "styled-reset";
+import ReactSelect from "react-select";
 /** @jsxImportSource @emotion/react */
 import { HiSearch } from "react-icons/hi";
 import * as S from "./style";
 
 function BoardList() {
+    const options = [
+        { value: "전체", label: "전체" },
+        { value: "제목", label: "제목" },
+        { value: "작성자", label: "작성자" },
+    ];
+
     return (
         <>
             <Reset />
             <div css={S.layout}>
                 <div css={S.searchContainer}>
-                    <span css={S.selectBox}>카테고리</span>
+                    <div css={S.selectBox}>
+                        <ReactSelect className="select-box" options={options} defaultValue={options[0]} />
+                    </div>
                     <input css={S.searchInput} type="text" />
-                    <span>
-                        <HiSearch style={{ margin: "7px 0 0 6px", cursor: "pointer" }} />
-                    </span>
+                    <div className="icon-box">
+                        <HiSearch size={20} />
+                    </div>
                 </div>
                 <div css={S.categoryBox}>
                     <div css={S.category}>공지</div>
@@ -62,6 +71,7 @@ function BoardList() {
                         </tr>
                     </tbody>
                 </table>
+                <div css={S.pageNumbers}>{/* {pagination()} */}</div>
             </div>
         </>
     );

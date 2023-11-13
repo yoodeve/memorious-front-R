@@ -9,14 +9,29 @@ export const layout = css`
 `;
 
 export const searchContainer = css`
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
     margin: 20px 10px;
     & * {
         font-size: 15px;
     }
+    .icon-box {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-left: 6px;
+        cursor: pointer;
+    }
 `;
+
 export const selectBox = css`
     width: 100px;
-    border: 1px solid #dbdbdb;
+    border: none;
+    .select-box {
+        border: 1px solid #a05b2c;
+        border-radius: 5px;
+    }
 `;
 
 export const searchInput = css`
@@ -29,7 +44,6 @@ export const searchInput = css`
 `;
 
 export const searchIcon = css`
-    /* margin-top: 5px; */
     padding: 8px 5px;
 `;
 
@@ -43,7 +57,7 @@ export const categoryBox = css`
 `;
 
 export const category = css`
-    padding: 10px;
+    padding: 10px 15px;
     border-radius: 20px;
     background-color: #fffbf5;
     cursor: pointer;
@@ -58,17 +72,18 @@ export const table = css`
     border-radius: 10px;
     width: 100%;
     max-width: 800px;
-    box-shadow: 2px 2px 3px 3px rgba(111, 98, 87, 0.2);
+    box-shadow: 2px 2px 5px 0px rgba(111, 98, 87, 0.2);
     background-color: #fffbf5;
     overflow: hidden;
     border-style: hidden;
     & th {
-        background-color: #fffbf5;
+        background-color: #e6a156;
+        color: #fff;
     }
 
     & th,
     td {
-        border: 1px solid #a05b2c;
+        border: 1px solid #e6a156;
         padding: 8px;
         height: 30px;
         text-align: center;
@@ -84,6 +99,24 @@ export const boardTitle = css`
     max-width: 500px;
     width: 500px;
     overflow: hidden;
-    text-overflow: ellipsis; //텍스트 넘어갔을 때 ... 으로 처리
-    white-space: nowrap; //줄바꿈 없애기?
+    text-overflow: ellipsis;
+    white-space: nowrap;
+`;
+
+export const pageNumbers = css`
+    display: flex;
+
+    align-items: center;
+    margin-top: 10px;
+    width: 200px;
+
+    & button {
+        cursor: pointer;
+        margin: 0px 3px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 20px;
+        border: 1px solid #dbdbdb;
+    }
 `;
