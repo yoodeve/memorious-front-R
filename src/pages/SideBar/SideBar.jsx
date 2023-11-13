@@ -25,7 +25,7 @@ export const mainContainer = css`
 `;
 
 const contentsContainer = css`
-    width: 860px;
+    width: 1020px;
 `;
 
 function SideBar() {
