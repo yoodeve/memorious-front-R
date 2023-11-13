@@ -6,11 +6,36 @@ import { labelPreset } from "../../../../constants/Calendar/labelPreset";
 import LabelColorBadge from "./LabelColorBadge/LabelColorBadge";
 import { SAttendeeSelect, SCheckbox, SColorPicker, SCycleInput, SCycleSelect, SDatePicker, SDescriptionInput, SLocationInput, SModal, SRadio, SRadioRepeat, SRangePicker, SRepeatInput, SSelectOption, STimePicker, STitleInput } from "./StyledComponents/style";
 import { SFlexBox, SPanelBox } from "./style";
+import { ScheduleData } from "../../../../constants/Calendar/SchduleData";
 /** @jsxImportSource @emotion/react */
 
 function AddScheduleModal({ open, setOpen, date }) {
+    // 시간 선택시 UX를 위해 기본 시간을 중앙에 있는 값으로 변경
     const defaultStTime = date.set("hour", 12).set("m", 0).format("HH:mm");
     const defaultEndTime = date.set("hour", 13).set("m", 0).format("HH:mm");
+    const formattedDate = date.format("YYYY-MM-DD");
+
+    const defaultScheduleInput = {
+        title: "",
+        labelColor: "f5222d",
+        startDate: formattedDate,
+        endDate: formattedDate,
+        isDayAll: 1,
+        startTime: defaultStTime,
+        endTime: defaultEndTime,
+        attendee: [],
+        location: "",
+        cyclePeriod: CyclePreset[0].value,
+        repeatType: "none",
+        repeatCount: "",
+        repeatEndDate: formattedDate,
+        description: "",
+    };
+
+    const [selectedLabel, setSelectedLabel] = useState(CyclePreset[0].label);
+    const [scheduleInput, setScheduleInput] = useState(defaultScheduleInput);
+    const [colorPickerOpen, setColorPickerOpen] = useState(false);
+
     // 가상의 가족 데이터(사이트 로드시 가족 정보를 불러온 값)
     const mockUsers = [
         { id: 1, name: "한유정" },
@@ -18,40 +43,16 @@ function AddScheduleModal({ open, setOpen, date }) {
         { id: 3, name: "주성광" },
     ];
     const [users, setUsers] = useState(mockUsers);
-    const dateFormat = date.format("YYYY-MM-DD");
 
-    const defaultScheduleInput = {
-        title: "",
-        labelColor: "f5222d",
-        startDate: dateFormat,
-        endDate: dateFormat,
-        isDayAll: 1,
-        startTime: defaultStTime,
-        endTime: defaultEndTime,
-        attendee: [],
-        location: "",
-        cycle: CyclePreset[0].value,
-        repeatType: "none",
-        repeatCount: "",
-        repeatEndDate: dateFormat,
-        description: "",
-    };
-    const [selectedLabel, setSelectedLabel] = useState(CyclePreset[0].label);
-    const [scheduleInput, setScheduleInput] = useState(defaultScheduleInput);
-
-    // ColorPicker
-    const [colorPickerOpen, setColorPickerOpen] = useState(false);
+    // 제목입력에 focus 줌
     const inputRef = useRef(null);
-
-    // isDayAll & TimePicker
-
-    // 제목 입력에 focus
     useEffect(() => {
         if (inputRef.current) {
             inputRef.current.focus();
         }
     }, []);
 
+    // 확인버튼 클릭시
     const handleOk = () => {
         // setOpen(false);
         setScheduleInput({
@@ -61,13 +62,14 @@ function AddScheduleModal({ open, setOpen, date }) {
             repeatEndDate: scheduleInput.repeatType === "none" ? "0000-00-00" : scheduleInput.repeatEndDate,
         });
         console.log(scheduleInput);
+        ScheduleData.push(scheduleInput);
     };
 
     const handleCancel = () => {
         setOpen(false);
     };
 
-    // ====== onChange 모음 ======
+    // <=====    Input 상태변경(다수 사용)      =====>
     const handleInputChange = e => {
         setScheduleInput({
             ...scheduleInput,
@@ -75,25 +77,9 @@ function AddScheduleModal({ open, setOpen, date }) {
         });
     };
 
-    const handleLabelColorChange = e => {
-        setScheduleInput({
-            ...scheduleInput,
-            labelColor: e.target.value,
-        });
-    };
-
-    const handleDateChange = dates => {
-        // dates 배열: [0]=startDate, [1]=endDate, type:Day.js // date
-        console.log("dateChanged");
-        setScheduleInput({
-            ...scheduleInput,
-            startDate: dates[0].format("YYYY-MM-DD"),
-            endDate: dates[1].format("YYYY-MM-DD"),
-        });
-    };
-
-    // <---    라벨 색상      --->
-    const handleLabelColorSelect = color => {
+    // <=====    라벨 색상      =====>
+    const handleLabelColorClick = color => {
+        console.log("color", color);
         setScheduleInput({
             ...scheduleInput,
             labelColor: color,
@@ -101,18 +87,28 @@ function AddScheduleModal({ open, setOpen, date }) {
         setColorPickerOpen(false);
     };
 
-    // 라벨 색상 변경 팝업 Customized
+    // 라벨 색상 변경 팝업을 Customized
     const panelRender = () => {
         return (
             <div className="custom-panel" css={SPanelBox}>
                 {labelPreset.colors.map(color => (
-                    <LabelColorBadge color={color} onClick={() => handleLabelColorSelect(color)} key={color} />
+                    <LabelColorBadge color={color} onClick={() => handleLabelColorClick(color)} key={color} />
                 ))}
             </div>
         );
     };
 
-    // 종일 체크박스
+    // <=====    날짜변경      =====>
+    const handleDateChange = dates => {
+        // dates 배열: [0]=startDate, [1]=endDate, type:Day.js // date
+        setScheduleInput({
+            ...scheduleInput,
+            startDate: dates[0].format("YYYY-MM-DD"),
+            endDate: dates[1].format("YYYY-MM-DD"),
+        });
+    };
+
+    // <=====    종일 상태변경      =====>
     const handleCheckboxChange = e => {
         setScheduleInput({
             ...scheduleInput,
@@ -120,13 +116,16 @@ function AddScheduleModal({ open, setOpen, date }) {
         });
     };
 
-    // <---     시간변경     --->
+    // <=====    시간 변경      =====>
     const handleStartTimeChange = time => {
-        const StTimeInt = dayjs(time, "HHmm").format("HHmm"); // 1200
-        const EndTimeInt = dayjs(scheduleInput.endTime, "HHmm").format("HHmm");
+        // 선택된 시작시간과 종료시간을 비교하기 위한
+        console.log("timeChange!");
+        const stTime = dayjs(time, "HH:mm");
+        const endTime = dayjs(scheduleInput.endTime, "HH:mm");
+        const timeDiff = endTime.diff(stTime, "minute");
 
-        // 같은 날짜인데 종료시간이 시작시간보다 빠를 경우 종료시간도 바꾼다
-        if (scheduleInput.startDate === scheduleInput.endDate && StTimeInt >= EndTimeInt) {
+        // 같은 날짜인데 종료시간이 시작시간보다 빠를 경우 종료시간을 시작시간의 한시간 뒤로 바꿈
+        if (scheduleInput.startDate === scheduleInput.endDate && timeDiff < 60) {
             setScheduleInput({
                 ...scheduleInput,
                 startTime: time.format("HH:mm"),
@@ -139,12 +138,14 @@ function AddScheduleModal({ open, setOpen, date }) {
             });
         }
     };
-    const handleEndTimeChange = time => {
-        const StTimeInt = dayjs(scheduleInput.startTime, "HHmm").format("HHmm"); // 1200
-        const EndTimeInt = dayjs(time, "HHmm").format("HHmm");
 
-        // 같은 날짜인데 종료시간이 시작시간보다 빠를 경우 시작시간도 바꾼다
-        if (scheduleInput.startDate === scheduleInput.endDate && StTimeInt >= EndTimeInt) {
+    const handleEndTimeChange = time => {
+        const stTime = dayjs(scheduleInput.startTime, "HHmm");
+        const endTime = dayjs(time, "HHmm");
+        const timeDiff = endTime.diff(stTime, "minute");
+
+        // 같은 날짜인데 종료시간이 시작시간보다 빠를 경우 시작시간을 종료시간의 한시간 전으로 바꿈
+        if (scheduleInput.startDate === scheduleInput.endDate && timeDiff < 60) {
             setScheduleInput({
                 ...scheduleInput,
                 startTime: time.subtract(1, "hour").format("HH:mm"),
@@ -158,7 +159,7 @@ function AddScheduleModal({ open, setOpen, date }) {
         }
     };
 
-    // <---     참석자      --->
+    // <=====    참석자      =====>
     // 체크한 참석자들을 Input에 저장
     const handleChange = attendeeArray => {
         setScheduleInput({
@@ -166,13 +167,15 @@ function AddScheduleModal({ open, setOpen, date }) {
             attendee: attendeeArray,
         });
     };
-    // 가상의 사용자 데이터에서 검색
+
+    // 서버로부터 받아올 사용자 데이터( [ { }, {} ] )에서 검색
     const handleSearch = input => {
         // mockUser의 user 중 input를 포함하는것
         const filteredUsers = mockUsers.filter(user => user.name.toLowerCase().includes(input.toLowerCase()));
         setUsers(filteredUsers);
     };
 
+    // <=====    반복 RadioGroup 상태 변경      =====>
     const handleRepeatTypeChange = e => {
         setScheduleInput({
             ...scheduleInput,
@@ -180,27 +183,29 @@ function AddScheduleModal({ open, setOpen, date }) {
         });
     };
 
-    const handleRepeatDateChange = value => {
+    // <=====    반복 종료일자 변경      =====>
+    const handleRepeatEndDateChange = value => {
         setScheduleInput({
             ...scheduleInput,
             repeatEndDate: value.format("YYYY-MM-DD"),
         });
     };
 
+    // <=====    반복 Select변경시 Label과 value(period) 변경(CyclePreset)      =====>
     const handleCycleChange = menu => {
         // menu : value, label (cyclePreset 참고)
         setSelectedLabel(menu.label);
         setScheduleInput({
             ...scheduleInput,
-            cycle: menu.value,
+            cyclePeriod: menu.value,
         });
     };
 
-    // SRepeatInput 변경 시 SCycleSelect의 선택값은 변경되지 않도록 수정
+    // "직접입력"일 때 입력한 반복주기 값을 Cycle로 변경
     const handleCycleInputChange = e => {
         setScheduleInput({
             ...scheduleInput,
-            cycle: e.target.value,
+            cyclePeriod: e.target.value,
         });
     };
     return (
@@ -208,7 +213,7 @@ function AddScheduleModal({ open, setOpen, date }) {
             <SModal centered title="일정 생성" open={open} onOk={handleOk} onCancel={handleCancel} date={date}>
                 <div css={SFlexBox}>
                     <STitleInput name="title" ref={inputRef} onChange={handleInputChange} value={scheduleInput.scheduleTitle} placeholder="제목을 입력해주세요.(필수)" size="large" />
-                    <SColorPicker panelRender={panelRender} value={scheduleInput.labelColor} onChange={handleLabelColorChange} open={colorPickerOpen} onOpenChange={setColorPickerOpen} />
+                    <SColorPicker panelRender={panelRender} value={scheduleInput.labelColor} open={colorPickerOpen} onOpenChange={setColorPickerOpen} />
                 </div>
 
                 <div css={SFlexBox}>
@@ -236,7 +241,7 @@ function AddScheduleModal({ open, setOpen, date }) {
                 <div>
                     {selectedLabel === CyclePreset[5].label ? ( // 선택된 라벨이 "직접 입력" 일 때
                         <h1>
-                            반복 주기 <SCycleInput name="CycleInput" onChange={handleCycleInputChange} value={scheduleInput.cycle} defaultValue="0" />일
+                            반복 주기 <SCycleInput name="CycleInput" onChange={handleCycleInputChange} value={scheduleInput.cyclePeriod} defaultValue="0" />일
                         </h1>
                     ) : null}
                 </div>
@@ -252,7 +257,7 @@ function AddScheduleModal({ open, setOpen, date }) {
                                     <SRadio value="date">종료일자</SRadio>
                                     {scheduleInput.repeatType === "date" ? (
                                         <>
-                                            <SDatePicker onChange={handleRepeatDateChange} value={dayjs(scheduleInput.repeatEndDate)} showToday={false} />
+                                            <SDatePicker onChange={handleRepeatEndDateChange} value={dayjs(scheduleInput.repeatEndDate)} showToday={false} />
                                         </>
                                     ) : null}
                                 </h1>

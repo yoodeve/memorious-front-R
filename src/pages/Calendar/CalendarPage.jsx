@@ -47,9 +47,9 @@ function CalendarPage() {
                     {schedule.map(data => (
                         <div onClick={e => handleScheduleClick(e, value)} css={SScheduleBox} key={data.id}>
                             {/* 종일이 아니면 뱃지 먼저 */}
-                            {data.isDayAll === 0 ? <Badge color={data.color} /> : <></>}
-                            <li css={SScheduleText(data.color, data.isDayAll)} key={data.id}>
-                                {data.subject}
+                            {data.isDayAll === 0 ? <Badge color={data.labelColor} /> : <></>}
+                            <li css={SScheduleText(data.labelColor, data.isDayAll)} key={data.id}>
+                                {data.title}
                             </li>
                         </div>
                     ))}

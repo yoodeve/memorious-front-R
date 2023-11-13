@@ -29,7 +29,7 @@ export const SScheduleBox = css`
 
 // 일정 li
 export const SScheduleText = (color, isDayAll) => css`
-    width: 157.44px; //크기를 지정해 셀 내용 보장
+    width: 100%; //크기를 지정해 셀 내용 보장
     padding-right: 3px;
     padding-left: 4px;
     border-radius: 5px;
