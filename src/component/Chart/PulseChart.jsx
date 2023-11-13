@@ -10,11 +10,11 @@ function PulseChart({ chartData }) {
     const userList = useRecoilValue(rcUserOnChartArray);
     useEffect(() => {
         if (userList.length > 0 && chartData.length > 0) {
-            const formatTime = d3.timeFormat("%m-%d");
+            const formatTime = d3.timeFormat("%m/%d");
             const w = 350;
             const h = 120;
 
-            const startDate = dayjs("2023-11-09");
+            const startDate = dayjs().subtract(1, "week");
             const endDate = dayjs(startDate).add(chartData[0].length - 1, "day");
 
             const maxYValue = Math.max(...chartData.flat());
@@ -46,7 +46,7 @@ function PulseChart({ chartData }) {
             svg.append("g").attr("class", "grid").call(yAxis).selectAll("line").attr("stroke", "#dbdbdb");
 
             svg.selectAll(".domain").attr("stroke", "#ddd");
-            svg.append("g").call(xAxis).attr("transform", `translate(0, ${h})`);
+            svg.append("g").call(xAxis).attr("transform", `translate(0, ${h})`).selectAll("text").style("font-size", "8px");
             svg.append("g").call(yAxis);
 
             const generateLine = d3
