@@ -1,65 +1,82 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import dayjs from "dayjs";
 import { useRecoilValue } from "recoil";
-import { chartGraphDummyDataObj } from "./chartDummyData";
 import { rcUserOnChartArray } from "../../store/atoms/chartAtoms";
 
-function FbsChart() {
+function FbsChart({ chartData }) {
     const chartRef = useRef();
     const userList = useRecoilValue(rcUserOnChartArray);
-    const [data, setData] = useState([]);
 
     useEffect(() => {
-        setData(
-            userList.map(e => {
-                return chartGraphDummyDataObj(e);
-            }),
-        );
-    }, [userList]);
+        if (userList.length > 0 && chartData.length > 0) {
+            const formatTime = d3.timeFormat("%m-%d");
+            const w = 350;
+            const h = 120;
 
-    useEffect(() => {
-        if (userList.length > 0 && data.length > 0) {
-            // const formatTime = d3.timeFormat("%m-%d");
-            // const w = 350;
-            // const h = 120;
-            // const startDate = dayjs(data.map(e => e.startDate));
-            // const endDate = dayjs(startDate).add(7, "day");
-            // const dataArray = userList.map(name => {
-            //     return data.map(el => {
-            //         return el[name];
-            //     });
-            // });
-            // const maxYValue = Math.max([...dataArray]);
-            // const svg = d3.select(chartRef.current).attr("width", w).attr("height", h).style("background", "#fff").style("margin-top", 40).style("overflow", "visible");
-            // const xScale = d3.scaleTime().domain([startDate, endDate]).range([0, w]);
-            // const yScale = d3.scaleLinear().domain([0, maxYValue]).range([h, 0]);
-            // const xAxis = d3.axisBottom(xScale).tickFormat(formatTime);
-            // const yAxis = d3.axisLeft(yScale).tickSize(20);
-            // svg.append("g").call(xAxis).attr("transform", `translate(0, ${h})`);
-            // svg.append("g").call(yAxis);
-            // if (dataArray.length > 0) {
-            //     const generateLine = d3
-            //         .line()
-            //         .x((d, i) => xScale(i))
-            //         .y(yScale)
-            //         .curve(d3.curveCardinal);
-            //     dataArray.forEach((e, index) => {
-            //         console.log(dataArray);
-            //         svg.append("path")
-            //             .data([e])
-            //             .attr("d", d => {
-            //                 return generateLine(d);
-            //             })
-            //             .attr("fill", "none")
-            //             .attr("stroke-width", 2)
-            //             // eslint-disable-next-line no-nested-ternary
-            //             .attr("stroke", `#${index % 3 === 0 ? "666666" : index % 3 === 1 ? "e6a156" : "952323"}`);
-            //     });
-            // }
+            const startDate = dayjs("2023-11-09");
+            const endDate = dayjs(startDate).add(chartData[0].length - 1, "day");
+
+            const maxYValue = Math.max(...chartData.flat());
+
+            const svg = d3.select(chartRef.current).attr("width", w).attr("height", h).style("background", "#fff").style("margin-top", 40).style("overflow", "visible");
+            svg.selectAll("*").remove();
+
+            const xScale = d3.scaleTime().domain([startDate, endDate]).range([0, w]);
+
+            const yScale = d3
+                .scaleLinear()
+                .domain([0, maxYValue + 10])
+                .range([h, 0]);
+
+            const xAxis = d3.axisBottom(xScale).tickFormat(formatTime);
+            const yAxis = d3
+                .axisRight(yScale)
+                .tickSize(w)
+                .tickValues(d3.range(0, maxYValue + 11, 100));
+
+            svg.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - 40)
+                .attr("x", 0 - h / 2)
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .text("혈당");
+
+            svg.append("g").attr("class", "grid").call(yAxis).selectAll("line").attr("stroke", "#dbdbdb");
+
+            svg.selectAll(".domain").attr("stroke", "#ddd");
+            svg.append("g").call(xAxis).attr("transform", `translate(0, ${h})`);
+            svg.append("g").call(yAxis);
+
+            const generateLine = d3
+                .line()
+                .x((d, i) => xScale(startDate.add(i, "day")))
+                .y(d => yScale(d))
+                .curve(d3.curveCardinal);
+
+            chartData.forEach((lineData, index) => {
+                svg.append("path")
+                    .data([lineData])
+                    .attr("d", generateLine)
+                    .attr("fill", "none")
+                    .attr("stroke-width", 2)
+                    .attr("stroke", `#${index % 3 === 0 ? "666666" : index % 3 === 1 ? "e6a156" : "952323"}`)
+                    .attr("stroke-dasharray", function () {
+                        return this.getTotalLength();
+                    })
+                    .attr("stroke-dashoffset", function () {
+                        return this.getTotalLength();
+                    })
+                    .transition()
+                    .duration(500)
+                    .ease(d3.easeLinear)
+                    .attr("stroke-dashoffset", 0);
+            });
         }
-    }, [chartRef, data]);
+    }, [chartData]);
 
     return <svg ref={chartRef} />;
 }
