@@ -74,6 +74,7 @@ export const memoBoard = css`
     background-color: #6f6257;
     .memo-scroll-board {
         width: 100%;
+        min-width: 700px;
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         grid-template-rows: repeat(3, 1fr);
