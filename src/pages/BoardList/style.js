@@ -53,7 +53,9 @@ export const categoryBox = css`
     border-radius: 25px;
     margin: 20px 0 10px;
     padding: 10px;
-    background-color: #6f6257;
+    width: 100%;
+    min-width: 500px;
+    background-color: #8c8179;
 `;
 
 export const category = css`
@@ -71,7 +73,7 @@ export const table = css`
     border-collapse: collapse;
     border-radius: 10px;
     width: 100%;
-    max-width: 800px;
+    min-width: 500px;
     box-shadow: 2px 2px 5px 0px rgba(111, 98, 87, 0.2);
     background-color: #fffbf5;
     overflow: hidden;
