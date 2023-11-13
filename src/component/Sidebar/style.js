@@ -2,7 +2,7 @@ import { css } from "@emotion/react";
 
 export const sidebarContainer = css`
     position: relative;
-    width: 280px;
+    width: 350px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;

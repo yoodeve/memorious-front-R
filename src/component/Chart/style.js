@@ -7,9 +7,10 @@ export const ChartContiner = css`
 `;
 
 export const chartSidebarContainer = css`
-    width: 180px;
+    width: 200px;
     height: 100%;
     background-color: #6f6257;
+    padding: 0 20px;
 `;
 
 export const periodTab = css`

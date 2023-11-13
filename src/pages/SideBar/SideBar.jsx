@@ -25,7 +25,11 @@ export const mainContainer = css`
 `;
 
 const contentsContainer = css`
-    width: 1020px;
+    width: 100%;
+    max-width: 1300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 `;
 
 function SideBar() {
