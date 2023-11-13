@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { Modal, Input, Select } from "antd";
+import axios from "axios";
 import { emailOptions } from "../../constants/emailOptions";
 import InviteResultModal from "./InviteResultModal";
+// import { useQueryClient } from "react-query";
 
 /*
 todo : 이메일 정규식 검증 및 req/resp
@@ -15,13 +17,29 @@ function InviteModal({ open, setOpen }) {
     const [emailInputValue, setEmailInputValue] = useState(defaultEmail);
     const [resultModalOpen, setResultModalOpen] = useState(false);
     const [emailAddress, setEmailAddress] = useState("");
+    const [isSuccess, setIsSuccess] = useState(false);
+    // const queyrClient = useQueryClient();
+    // const principalState = queyrClient.getQueryState("getPrincipal");
+    // const principal = principalState.data.data;
 
     // <<< 모달창 관련 >>>
-    const handleOk = () => {
-        setOpen(false);
-        setResultModalOpen(true);
-        setEmailInputValue(defaultEmail);
-        setEmailAddress(`${emailInputValue.local}@${emailInputValue.domainSelectBox === "직접 입력" ? emailInputValue.domain : emailInputValue.domainSelectBox}`);
+    const handleOk = async () => {
+        const emailInput = `${emailInputValue.local}@${emailInputValue.domainSelectBox === "직접 입력" ? emailInputValue.domain : emailInputValue.domainSelectBox}`;
+        setEmailAddress(emailInput);
+        try {
+            const option = {
+                headers: {
+                    Authorization: localStorage.getItem("accessToken"),
+                },
+            };
+            await axios.post("/invitation/mail", { emailInput }, option);
+            setIsSuccess(true);
+        } catch (error) {
+            setIsSuccess(false);
+        } finally {
+            setOpen(false);
+            setResultModalOpen(true);
+        }
     };
 
     const handleCancel = () => {
@@ -45,6 +63,7 @@ function InviteModal({ open, setOpen }) {
             });
         } else {
             setEmailInputValue({
+                ...emailInputValue,
                 domain: emailInputValue.domainSelectBox,
             });
         }
@@ -66,7 +85,7 @@ function InviteModal({ open, setOpen }) {
                 <Input name="domain" onChange={onDomainChange} defaultValue={emailOptions[0].value} value={emailInputValue.domainSelectBox === "직접 입력" ? emailInputValue.domain : emailInputValue.domainSelectBox} style={{ width: "20%" }} />
                 <Select name="domainSelectBox" options={emailOptions} onChange={onDomainSelectBoxChange} value={emailInputValue.domainSelectBox} style={{ width: "25%" }} />
             </Modal>
-            <InviteResultModal open={resultModalOpen} setOpen={setResultModalOpen} email={emailAddress} />
+            <InviteResultModal open={resultModalOpen} setOpen={setResultModalOpen} email={emailAddress} isSuccess={isSuccess} />
         </>
     );
 }
