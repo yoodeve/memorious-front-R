@@ -2,9 +2,9 @@ import { css } from "@emotion/react";
 
 export const mainLayout = css`
     display: grid;
-    place-items: center; //자기 요소의 내부 요소가 1개일 경우에만 적용가능
+    place-items: center;
     width: 70%;
-    min-width: 700px;
+    min-width: 1020px;
     min-height: 100vh;
     margin: 0 auto;
     background-color: #fffbf5;

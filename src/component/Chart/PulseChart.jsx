@@ -1,51 +1,80 @@
 /* eslint-disable no-nested-ternary */
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
-import { chartGraphDummyDataObj, chartGraphDummyDataObj2 } from "./chartDummyData";
+import dayjs from "dayjs";
+import { useRecoilValue } from "recoil";
+import { rcUserOnChartArray } from "../../store/atoms/chartAtoms";
 
-function PulseChart() {
+function PulseChart({ chartData }) {
     const chartRef = useRef();
+    const userList = useRecoilValue(rcUserOnChartArray);
     useEffect(() => {
-        const DATA = [chartGraphDummyDataObj.pulse.map(e => e.data), chartGraphDummyDataObj2.pulse.map(e => e.data)];
-        const w = 350;
-        const h = 120;
+        if (userList.length > 0 && chartData.length > 0) {
+            const formatTime = d3.timeFormat("%m/%d");
+            const w = 350;
+            const h = 120;
 
-        const svg = d3.select(chartRef.current).attr("width", w).attr("height", h).style("background", "#fff").style("margin-top", 40).style("overflow", "visible");
+            const startDate = dayjs().subtract(1, "week");
+            const endDate = dayjs(startDate).add(chartData[0].length - 1, "day");
 
-        const xScale = d3
-            .scaleLinear()
-            .domain([0, DATA[0].length - 1])
-            .range([0, w]);
+            const maxYValue = Math.max(...chartData.flat());
 
-        const yScale = d3
-            .scaleLinear()
-            .domain([0, d3.max(DATA.flat())])
-            .range([h, 0]);
+            const svg = d3.select(chartRef.current).attr("width", w).attr("height", h).style("background", "#fff").style("margin-top", 40).style("overflow", "visible");
+            svg.selectAll("*").remove();
 
-        const generateLine = d3
-            .line()
-            .x((d, i) => xScale(i))
-            .y(yScale)
-            .curve(d3.curveCardinal);
+            const xScale = d3.scaleTime().domain([startDate, endDate]).range([0, w]);
 
-        const xAxis = d3
-            .axisBottom(xScale)
-            .ticks(DATA[0].length)
-            .tickFormat(i => i + 1);
-        const yAxis = d3.axisLeft(yScale).ticks(5);
+            const yScale = d3
+                .scaleLinear()
+                .domain([0, maxYValue + 30])
+                .range([h, 0]);
 
-        svg.append("g").call(xAxis).attr("transform", `translate(0, ${h})`);
-        svg.append("g").call(yAxis);
+            const xAxis = d3.axisBottom(xScale).tickFormat(formatTime);
+            const yAxis = d3
+                .axisRight(yScale)
+                .tickSize(w)
+                .tickValues(d3.range(0, maxYValue + 31, 30));
 
-        DATA.forEach((e, index) => {
-            svg.append("path")
-                .data([e])
-                .attr("d", d => generateLine(d))
-                .attr("fill", "none")
-                .attr("stroke-width", 2)
-                .attr("stroke", `#${index % 3 === 0 ? "666666" : index % 3 === 1 ? "e6a156" : "952323"}`);
-        });
-    }, [chartGraphDummyDataObj, chartGraphDummyDataObj2, chartRef]);
+            svg.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - 40)
+                .attr("x", 0 - h / 2)
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .text("맥박");
+
+            svg.append("g").attr("class", "grid").call(yAxis).selectAll("line").attr("stroke", "#dbdbdb");
+
+            svg.selectAll(".domain").attr("stroke", "#ddd");
+            svg.append("g").call(xAxis).attr("transform", `translate(0, ${h})`).selectAll("text").style("font-size", "8px");
+            svg.append("g").call(yAxis);
+
+            const generateLine = d3
+                .line()
+                .x((d, i) => xScale(startDate.add(i, "day")))
+                .y(d => yScale(d))
+                .curve(d3.curveCardinal);
+
+            chartData.forEach((lineData, index) => {
+                svg.append("path")
+                    .data([lineData])
+                    .attr("d", generateLine)
+                    .attr("fill", "none")
+                    .attr("stroke-width", 2)
+                    .attr("stroke", `#${index % 3 === 0 ? "666666" : index % 3 === 1 ? "e6a156" : "952323"}`)
+                    .attr("stroke-dasharray", function () {
+                        return this.getTotalLength();
+                    })
+                    .attr("stroke-dashoffset", function () {
+                        return this.getTotalLength();
+                    })
+                    .transition()
+                    .duration(500)
+                    .ease(d3.easeLinear)
+                    .attr("stroke-dashoffset", 0);
+            });
+        }
+    }, [chartData]);
 
     return <svg ref={chartRef} />;
 }
