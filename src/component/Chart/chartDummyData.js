@@ -11,24 +11,6 @@ export const chartProfileDummyDataObj = [
     { profileImgSrc: "", profileName: "꽁치" },
 ];
 
-export const chartGraphDummyDataObj = name => ({
-    startDate: "2023-10-23",
-    [name]: {
-        bloodSugar: [60, 90, 40, 70, 69, 81, 50],
-        step: [10000, 12000, 9000, 500, 15000, 7000, 200],
-        pulse: [54, 120, 40, 60, 70, 80, 75],
-    },
-});
-
-export const chartGraphDummyDataObj2 = username => ({
-    startDate: "2023-10-23",
-    [username]: {
-        bloodSugar: [90, 95, 44, 76, 89, 21, 80],
-        step: [15000, 9000, 9700, 1000, 1000, 17000, 1200],
-        pulse: [56, 140, 10, 70, 50, 100, 66],
-    },
-});
-
 export const chartPeriodArray = ["1달", "3달", "6달"];
 
 export const tableColumns = [
