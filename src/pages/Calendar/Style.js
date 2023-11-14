@@ -1,7 +1,7 @@
 import { css } from "@emotion/react";
 
 export const SMainContainer = css`
-    /* width: 98% */
+    width: 99%;
     /* width: 1102.13px; */
     height: 100%;
     display: grid;
