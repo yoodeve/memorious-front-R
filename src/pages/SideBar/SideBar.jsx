@@ -1,15 +1,17 @@
-import React from "react";
-import { Outlet } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
 import { css } from "@emotion/react";
 import { Reset } from "styled-reset";
-import Sidebar from "../../component/Sidebar";
+import SidebarContainer from "../../component/Sidebar";
+import { instance } from "../../config";
 /** @jsxImportSource @emotion/react */
 
-const mainContainer = css`
+export const mainContainer = css`
     display: flex;
     justify-content: flex-start;
-    width: 70%;
-    min-height: 100vh;
+    min-width: 1300px;
+    width: 75%;
+    height: 100vh;
     margin: 0 auto;
     box-shadow:
         rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
@@ -19,19 +21,35 @@ const mainContainer = css`
         box-sizing: border-box;
         font-family: "Pretendard-Medium";
         font-size: 14px;
+        pre {
+            white-space: pre-wrap;
+        }
     }
 `;
 
 const contentsContainer = css`
-    flex-grow: 1;
+    width: 100%;
+    max-width: 1300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 `;
 
 function SideBar() {
+    const navigate = useNavigate();
+    useEffect(() => {
+        instance
+            .get("/api/auth/authenticate")
+            .then(() => {})
+            .catch(() => {
+                navigate("/auth/oauth2/signup", { replace: false });
+            });
+    }, []);
     return (
         <>
             <Reset />
-            <div css={mainContainer}>
-                <Sidebar />
+            <div id="parent-container" css={mainContainer}>
+                <SidebarContainer />
                 <div css={contentsContainer}>
                     <Outlet />
                 </div>
