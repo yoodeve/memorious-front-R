@@ -15,7 +15,9 @@ function SidebarContainer() {
 
     return (
         <div css={sidebarContainer}>
-            <div css={imageBox} />
+            <div className="img-wrapper">
+                <div css={imageBox} />
+            </div>
             <div css={groupBoxWrapper}>
                 <div css={groupBox}>
                     {sidebarMenuList.map(e => (
