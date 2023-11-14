@@ -1,68 +1,77 @@
 import { css } from "@emotion/react";
 
-export const logoBox = css`
-    width: 150px;
+export const mainLayout = css`
+    display: grid;
+    place-items: center;
+    width: 70%;
+    min-width: 1020px;
+    min-height: 100vh;
     margin: 0 auto;
-    margin-top: 30px;
+    background-color: #fffbf5;
+    box-shadow:
+        rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
+        rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
+        rgba(10, 37, 64, 0.35) 0px -2px 6px 0px;
+    * {
+        box-sizing: border-box;
+        font-family: "Pretendard-Medium";
+        font-size: 14px;
+    }
+`;
+
+export const mainContainer = css`
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    border-radius: 10px;
+    width: 600px;
+    height: 600px;
+    background-color: #fff;
+    box-shadow: 0px 4px 4px 4px rgba(0, 0, 0, 0.25);
+`;
+
+export const logoBox = css`
+    width: 300px;
+    margin: 0 auto;
+    margin-top: 70px;
     & img {
         width: 100%;
     }
 `;
 
-export const signupText = css`
-    padding: 30px 0;
+export const introText = css`
+    padding: 70px 0;
     text-align: center;
     color: #6f6257;
     & p {
         line-height: 25px;
-        font-size: 22px;
+        font-size: 18px;
     }
 `;
 
-export const signupContainer = css`
+export const line = css`
+    width: 400px;
+    border-top: 2px solid #eee;
+`;
+
+export const loginButtonBox = css`
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
-    border-radius: 10px;
-    width: 370px;
-    height: 200px;
-    background-color: #fffbf5;
+    margin-top: 30px;
 `;
 
-export const inputContainer = css`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 20px;
-    width: 300px;
-    & div {
-        font-size: 18px;
-        color: #6f6257;
-    }
-`;
-
-export const inputBox = css`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border: 1px solid #a05b2c;
-    border-radius: 5px;
-    height: 40px;
-    width: 220px;
-    font-size: 18px;
-    color: #6f6257;
-    outline: none;
-`;
-
-export const signupButton = css`
+export const loginButton = css`
+    width: 195px;
     cursor: pointer;
-    margin-top: 50px;
+    margin-top: 4px;
     border: none;
-    border-radius: 10px;
-    width: 330px;
-    height: 50px;
-    font-size: 16px;
-    color: #fff;
-    background-color: #6f6257;
+    background: none;
+    padding: 0px;
+
+    & img {
+        width: 100%;
+        margin: 0;
+    }
 `;

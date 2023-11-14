@@ -1,77 +1,46 @@
 import { css } from "@emotion/react";
-/** @jsxImportSource @emotion/react */
 
-export const MainContainer = css`
-    margin: 36px 0px 20px 36px;
-    font-size: 22px;
-
-    & h1 {
-        font-size: 42px;
-        font-weight: 700;
-        color: #6f6257;
-    }
-
-    & h2 {
-        color: #6f6257;
-        font-size: 28px;
-        font-weight: 600;
-    }
+export const SMainContainer = css`
+    width: 99%;
+    /* width: 1102.13px; */
+    height: 100%;
+    display: grid;
+    place-items: center;
 `;
 
-export const infoContainer = css`
-    display: flex;
-    flex-direction: column;
-    margin-top: 30px;
-    padding-left: 50px;
-
-    & > div {
-        margin-top: 30px;
-    }
-`;
-
-export const userImgBox = css`
-    border-radius: 50%;
-    width: 150px;
-    height: 150px;
-    overflow: hidden;
+//  onClick을 사용하기 위한 div(antd onSelect 버블링 발생)
+export const SdateCellBox = css`
+    width: 157px;
+    height: 109px;
     cursor: pointer;
-
-    & > img {
-        width: 100%;
-        height: 100%;
-    }
 `;
 
-export const file = css`
-    display: none;
-`;
-
-export const textBox = css`
-    display: flex;
-    margin-top: 24px;
-    align-items: baseline;
-
-    & > h2 {
-        margin-right: 20px;
-    }
-    & > span {
-        font-size: 20px;
-    }
-`;
-
-export const socialTextBox = css`
+// 일정li를 담는 div
+export const SScheduleBox = css`
     display: flex;
     align-items: center;
-    margin-top: 20px;
-
-    & > img {
-        width: 36px;
-        height: 36px;
-        margin-left: 80px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    :hover {
+        background-color: #f1f3f490;
+        filter: brightness(95%);
     }
-
-    & span {
-        padding-left: 20px;
-        font-size: 20px;
+    & > li {
     }
+`;
+
+// 일정 li
+export const SScheduleText = (color, isDayAll) => css`
+    width: 100%; //크기를 지정해 셀 내용 보장
+    padding-right: 3px;
+    padding-left: 4px;
+    border-radius: 5px;
+    background-color: ${isDayAll === 0 ? "transparent" : color};
+    color: ${isDayAll === 0 ? "black" : "white"};
+    font-size: 15px;
+    /* 아래쪽으로 내려가는것을 막음 */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-break: break-all;
 `;
