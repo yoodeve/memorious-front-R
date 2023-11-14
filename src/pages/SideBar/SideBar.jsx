@@ -21,6 +21,9 @@ export const mainContainer = css`
         box-sizing: border-box;
         font-family: "Pretendard-Medium";
         font-size: 14px;
+        pre {
+            white-space: pre-wrap;
+        }
     }
 `;
 

@@ -27,7 +27,7 @@ function MemoMain() {
     const fetchMemo = async () => {
         const response = await instance.get(`/api/memo/${pageNum}`);
         setMemoList(prevMemoList => {
-            return pageNum ? [...response.data.memoList, ...prevMemoList] : [...response.data.memoList];
+            return pageNum > 0 ? [...prevMemoList, ...response.data.memoList] : [...response.data.memoList];
         });
         setTotalCount(response.data.totalCount);
     };
