@@ -11,14 +11,14 @@ function SidebarContainer() {
     const { pathname } = useLocation();
 
     const navigate = useNavigate();
-    const [open, setOpen] = useState(false);
+    const [modalOpen, setModalOpen] = useState(false);
 
     const navigateToPage = route => () => {
         navigate(route);
     };
 
     const handleInviteClick = () => {
-        setOpen(true);
+        setModalOpen(true);
     };
 
     const items = [
@@ -52,13 +52,15 @@ function SidebarContainer() {
                     ))}
                 </div>
             </div>
+            {/* todo : 기능 완료 후 삭제 */}
+            <div onClick={handleInviteClick}>가족초대하기</div>
             <div css={bottomSettingMenuBox}>
                 <span className="my-label">My프로필</span>
                 <div className="right-titles">
                     <Dropdown menu={{ items }} placement="topRight" arrow={{ pointAtCenter: true }}>
                         <span>설정</span>
                     </Dropdown>
-                    <InviteModal open={open} setOpen={setOpen} />
+                    <InviteModal open={modalOpen} setOpen={setModalOpen} />
                     <span>로그아웃</span>
                 </div>
             </div>
