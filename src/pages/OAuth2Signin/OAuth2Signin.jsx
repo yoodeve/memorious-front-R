@@ -3,8 +3,8 @@ import React, { useState } from "react";
 /** @jsxImportSource @emotion/react */
 import { useSearchParams } from "react-router-dom";
 import { instance } from "../../config";
-import { inputBox, inputContainer, signupButton, signupContainer, signupText } from "../OAuth2Signup/style";
-import { logoBox, mainContainer, mainLayout } from "./style";
+import { inputBox, inputContainer, signupButton, signupContainer, signupText } from "../OAuth2Signup/Style";
+import { logoBox, mainContainer, mainLayout } from "./Style";
 
 function OAuth2Signin() {
     const [searchParams, setSearchParams] = useSearchParams();

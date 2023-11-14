@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import SideBar from "../pages/SideBar/SideBar";
 import GlobalStyle from "../style/Global";
+import BoardList from "../pages/BoardList/BoardList";
 import CalendarPage from "../pages/Calendar/CalendarPage";
 import ChartRoute from "./ChartRoute";
 import MemoRoute from "./MemoRoute";
