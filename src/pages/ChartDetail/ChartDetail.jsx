@@ -1,8 +1,6 @@
-/* eslint-disable no-unused-vars */
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useQuery } from "react-query";
 import { Table } from "antd";
-import styled from "@emotion/styled";
 import Chart from "../../component/Chart/Chart";
 import ChartTableContainer from "../../component/ChartDetail/ChartTableContainer";
 import { instance } from "../../config";

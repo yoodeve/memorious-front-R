@@ -3,7 +3,6 @@ import ChartTableFirstRowInput from "../ChartDetail/ChartFirstRowInput";
 import ChartDetailAddBtn from "../ChartDetail/ChartDetailAddBtn";
 import ChartDetailEditBtn from "../ChartDetail/ChartDetailEditBtn";
 
-/* eslint-disable no-unused-vars */
 export const chartProfileDummyDataObj = [
     { profileImgSrc: "", profileName: "유정" },
     { profileImgSrc: "", profileName: "정어리" },

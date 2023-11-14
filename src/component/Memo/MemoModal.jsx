@@ -1,6 +1,4 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-/* eslint-disable no-unused-vars */
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
 import TextArea from "antd/es/input/TextArea";
 import dayjs from "dayjs";
@@ -34,9 +32,6 @@ function MemoModal({ setOpen, open }) {
         }
     };
 
-    /**
-     * @todo 유정 : antd modal mask영역 조절
-     */
     return (
         <ModalContainer destroyOnClose title="메모 추가하기" centered onOk={onOk} onCancel={setClose} open={open}>
             <TextArea

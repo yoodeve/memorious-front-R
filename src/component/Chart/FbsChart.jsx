@@ -1,6 +1,5 @@
 /* eslint-disable no-nested-ternary */
-/* eslint-disable no-unused-vars */
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 import dayjs from "dayjs";
 import { useRecoilValue } from "recoil";

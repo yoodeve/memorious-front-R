@@ -24,7 +24,6 @@ export const mainContainer = css`
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-    /* margin: 0 auto; */
     border-radius: 10px;
     width: 600px;
     height: 600px;
