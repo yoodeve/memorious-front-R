@@ -7,8 +7,6 @@ import dayjs from "dayjs";
 import { ModalContainer } from "./style";
 import { instance } from "../../config";
 
-// todo 수정, 삭제 버튼 생성 및 api연결
-// todo 메모 리콜 옵션 추가(MemoContainer.jsx에 deps추가)
 function MemoModal({ setOpen, open }) {
     const queryClient = useQueryClient();
 
