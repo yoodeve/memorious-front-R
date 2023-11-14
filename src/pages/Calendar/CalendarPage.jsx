@@ -14,7 +14,8 @@ function CalendarPage() {
     const [addModalOpen, setAddModalOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState(now);
 
-    // // 일정 클릭시 수정 Modal
+    // 특정한 '일정'을 클릭하면 추가모달과 동일한 수정모달이 나옴
+    // todo : 수정버튼을 포함한 조회모달
     const handleScheduleClick = (e, data) => {
         console.log("일정 클릭시 넘어오는 값", data);
         e.stopPropagation();

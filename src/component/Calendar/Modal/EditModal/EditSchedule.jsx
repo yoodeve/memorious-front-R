@@ -60,7 +60,6 @@ function EditSchedule({ open, setOpen, date }) {
             endTime: scheduleInput.isDayAll === 1 ? "00:00" : scheduleInput.endTime,
             repeatEndDate: scheduleInput.repeatType === "none" ? "0000-00-00" : scheduleInput.repeatEndDate,
         });
-        console.log(scheduleInput);
     };
 
     const handleCancel = () => {
@@ -84,7 +83,6 @@ function EditSchedule({ open, setOpen, date }) {
 
     const handleDateChange = dates => {
         // dates 배열: [0]=startDate, [1]=endDate, type:Day.js // date
-        console.log("dateChanged");
         setScheduleInput({
             ...scheduleInput,
             startDate: dates[0].format("YYYY-MM-DD"),

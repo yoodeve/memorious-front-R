@@ -6,7 +6,6 @@ import { labelPreset } from "../../../../constants/Calendar/labelPreset";
 import LabelColorBadge from "./LabelColorBadge/LabelColorBadge";
 import { SAttendeeSelect, SCheckbox, SColorPicker, SCycleInput, SCycleSelect, SDatePicker, SDescriptionInput, SLocationInput, SModal, SRadio, SRadioRepeat, SRangePicker, SRepeatInput, SSelectOption, STimePicker, STitleInput } from "./StyledComponents/style";
 import { SFlexBox, SPanelBox } from "./style";
-import { ScheduleData } from "../../../../constants/Calendar/SchduleData";
 /** @jsxImportSource @emotion/react */
 
 function AddScheduleModal({ open, setOpen, date }) {
@@ -52,6 +51,7 @@ function AddScheduleModal({ open, setOpen, date }) {
         }
     }, []);
 
+    const dataArray = [];
     // 확인버튼 클릭시
     const handleOk = () => {
         // setOpen(false);
@@ -59,10 +59,11 @@ function AddScheduleModal({ open, setOpen, date }) {
             ...scheduleInput,
             startTime: scheduleInput.isDayAll === 1 ? "00:00" : scheduleInput.startTime,
             endTime: scheduleInput.isDayAll === 1 ? "00:00" : scheduleInput.endTime,
-            repeatEndDate: scheduleInput.repeatType === "none" ? "0000-00-00" : scheduleInput.repeatEndDate,
+            repeatEndDate: scheduleInput.repeatType === "date" ? scheduleInput.repeatEndDate : "0000-00-00",
         });
-        console.log(scheduleInput);
-        ScheduleData.push(scheduleInput);
+        // console.log(scheduleInput);
+        dataArray.push(scheduleInput);
+        console.log(dataArray);
     };
 
     const handleCancel = () => {
@@ -79,7 +80,6 @@ function AddScheduleModal({ open, setOpen, date }) {
 
     // <=====    라벨 색상      =====>
     const handleLabelColorClick = color => {
-        console.log("color", color);
         setScheduleInput({
             ...scheduleInput,
             labelColor: color,
@@ -119,7 +119,6 @@ function AddScheduleModal({ open, setOpen, date }) {
     // <=====    시간 변경      =====>
     const handleStartTimeChange = time => {
         // 선택된 시작시간과 종료시간을 비교하기 위한
-        console.log("timeChange!");
         const stTime = dayjs(time, "HH:mm");
         const endTime = dayjs(scheduleInput.endTime, "HH:mm");
         const timeDiff = endTime.diff(stTime, "minute");
@@ -246,8 +245,8 @@ function AddScheduleModal({ open, setOpen, date }) {
                     ) : null}
                 </div>
                 <div>
-                    {selectedLabel === CyclePreset[0].label ? null : ( // 반복을 선택할 경우
-                        <>
+                    {selectedLabel === CyclePreset[0].label ? null : ( // '반복안함'이 아닐 경우
+                        <div>
                             <h1>반복 횟수</h1>
                             <SRadioRepeat onChange={handleRepeatTypeChange} value={scheduleInput.repeatType}>
                                 <h1>
@@ -270,7 +269,7 @@ function AddScheduleModal({ open, setOpen, date }) {
                                     ) : null}
                                 </h1>
                             </SRadioRepeat>
-                        </>
+                        </div>
                     )}
                 </div>
 

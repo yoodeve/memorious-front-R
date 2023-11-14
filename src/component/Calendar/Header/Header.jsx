@@ -22,7 +22,6 @@ function Header({ value, onChange }) {
         );
     }
     const handleAddClick = () => {
-        console.log("header");
         setAddModalOpen(true);
     };
 
