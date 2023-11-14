@@ -1,5 +1,5 @@
-/* eslint-disable*/
-import React, { useEffect, useState } from "react";
+/* eslint-disable no-unused-vars */
+import React, { useState } from "react";
 /** @jsxImportSource @emotion/react */
 import { useSearchParams } from "react-router-dom";
 import { instance } from "../../config";

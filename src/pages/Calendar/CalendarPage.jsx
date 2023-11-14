@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import React, { useMemo } from "react";
 import styled from "styled-components";
 import { Badge, Button, Calendar } from "antd";

@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { Button } from "antd";
 import React from "react";
 import { useMutation, useQueryClient } from "react-query";

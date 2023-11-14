@@ -15,7 +15,6 @@ function Oauth2Redirect({ type }) {
                     },
                 })
                 .then(res => {
-                    console.log(res);
                     localStorage.setItem("accessToken", `Bearer ${res.data}`);
                     navigate("/");
                 });

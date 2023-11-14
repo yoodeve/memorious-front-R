@@ -1,14 +1,12 @@
-/* eslint-disable no-unused-vars */
-import { debounce } from "lodash";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useState } from "react";
 import { css } from "@emotion/react";
-/** @jsxImportSource @emotion/react */
 import { useQuery } from "react-query";
 import { useRecoilState, useRecoilValue } from "recoil";
 import MemoHeader from "../../component/Memo/MemoHeader";
 import MemoContainer from "../../component/Memo/MemoContainer";
 import { rcMemoList, rcMemoPage } from "../../store/atoms/memoAtoms";
 import { instance } from "../../config";
+/** @jsxImportSource @emotion/react */
 
 const memoMainContainer = css`
     width: 100%;
@@ -32,6 +30,7 @@ function MemoMain() {
         setTotalCount(response.data.totalCount);
     };
 
+    // eslint-disable-next-line no-unused-vars
     const getMemo = useQuery(["getMemo", pageNum], fetchMemo, {
         retryOnMount: true,
         refetchOnWindowFocus: false,

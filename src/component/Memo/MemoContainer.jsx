@@ -1,4 +1,3 @@
-/* eslint-disable react/no-array-index-key */
 import React, { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { useRecoilState } from "recoil";

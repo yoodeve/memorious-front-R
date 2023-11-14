@@ -19,7 +19,6 @@ function ChartEditModal({ open, setOpen, record }) {
             ...healthInfo,
             [name]: value,
         });
-        console.log();
     };
 
     const onOk = async () => {

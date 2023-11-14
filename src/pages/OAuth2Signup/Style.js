@@ -24,7 +24,6 @@ export const signupContainer = css`
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    /* border: 1px solid #dbdbdb; */
     border-radius: 10px;
     width: 370px;
     height: 200px;
