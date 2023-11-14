@@ -1,7 +1,7 @@
 import React from "react";
 import { Reset } from "styled-reset";
-import { introText, line, loginButton, loginButtonBox, mainContainer, mainLayout } from "../OAuth2Signin/Style";
-import { logoBox } from "./Style";
+import { introText, line, loginButton, loginButtonBox, mainContainer, mainLayout } from "../OAuth2Signin/style";
+import { logoBox } from "./style";
 /** @jsxImportSource @emotion/react */
 
 function OAuth2Signup() {
