@@ -8,7 +8,7 @@ function TokenLayout() {
         if (!token) {
             navigate("/auth/oauth2/signup", { replace: false });
         } else {
-            navigate("/calendar", { replace: false });
+            navigate("/", { replace: false });
         }
     }, [token]);
     return (

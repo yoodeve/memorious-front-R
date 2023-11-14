@@ -30,11 +30,12 @@ function OAuth2Signin() {
         try {
             const response = await instance.post("/api/auth/oauth2/signup", signupUser);
             localStorage.setItem("accessToken", `Bearer ${response.data}`);
+            window.location.reload();
+            window.location.replace("/");
         } catch (error) {
             console.error(error.response);
         }
         alert("회원가입 성공");
-        window.location.replace("/");
     };
 
     return (

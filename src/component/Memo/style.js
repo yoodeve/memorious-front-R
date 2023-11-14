@@ -61,17 +61,30 @@ export const memoWrapper = css`
     flex-direction: column;
     align-items: center;
     width: 100%;
-    height: 550px;
+    max-width: 900px;
+    height: 600px;
     padding: 0 50px 50px 50px;
 `;
 
 export const memoBoard = css`
+    border-radius: 6px;
     display: flex;
     flex-direction: column;
     width: 100%;
     overflow-y: auto;
-    height: calc(100% + 1px);
     background-color: #6f6257;
+    ::-webkit-scrollbar {
+        width: 3px;
+        opacity: 0.2;
+    }
+    ::-webkit-scrollbar-track {
+        background-color: #fffbf5;
+    }
+    ::-webkit-scrollbar-thumb {
+        background-color: #e6a156;
+        height: auto;
+        border-radius: 6px;
+    }
     .memo-scroll-board {
         width: 100%;
         min-width: 700px;
@@ -93,6 +106,8 @@ export const memoContent = index => css`
     color: #666666;
     background-color: ${index % 2 === 0 ? "#FFFBF5" : "#F5EFE6"};
     padding: 0 20px;
+    word-wrap: break-word;
+    word-break: break-all;
     .author-label {
         width: 100%;
         height: 20px;
