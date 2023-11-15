@@ -1,8 +1,6 @@
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useRef, useState } from "react";
 import { useRecoilValue } from "recoil";
 import dayjs from "dayjs";
-// import { useInView } from "react-intersection-observer";
 import FbsChart from "./FbsChart";
 import { instance } from "../../config";
 import { rcUserOnChartArray } from "../../store/atoms/chartAtoms";
@@ -19,13 +17,10 @@ function ChartGraph() {
     const [pulseData, setPulseData] = useState([]);
 
     const getChartData = async () => {
-        console.log(userList);
         const response = await instance.post("/api/chart/graph", { userList: [...userList.map(e => e.userId)], startDate: dayjs("2023-11-09") });
-        console.log(response.data);
         const fbs = userList.map(user => {
             const userData = response.data[user.nickname];
             if (userData.fbs) {
-                console.log(Object.values(userData.fbs));
                 return Object.values(userData.fbs);
             }
             return [];
@@ -44,8 +39,7 @@ function ChartGraph() {
             }
             return [];
         });
-        // const step = userList.map(user => Object.values(response.data[user]?.step));
-        // const pulse = userList.map(user => Object.values(response.data[user]?.pulse));
+
         setFbsData(fbs);
         setStepData(step);
         setPulseData(pulse);
