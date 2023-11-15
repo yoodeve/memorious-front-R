@@ -1,5 +1,7 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
+import { useQuery } from "react-query";
 import { css } from "@emotion/react";
 import { Reset } from "styled-reset";
 import SidebarContainer from "../../component/Sidebar";
@@ -37,6 +39,27 @@ const contentsContainer = css`
 
 function SideBar() {
     const navigate = useNavigate();
+    const getPrincipal = useQuery(
+        ["getPrincipal"],
+        async () => {
+            try {
+                const option = {
+                    headers: {
+                        Authorization: localStorage.getItem("accessToken"),
+                    },
+                };
+                return await instance.get("/api/auth/principal", option);
+            } catch (err) {
+                throw new Error(err);
+            }
+        },
+        {
+            retry: 0,
+            refetchInterval: 1000 * 60 * 10,
+            refetchOnWindowFocus: false,
+        },
+    );
+
     /* @라우팅 */
     useEffect(() => {
         instance
