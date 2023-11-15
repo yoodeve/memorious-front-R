@@ -26,7 +26,7 @@ function AddScheduleModal({ open, setOpen, date }) {
         isAllDay: 1,
         startTime: "",
         endTime: "",
-        attendee: [],
+        attendee: [], // id만 넘겨줌
         location: "",
         repeatType: "none",
         repeatCycle: RepeatCyclePreset[0].value,
@@ -39,6 +39,7 @@ function AddScheduleModal({ open, setOpen, date }) {
     const [scheduleInput, setScheduleInput] = useState(defaultSchedule);
     const [colorPickerOpen, setColorPickerOpen] = useState(false);
     const [repeatEndDate, setRepeatEndDate] = useState(formattedDate);
+    const [attendeeValue, setAttendeeValue] = useState([]);
 
     // 가상의 가족 데이터(사이트 로드시 가족 정보를 불러온 값)
     const mockUsers = [
@@ -167,11 +168,23 @@ function AddScheduleModal({ open, setOpen, date }) {
 
     // <=====    참석자      =====>
     // 체크한 참석자들을 Input에 저장
-    const handleChange = attendeeArray => {
+    const handleChange = attendees => {
+        // attendees : key(userId) / name(username)
+        console.log(attendees);
+        const keys = attendees.map(attendee => attendee.key);
+        const options = attendees.map(attendee => ({
+            value: attendee.key,
+            label: attendee.label,
+        }));
+
+        setAttendeeValue(options);
         setScheduleInput({
             ...scheduleInput,
-            attendee: attendeeArray,
+            attendee: keys,
         });
+
+        console.log(attendeeValue);
+        console.log(scheduleInput.attendee);
     };
 
     // 서버로부터 받아올 사용자 데이터( [ { }, {} ] )에서 검색
@@ -205,7 +218,7 @@ function AddScheduleModal({ open, setOpen, date }) {
         setSelectedRepeatLabel(menu.label);
         setScheduleInput({
             ...scheduleInput,
-            repeatCycle: menu.value,
+            repeatCycle: menu.label,
         });
     };
 
@@ -236,7 +249,7 @@ function AddScheduleModal({ open, setOpen, date }) {
                         <STimePicker css={STime} onSelect={handleEndTimeChange} value={dayjs(scheduleInput.endTime, "HH:mm")} minuteStep="10" format="HH:mm" size="large" />
                     </div>
                 )}
-                <SAttendeeSelect showSearch value={scheduleInput.attendee} mode="multiple" placeholder="참석자" filterOption={false} onSearch={handleSearch} onChange={handleChange} size="large">
+                <SAttendeeSelect labelInValue showSearch key={attendeeValue.key} value={attendeeValue.value} label={attendeeValue.label} mode="multiple" placeholder="참석자" filterOption={false} onSearch={handleSearch} onChange={handleChange} size="large">
                     {users.map(user => (
                         <SSelectOption key={user.id} value={user.name}>
                             {user.name}
