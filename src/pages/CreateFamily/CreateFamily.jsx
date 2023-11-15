@@ -23,7 +23,8 @@ function CreateFamily() {
                 },
             };
 
-            await instance.post("api/create/family", familyData, option).then(alert("가족 페이지 생성이 완료되었습니다."));
+            await instance.post("api/create/family", familyData, option);
+            alert("가족 페이지 생성이 완료되었습니다.");
             navigate("/");
         } catch (error) {
             console.error(error);
