@@ -1,14 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRecoilValue } from "recoil";
 import dayjs from "dayjs";
+// import { useInView } from "react-intersection-observer";
 import FbsChart from "./FbsChart";
 import { instance } from "../../config";
 import { rcUserOnChartArray } from "../../store/atoms/chartAtoms";
 import StepChart from "./StepChart";
 import PulseChart from "./PulseChart";
+import { chartContainer, chartWrapper } from "./style";
+/** @jsxImportSource @emotion/react */
 
 function ChartGraph() {
     const userList = useRecoilValue(rcUserOnChartArray);
+    const fbsRef = useRef();
     const [fbsData, setFbsData] = useState([]);
     const [stepData, setStepData] = useState([]);
     const [pulseData, setPulseData] = useState([]);
@@ -27,12 +31,27 @@ function ChartGraph() {
         getChartData();
     }, [userList]);
 
+    useEffect(() => {
+        console.log(fbsRef);
+    }, []);
+
     return (
-        <>
-            <FbsChart chartData={fbsData} />
-            <StepChart chartData={stepData} />
-            <PulseChart chartData={pulseData} />
-        </>
+        <div css={chartContainer}>
+            <div css={chartWrapper}>
+                <div>
+                    <FbsChart chartData={fbsData} />
+                    <div ref={fbsRef} />
+                </div>
+                <div>
+                    <StepChart chartData={stepData} />
+                    <div />
+                </div>
+                <div>
+                    <PulseChart chartData={pulseData} />
+                    <div />
+                </div>
+            </div>
+        </div>
     );
 }
 

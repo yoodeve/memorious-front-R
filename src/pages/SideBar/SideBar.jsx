@@ -37,6 +37,7 @@ const contentsContainer = css`
 
 function SideBar() {
     const navigate = useNavigate();
+    /* @라우팅 */
     useEffect(() => {
         instance
             .get("/api/auth/authenticate")

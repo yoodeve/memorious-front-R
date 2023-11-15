@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Dropdown } from "antd";
