@@ -1,9 +1,11 @@
 import { css } from "@emotion/react";
 
 export const SMainContainer = css`
-    /* width: 98% */
+    width: 99%;
     /* width: 1102.13px; */
     height: 100%;
+    display: grid;
+    place-items: center;
 `;
 
 //  onClick을 사용하기 위한 div(antd onSelect 버블링 발생)
