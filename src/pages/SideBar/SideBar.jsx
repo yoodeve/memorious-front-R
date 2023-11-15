@@ -48,7 +48,7 @@ function SideBar() {
                         Authorization: localStorage.getItem("accessToken"),
                     },
                 };
-                return await instance.get("/api/auth/principal", option);
+                return await instance.get("/api/account/principal", option);
             } catch (err) {
                 throw new Error(err);
             }
@@ -74,9 +74,7 @@ function SideBar() {
             <Reset />
             <div id="parent-container" css={mainContainer}>
                 <SidebarContainer />
-                <div css={contentsContainer}>
-                    <Outlet />
-                </div>
+                <div css={contentsContainer}>{!getPrincipal.isLoading && <Outlet />}</div>
             </div>
         </>
     );

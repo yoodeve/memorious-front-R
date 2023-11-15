@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useRef, useState } from "react";
 import { useRecoilValue } from "recoil";
 import dayjs from "dayjs";
@@ -18,22 +19,43 @@ function ChartGraph() {
     const [pulseData, setPulseData] = useState([]);
 
     const getChartData = async () => {
-        const response = await instance.post("/api/chart/graph", { userList: [...userList], startDate: dayjs("2023-11-09") });
-        const fbs = userList.map(user => Object.values(response.data[user]?.fbs));
-        const step = userList.map(user => Object.values(response.data[user]?.step));
-        const pulse = userList.map(user => Object.values(response.data[user]?.pulse));
+        console.log(userList);
+        const response = await instance.post("/api/chart/graph", { userList: [...userList.map(e => e.userId)], startDate: dayjs("2023-11-09") });
+        console.log(response.data);
+        const fbs = userList.map(user => {
+            const userData = response.data[user.nickname];
+            if (userData.fbs) {
+                console.log(Object.values(userData.fbs));
+                return Object.values(userData.fbs);
+            }
+            return [];
+        });
+        const step = userList.map(user => {
+            const userData = response.data[user.nickname];
+            if (userData.fbs) {
+                return Object.values(userData.step);
+            }
+            return [];
+        });
+        const pulse = userList.map(user => {
+            const userData = response.data[user.nickname];
+            if (userData.fbs) {
+                return Object.values(userData.pulse);
+            }
+            return [];
+        });
+        // const step = userList.map(user => Object.values(response.data[user]?.step));
+        // const pulse = userList.map(user => Object.values(response.data[user]?.pulse));
         setFbsData(fbs);
         setStepData(step);
         setPulseData(pulse);
     };
 
     useEffect(() => {
-        getChartData();
+        if (userList) {
+            getChartData();
+        }
     }, [userList]);
-
-    useEffect(() => {
-        console.log(fbsRef);
-    }, []);
 
     return (
         <div css={chartContainer}>
