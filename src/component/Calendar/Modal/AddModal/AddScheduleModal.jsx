@@ -20,7 +20,7 @@ function AddScheduleModal({ open, setOpen, date }) {
 
     const defaultSchedule = {
         title: "",
-        labelColor: "f5222d",
+        labelColor: "#8BBB11",
         startDate: formattedDate,
         endDate: formattedDate,
         isAllDay: 1,
@@ -59,11 +59,9 @@ function AddScheduleModal({ open, setOpen, date }) {
 
     // 확인버튼 클릭시
     const handleOk = async () => {
-        // setOpen(false);
-        // todo : 수정 필요
-        // repeatEndDate: prevScheduleInput.repeatType === "date" ? prevScheduleInput.repeatEndDate : "0000-00-00",
+        setOpen(false);
+        console.log("요청 값", scheduleInput);
 
-        console.log(scheduleInput);
         try {
             const response = await instance.post("/api/calendar/schedule", scheduleInput);
             console.log(response);
@@ -152,7 +150,7 @@ function AddScheduleModal({ open, setOpen, date }) {
         const timeDiff = endTime.diff(stTime, "minute");
 
         // 같은 날짜인데 종료시간이 시작시간보다 빠를 경우 시작시간을 종료시간의 한시간 전으로 바꿈
-        if (scheduleInput.startDate === scheduleInput.endDate && timeDiff < 60) {
+        if (scheduleInput.startDate === scheduleInput.endDate && timeDiff < 9) {
             setScheduleInput({
                 ...scheduleInput,
                 startTime: time.subtract(1, "hour").format("HH:mm"),
@@ -170,7 +168,6 @@ function AddScheduleModal({ open, setOpen, date }) {
     // 체크한 참석자들을 Input에 저장
     const handleChange = attendees => {
         // attendees : key(userId) / name(username)
-        console.log(attendees);
         const keys = attendees.map(attendee => attendee.key);
         const options = attendees.map(attendee => ({
             value: attendee.key,
@@ -182,9 +179,6 @@ function AddScheduleModal({ open, setOpen, date }) {
             ...scheduleInput,
             attendee: keys,
         });
-
-        console.log(attendeeValue);
-        console.log(scheduleInput.attendee);
     };
 
     // 서버로부터 받아올 사용자 데이터( [ { }, {} ] )에서 검색
@@ -218,7 +212,7 @@ function AddScheduleModal({ open, setOpen, date }) {
         setSelectedRepeatLabel(menu.label);
         setScheduleInput({
             ...scheduleInput,
-            repeatCycle: menu.label,
+            repeatCycle: menu.value,
         });
     };
 
