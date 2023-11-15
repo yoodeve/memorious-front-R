@@ -1,152 +1,72 @@
-import React, { useMemo } from "react";
-import styled from "styled-components";
-import { Badge, Button, Calendar } from "antd";
+import React, { useState } from "react";
 /** @jsxImportSource @emotion/react */
-import { SMainContainer } from "./Style";
-
-const HeaderRender = ({ value, onChange }) => {
-    return (
-        <div style={{ display: "flex", justifyContent: "space-between", margin: "0 20px" }}>
-            <span style={{ fontSize: "1.5rem" }}>{value.year()}</span>
-            <div>
-                <Button onClick={() => onChange(value.clone().subtract(1, "years"))}>이전달</Button>
-                <Button type="primary" onClick={() => onChange(value.clone().add(1, "years"))}>
-                    다음달
-                </Button>
-            </div>
-        </div>
-    );
-};
+import dayjs from "dayjs";
+import Badge from "../../component/Calendar/Badge";
+import AddScheduleModal from "../../component/Calendar/Modal/AddModal/AddScheduleModal";
+import EditScheduleModal from "../../component/Calendar/Modal/EditModal/EditScheduleModal";
+import StyledCalendar from "../../component/Calendar/Styled/StyledCalendar/StyledCalendar";
+import { ScheduleData } from "../../constants/Calendar/SchduleData";
+import { SMainContainer, SScheduleBox, SScheduleText, SdateCellBox } from "./style";
 
 function CalendarPage() {
-    const getMonthData = value => {
-        if (value.month() === 3) {
-            return 1;
-        }
-    };
-    const getListData = value => {
-        let listData;
-        switch (value.date()) {
-            case 15:
-                listData = [
-                    {
-                        type: "#213978",
-                        content: "This is warning event",
-                    },
+    const now = dayjs();
+    const [editModalOpen, setEditModalOpen] = useState(false);
+    const [addModalOpen, setAddModalOpen] = useState(false);
+    const [selectedDate, setSelectedDate] = useState(now);
 
-                    {
-                        type: "red",
-                        content: "This is error event 1.",
-                    },
-                    {
-                        type: "#666",
-                        content: "This is error event 1.",
-                    },
-                ];
-                break;
-            case 14:
-                listData = [
-                    {
-                        type: "#888",
-                        content: "zzz",
-                    },
-                ];
-                break;
-            default:
-        }
-        return listData || [];
+    // 특정한 '일정'을 클릭하면 추가모달과 동일한 수정모달이 나옴
+    // todo : 수정버튼을 포함한 조회모달
+    const handleScheduleClick = (e, data) => {
+        console.log("일정 클릭시 넘어오는 값", data);
+        e.stopPropagation();
+        setEditModalOpen(true);
     };
 
-    const onPanelChange = (value, mode) => {
-        console.log(value.format("YYYY-MM-DD"), mode);
+    // 셀 클릭시 해당 날짜에 일정 추가 Modal
+    const handleAddSchedule = date => {
+        setAddModalOpen(true);
+        setSelectedDate(date);
     };
 
-    const monthCellRender = value => {
-        const num = getMonthData(value);
-        return num ? (
-            <div className="notes-month">
-                <section>{num}</section>
-                <span>Backlog number</span>
-            </div>
-        ) : null;
+    // 데이터 필터링
+    const getFiteredData = value => {
+        const dateFormat = value.format("YYYY-MM-DD");
+
+        const dayAllData = ScheduleData.filter(item => item.date === dateFormat && item.isDayAll === 1);
+        const nonAllDayData = ScheduleData.filter(item => item.date === dateFormat && item.isDayAll === 0);
+
+        const allData = dayAllData.concat(nonAllDayData);
+        return allData;
     };
 
-    const dateCellRender = value => {
-        const listData = getListData(value);
+    // 각 날짜의 cell 안을 렌더링(일정)
+    const cellRender = value => {
+        const schedule = getFiteredData(value);
         return (
-            <div>
+            <div css={SdateCellBox} onClick={() => handleAddSchedule(value)}>
                 <ul className="events">
-                    {listData.map(item => {
-                        return (
-                            <li key={item.content}>
-                                <Badge color={item.type} text={item.content} />
+                    {schedule.map(data => (
+                        <div onClick={e => handleScheduleClick(e, value)} css={SScheduleBox} key={data.id}>
+                            {/* 종일이 아니면 뱃지 먼저 */}
+                            {data.isDayAll === 0 ? <Badge color={data.labelColor} /> : <></>}
+                            <li css={SScheduleText(data.labelColor, data.isDayAll)} key={data.id}>
+                                {data.title}
                             </li>
-                        );
-                    })}
+                        </div>
+                    ))}
                 </ul>
             </div>
         );
     };
 
-    const cellRender = (current, info) => {
-        if (info.type === "date") return dateCellRender(current);
-        if (info.type === "month") return monthCellRender(current);
-        return info.originNode;
-    };
-
-    const tableCss = useMemo(() => {
-        return { width: "100%", height: "max-content" };
-    }, []);
-
-    const SCalendar = styled(Calendar)`
-        thead tr th {
-            font-size: 24px;
-            text-align: center;
-        }
-
-        .ant-picker-calendar-header {
-            display: flex;
-            justify-content: flex-end;
-            position: relative;
-            .ant-select {
-                &:nth-of-type(1) {
-                    margin-left: 10px;
-                }
-                &:nth-of-type(2) {
-                    margin-right: 800px;
-                }
-            }
-        }
-        /* 요일 표시 중앙으로  */
-        .ant-picker-calendar .ant-picker-calendar-full .ant-picker-panel {
-        }
-
-        .css-1rclprt-SideBar * {
-            font-size: 24px;
-        }
-
-        .ant-picker-calendar-date {
-            height: 130px;
-        }
-
-        .ant-picker-calendar-date-value {
-            text-align: center;
-            font-family: "Pretendard-Bold";
-        }
-
-        .ant-picker-cell ant-picker-cell-in-view {
-            height: 135px;
-        }
-        tbody tr td .ant-picker-cell-inner.ant-picker-calendar-date .ant-picker-calendar-date-content {
-            height: 110px;
-        }
-    `;
-
     return (
-        <div css={SMainContainer}>
-            <SCalendar headerRender={HeaderRender} dateCellRender={dateCellRender} onPanelChange={onPanelChange} cellRender={cellRender} style={tableCss} />
-            {/* <Calendar onPanelChange={onPanelChange} cellRender={cellRender} style={tableCss} /> */}
-        </div>
+        <>
+            {addModalOpen ? <AddScheduleModal open={addModalOpen} setOpen={setAddModalOpen} date={selectedDate} /> : <></>}
+            <EditScheduleModal open={editModalOpen} setOpen={setEditModalOpen} />
+            <div css={SMainContainer}>
+                <StyledCalendar cellRender={cellRender} />
+            </div>
+        </>
     );
 }
 
