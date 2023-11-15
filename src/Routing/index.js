@@ -8,6 +8,8 @@ import MemoRoute from "./MemoRoute";
 import SettingRoute from "./SettingRoute";
 import CreateFamily from "../pages/CreateFamily/CreateFamily";
 import Oauth2Route from "./Oauth2Route";
+// import TokenLayout from "../component/TokenLayout";
+import BoardRoute from "./BoardRoute";
 
 function Routing() {
     return (
@@ -19,7 +21,7 @@ function Routing() {
                         <Route path="/" element={<Navigate replace to="calendar" />} />
                         <Route path="calendar/*" element={<CalendarPage />} />
                         <Route path="memo/*" element={<MemoRoute />} />
-                        <Route path="board" element={<>게시판</>} />
+                        <Route path="board/*" element={<BoardRoute />} />
                         <Route path="check-list" element={<>체크</>} />
                         <Route path="chart/*" element={<ChartRoute />} />
                         <Route path="map" element={<>맵</>} />
