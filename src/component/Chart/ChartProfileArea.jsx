@@ -6,22 +6,23 @@ import { profileContainer, profileWrapper, userSelectedButton } from "./style";
 /** @jsxImportSource @emotion/react */
 
 function ChartProfileArea({ index, user, userList }) {
-    const [chartLabel, setChartLabel] = useState(userList.map(e => e.nickname));
+    const [chartLabel, setChartLabel] = useState(userList);
     const [checked, setChecked] = useState(false);
 
     const onAddLabelList = useCallback(
-        profile => () => {
+        nickname => () => {
             setChartLabel(prevLabels => {
-                const updatedLabels = prevLabels.includes(profile) ? prevLabels.filter(e => e !== profile) : [...prevLabels, profile];
+                const updatedLabels = prevLabels.includes(nickname) ? prevLabels.filter(f => f !== nickname) : [...prevLabels, nickname];
                 return updatedLabels;
             });
-            setChecked(chartLabel.includes(user.nickname));
+            setChecked(chartLabel.includes(user));
         },
         [checked],
     );
 
     useLayoutEffect(() => {
-        setChecked(chartLabel.includes(user.nickname));
+        console.log(chartLabel);
+        setChecked(chartLabel.includes(user));
     }, [chartLabel]);
 
     return (
@@ -32,7 +33,7 @@ function ChartProfileArea({ index, user, userList }) {
                 </div>
                 <span>{user.nickname}</span>
                 <div css={userSelectedButton}>
-                    <input id={index} type="checkbox" checked={checked} onChange={onAddLabelList(user.nickname)} />
+                    <input id={index} type="checkbox" checked={checked} onChange={onAddLabelList(user)} />
                     <label htmlFor={index} />
                 </div>
             </div>

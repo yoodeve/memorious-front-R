@@ -27,7 +27,7 @@ function ChartSidebar() {
             <div css={chartSidebarContainer}>
                 <ChartSidebarPeriodTab />
                 {userList?.map((ele, i) => {
-                    return <ChartProfileArea userList={userList} index={i} user={ele} />;
+                    return <ChartProfileArea key={ele.userId} userList={userList} index={i} user={ele} />;
                 })}
             </div>
         )
