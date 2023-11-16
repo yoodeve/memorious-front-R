@@ -115,3 +115,7 @@ export const bottomSettingMenuBox = css`
         cursor: pointer;
     }
 `;
+
+export const test = css`
+    margin: 20px 0px;
+`;

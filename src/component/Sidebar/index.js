@@ -1,9 +1,10 @@
+import { Dropdown } from "antd";
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Dropdown } from "antd";
-import { sidebarMenuList } from "./sidebarMenu";
-import { bottomSettingMenuBox, groupBox, groupBoxWrapper, imageBox, sideBarLabel, sidebarContainer } from "./style";
+import { instance } from "../../config";
 import InviteModal from "../Invite/InviteModal";
+import { sidebarMenuList } from "./sidebarMenu";
+import { bottomSettingMenuBox, groupBox, groupBoxWrapper, imageBox, sideBarLabel, sidebarContainer, test } from "./style";
 /** @jsxImportSource @emotion/react */
 
 function SidebarContainer() {
@@ -20,6 +21,14 @@ function SidebarContainer() {
         setModalOpen(true);
     };
 
+    const handleTestClick = async () => {
+        try {
+            const response = await instance.get("/api/account/principal");
+            console.log("response", response);
+        } catch (error) {
+            console.log("error", error);
+        }
+    };
     const items = [
         {
             key: "1",
@@ -52,7 +61,13 @@ function SidebarContainer() {
                 </div>
             </div>
             {/* todo : 기능 완료 후 삭제 */}
-            <div onClick={handleInviteClick}>가족초대하기</div>
+            <div css={test} onClick={handleInviteClick}>
+                가족초대하기
+            </div>
+            <div css={test} onClick={handleTestClick}>
+                {" "}
+                TestBtn
+            </div>
             <div css={bottomSettingMenuBox}>
                 <span className="my-label">My프로필</span>
                 <div className="right-titles">

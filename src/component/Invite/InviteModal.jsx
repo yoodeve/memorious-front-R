@@ -1,25 +1,13 @@
+import { Input, Modal, Select } from "antd";
 import React, { useState } from "react";
-import { Modal, Input, Select } from "antd";
-import { useQueryClient } from "react-query";
+import { instance } from "../../config";
 import { emailOptions } from "../../constants/emailOptions";
 import InviteResultModal from "./InviteResultModal";
-import { instance } from "../../config";
 
 /*
 todo : 이메일 정규식 검증 및 req/resp
 */
 function InviteModal({ open, setOpen }) {
-    const queryClient = useQueryClient();
-
-    const principalState = queryClient.getQueryState("getPrincipal");
-    const principal = principalState?.data?.data;
-    console.log(principal);
-    // eslint-disable-next-line prefer-destructuring
-    const userId = principal.userId;
-    console.log(userId);
-    // useEffect(() => {
-    // }, []);
-
     const defaultEmail = {
         local: "jusgb",
         domain: "",
@@ -34,7 +22,7 @@ function InviteModal({ open, setOpen }) {
     // <<< 모달창 관련 >>>
     const handleOk = async () => {
         try {
-            const response = await instance.post("api/invitation/mail", { email, userId });
+            const response = await instance.post("api/invitation/mail", { email });
             setIsSuccess(true);
             console.log("response", response);
         } catch (error) {

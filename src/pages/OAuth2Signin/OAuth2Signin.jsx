@@ -29,7 +29,7 @@ function OAuth2Signin() {
     const handleSignupSubmit = async () => {
         try {
             const response = await instance.post("/api/auth/oauth2/signup", signupUser);
-            alert("회원가입 성공");
+            window.alert("회원가입 성공");
             localStorage.setItem("accessToken", `Bearer ${response.data}`);
             window.location.replace("/create/family");
         } catch (error) {
