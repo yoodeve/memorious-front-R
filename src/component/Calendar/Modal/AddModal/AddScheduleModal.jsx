@@ -20,7 +20,7 @@ function AddScheduleModal({ open, setOpen, date }) {
 
     const defaultSchedule = {
         title: "",
-        labelColor: "f5222d",
+        labelColor: "#8BBB11",
         startDate: formattedDate,
         endDate: formattedDate,
         isAllDay: 1,
