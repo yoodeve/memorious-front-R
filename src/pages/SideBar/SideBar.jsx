@@ -60,7 +60,7 @@ function SideBar() {
         },
     );
 
-    /* @라우팅 */
+    /* 자동 로그인 라우팅 */
     useEffect(() => {
         instance
             .get("/api/auth/authenticate")
