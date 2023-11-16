@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useQueryClient } from "react-query";
 import { Modal, Input, Select } from "antd";
 import { emailOptions } from "../../constants/emailOptions";
 import InviteResultModal from "./InviteResultModal";
@@ -10,30 +11,33 @@ todo : 이메일 정규식 검증 및 req/resp
 */
 function InviteModal({ open, setOpen }) {
     const defaultEmail = {
-        local: "",
+        local: "jusgb",
         domain: "",
         domainSelectBox: emailOptions[0].value,
     };
     const [emailInput, setEmailInput] = useState(defaultEmail);
 
     const [resultModalOpen, setResultModalOpen] = useState(false);
-    let isSuccess = false;
+    const [isSuccess, setIsSuccess] = useState(false);
 
-    const customDomainSelect = emailOptions[emailOptions.length - 1];
+    const customDomainSelect = emailOptions[emailOptions.length - 1].value;
     const email = `${emailInput.local}@${emailInput.domainSelectBox === customDomainSelect ? emailInput.domain : emailInput.domainSelectBox}`;
-    // const queyrClient = useQueryClient();
-    // const principalState = queyrClient.getQueryState("getPrincipal");
-    // const principal = principalState.data.data;
+
+    const queryClient = useQueryClient();
+    const principalState = queryClient.getQueryState("getPrincipal");
+    const principal = principalState;
+
+    console.log(principal);
 
     // <<< 모달창 관련 >>>
     const handleOk = async () => {
         try {
-            const response = await instance.post("/invitation/mail", { email });
-            isSuccess = true;
-            console.log(response);
+            const response = await instance.post("api/invitation/mail", { email });
+            setIsSuccess(true);
+            console.log("response", response);
         } catch (error) {
-            console.log(error);
-            isSuccess = false;
+            setIsSuccess(false);
+            console.log("error", error);
         } finally {
             setOpen(false);
             setResultModalOpen(true);
@@ -56,18 +60,24 @@ function InviteModal({ open, setOpen }) {
 
     // << Domain 입력 부분 >>>
     const onDomainChange = e => {
+        setEmailInput({
+            ...emailInput,
+            domain: e.target.value,
+        });
+        console.log(emailInput.domain);
+
         // 직접입력 일때만 Change를 반영함
-        if (emailInput.domainSelectBox === customDomainSelect) {
-            setEmailInput({
-                ...emailInput,
-                domain: e.target.value,
-            });
-        } else {
-            setEmailInput({
-                ...emailInput,
-                domain: emailInput.domainSelectBox,
-            });
-        }
+        // if (emailInput.domainSelectBox === customDomainSelect) {
+        //     setEmailInput({
+        //         ...emailInput,
+        //         domain: e.target.value,
+        //     });
+        // } else {
+        //     setEmailInput({
+        //         ...emailInput,
+        //         domain: emailInput.domainSelectBox,
+        //     });
+        // }
     };
 
     // <<< Domain Select 부분 >>>
