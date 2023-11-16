@@ -8,7 +8,8 @@ import { instance } from "../../config";
 
 function ChartDetailAddBtn() {
     const queryClient = useQueryClient();
-    const mutationEdit = useMutation(data => instance.post("/api/chart", data), {
+    const { data } = queryClient.getQueryState(["getPrincipal"]);
+    const mutationEdit = useMutation(d => instance.post("/api/chart", d), {
         onSuccess: () => {
             queryClient.refetchQueries(["getTableData"]);
         },
@@ -16,7 +17,7 @@ function ChartDetailAddBtn() {
     const [tableData, setTableData] = useRecoilState(rcTableData);
 
     const onClick = async () => {
-        await mutationEdit.mutate({ ...tableData, userId: "유정" });
+        await mutationEdit.mutate({ ...tableData, userId: data.data.userId });
         setTableData({ step: 0, fbs: 0, date: dayjs().format("YYYY-MM-DD"), pulse: 0 });
     };
     return <Button onClick={onClick}>추가</Button>;

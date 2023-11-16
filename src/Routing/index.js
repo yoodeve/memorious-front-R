@@ -8,6 +8,7 @@ import MemoRoute from "./MemoRoute";
 import SettingRoute from "./SettingRoute";
 import CreateFamily from "../pages/CreateFamily/CreateFamily";
 import Oauth2Route from "./Oauth2Route";
+import NotFound from "../pages/NotFound";
 // import TokenLayout from "../component/TokenLayout";
 import BoardRoute from "./BoardRoute";
 
@@ -29,6 +30,7 @@ function Routing() {
                     </Route>
                     <Route path="/auth/oauth2/*" element={<Oauth2Route />} />
                     <Route path="/create/family" element={<CreateFamily />} />
+                    <Route path="*" element={<NotFound />} />
                 </Routes>
             </BrowserRouter>
         </>

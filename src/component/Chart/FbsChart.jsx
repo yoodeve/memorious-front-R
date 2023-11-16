@@ -12,8 +12,8 @@ function FbsChart({ chartData }) {
     useEffect(() => {
         if (userList.length > 0 && chartData.length > 0) {
             const formatTime = d3.timeFormat("%m/%d");
-            const w = 350;
-            const h = 120;
+            const w = 550;
+            const h = 300;
 
             const startDate = dayjs().subtract(1, "week");
             const endDate = dayjs(startDate).add(chartData[0].length - 1, "day");
@@ -61,7 +61,7 @@ function FbsChart({ chartData }) {
                     .data([lineData])
                     .attr("d", generateLine)
                     .attr("fill", "none")
-                    .attr("stroke-width", 2)
+                    .attr("stroke-width", 3)
                     .attr("stroke", `#${index % 3 === 0 ? "666666" : index % 3 === 1 ? "e6a156" : "952323"}`)
                     .attr("stroke-dasharray", function () {
                         return this.getTotalLength();

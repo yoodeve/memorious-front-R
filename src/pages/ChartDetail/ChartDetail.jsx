@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import { Table } from "antd";
 import Chart from "../../component/Chart/Chart";
 import ChartTableContainer from "../../component/ChartDetail/ChartTableContainer";
@@ -7,6 +7,8 @@ import { instance } from "../../config";
 import { tableColumns } from "../../component/Chart/chartDummyData";
 
 function ChartDetail() {
+    const queryClient = useQueryClient();
+    const { data } = queryClient.getQueryState(["getPrincipal"]);
     const tableCss = useMemo(() => {
         return { height: "25vh", width: "500px" };
     }, []);
@@ -14,7 +16,7 @@ function ChartDetail() {
     const [tableData, setTableData] = useState([]);
 
     const fetchTableData = async () => {
-        instance.get("/api/chart", { params: { userId: "유정" } }).then(resp => {
+        instance.get("/api/chart", { params: { userId: data.data.userId } }).then(resp => {
             setTableData(resp.data);
         });
     };

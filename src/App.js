@@ -3,7 +3,7 @@ import { RecoilRoot } from "recoil";
 import { ConfigProvider } from "antd";
 import Routing from "./Routing";
 
-/** @todo 컬러 옵션 : https://ant.design/docs/react/customize-theme */
+/* 컬러 옵션 : https://ant.design/docs/react/customize-theme */
 const config = {
     token: {
         colorPrimary: "#6F6257",
