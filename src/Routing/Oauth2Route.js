@@ -9,7 +9,7 @@ function Oauth2Route() {
         <Routes>
             <Route path="signin" element={<OAuth2Signin />} />
             <Route path="signup" element={<OAuth2Signup />} />
-            <Route path="signup/redirect" element={<Oauth2Redirect type="naver" />} />
+            <Route path="signin/redirect" element={<Oauth2Redirect type="naver" />} />
         </Routes>
     );
 }

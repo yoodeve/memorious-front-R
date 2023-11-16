@@ -63,9 +63,10 @@ function SideBar() {
     /* 자동 로그인 라우팅 */
     useEffect(() => {
         if (localStorage.getItem("accessToken") == null) {
-            navigate("/auth/oauth2/signup", { replace: false });
+            navigate("/auth/oauth2/signin", { replace: false });
         }
     }, []);
+
     return (
         <>
             <Reset />
