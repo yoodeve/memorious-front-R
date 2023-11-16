@@ -1,38 +1,40 @@
 import React, { useState } from "react";
-import { useQueryClient } from "react-query";
 import { Modal, Input, Select } from "antd";
+import { useQueryClient } from "react-query";
 import { emailOptions } from "../../constants/emailOptions";
 import InviteResultModal from "./InviteResultModal";
 import { instance } from "../../config";
-// import { useQueryClient } from "react-query";
 
 /*
 todo : 이메일 정규식 검증 및 req/resp
 */
 function InviteModal({ open, setOpen }) {
+    const queryClient = useQueryClient();
+
+    const principalState = queryClient.getQueryState("getPrincipal");
+    const principal = principalState?.data?.data;
+    console.log(principal);
+    // eslint-disable-next-line prefer-destructuring
+    const userId = principal.userId;
+    console.log(userId);
+    // useEffect(() => {
+    // }, []);
+
     const defaultEmail = {
         local: "jusgb",
         domain: "",
         domainSelectBox: emailOptions[0].value,
     };
     const [emailInput, setEmailInput] = useState(defaultEmail);
-
     const [resultModalOpen, setResultModalOpen] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
 
     const customDomainSelect = emailOptions[emailOptions.length - 1].value;
     const email = `${emailInput.local}@${emailInput.domainSelectBox === customDomainSelect ? emailInput.domain : emailInput.domainSelectBox}`;
-
-    const queryClient = useQueryClient();
-    const principalState = queryClient.getQueryState("getPrincipal");
-    const principal = principalState;
-
-    console.log(principal);
-
     // <<< 모달창 관련 >>>
     const handleOk = async () => {
         try {
-            const response = await instance.post("api/invitation/mail", { email });
+            const response = await instance.post("api/invitation/mail", { email, userId });
             setIsSuccess(true);
             console.log("response", response);
         } catch (error) {
