@@ -15,21 +15,21 @@ export const writeAndSearchBox = css`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 20px 10px;
+    margin: 20px 0;
 `;
 
 export const writeBoardBox = css`
     display: flex;
     align-items: center;
     border: 1px solid #6f6257;
-    border-radius: 10px;
+    border-radius: 6px;
     padding: 5px;
     width: 100px;
     height: 40px;
     background-color: #fffbf5;
     cursor: pointer;
-    & *:not(:nth-child(1)) {
-        margin-left: 10px;
+    & *:first-of-type {
+        margin-right: 10px;
     }
 `;
 
@@ -48,20 +48,11 @@ export const searchContainer = css`
     }
 `;
 
-export const selectBox = css`
-    width: 100px;
-    border: none;
-    .select-box {
-        border: 1px solid #a05b2c;
-        border-radius: 5px;
-    }
-`;
-
 export const searchInput = css`
     margin-left: 10px;
     border: 1px solid #a05b2c;
     border-radius: 5px;
-    width: 200px;
+    width: 250px;
     height: 40px;
     outline: none;
 `;
@@ -73,12 +64,13 @@ export const searchIcon = css`
 export const categoryBox = css`
     display: flex;
     align-items: center;
-    border-radius: 25px;
+    border-radius: 40px;
     margin: 20px 0;
     padding: 15px;
-    width: 100%;
-    min-width: 500px;
     background-color: #8c8179;
+    & *:not(:first-of-type) {
+        margin-left: 10px;
+    }
 `;
 
 export const category = css`
@@ -86,15 +78,12 @@ export const category = css`
     border-radius: 20px;
     background-color: #fffbf5;
     cursor: pointer;
-    &:not(:first-of-type) {
-        margin-left: 10px;
-    }
 `;
 
 export const table = css`
     margin-top: 30px;
     border-collapse: collapse;
-    border-radius: 10px;
+    border-radius: 6px;
     width: 100%;
     min-width: 500px;
     box-shadow: 2px 2px 5px 0px rgba(111, 98, 87, 0.2);

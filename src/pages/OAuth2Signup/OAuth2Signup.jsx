@@ -1,41 +1,70 @@
-import React from "react";
-import { Reset } from "styled-reset";
-import { introText, line, loginButton, loginButtonBox, mainContainer, mainLayout } from "../OAuth2Signin/style";
-import { logoBox } from "./style";
+/* eslint-disable no-unused-vars */
+import React, { useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { mainContainer, mainLayout } from "../OAuth2Signin/style";
+import { inputBox, inputContainer, logoBox, signupButton, signupContainer, signupText } from "./style";
+import { instance } from "../../config";
 /** @jsxImportSource @emotion/react */
 
 function OAuth2Signup() {
-    const handleKakaoLogin = () => {
-        window.location.href = "http://localhost:8080/oauth2/authorization/kakao";
+    const [searchParams, setSearchParams] = useSearchParams();
+    // const navigate = useNavigate();
+
+    const user = {
+        email: "",
+        nickname: "",
+        oauth2Id: searchParams.get("oauth2Id"),
+        provider: searchParams.get("provider"),
     };
-    const handleNaverLogin = () => {
-        window.location.href = "http://localhost:8080/oauth2/authorization/naver";
+
+    const [signupUser, setSignupUser] = useState(user);
+
+    const handleInputChange = e => {
+        setSignupUser({
+            ...signupUser,
+            [e.target.name]: e.target.value,
+        });
+    };
+
+    const handleSignupSubmit = async () => {
+        try {
+            const response = await instance.post("/api/auth/oauth2/signup", signupUser);
+            alert("회원가입 성공");
+            localStorage.setItem("accessToken", `Bearer ${response.data}`);
+            window.location.replace("/create/family");
+        } catch (error) {
+            console.error(error.response);
+        }
     };
 
     return (
         <>
-            <Reset />
             <div css={mainLayout}>
                 <div css={mainContainer}>
                     <div css={logoBox}>
                         <img src="/assets/images/logo.png" alt="" />
                     </div>
-                    <div css={introText}>
+                    <div css={signupText}>
                         <p>
-                            우리를 기억하는 메모리어스, 지금 시작해보세요.
+                            추가 정보를 입력하고
                             <br />
-                            아래의 버튼을 눌러 카카오 계정 혹은 네이버 계정으로 로그인해주세요
+                            회원가입을 완료하세요.
                         </p>
                     </div>
-                    <div css={line} />
-                    <div css={loginButtonBox}>
-                        <div css={loginButton} onClick={handleKakaoLogin}>
-                            <img src="/assets/images/kakao_login_logo.png" alt="" />
+                    <div css={signupContainer}>
+                        <div css={inputContainer}>
+                            <div>이메일</div>
+                            <input type="email" css={inputBox} onChange={handleInputChange} name="email" />
                         </div>
-                        <div css={loginButton} onClick={handleNaverLogin}>
-                            <img src="/assets/images/naver_login_logo.png" alt="" />
+
+                        <div css={inputContainer}>
+                            <div>별명</div>
+                            <input type="text" css={inputBox} onChange={handleInputChange} name="nickname" />
                         </div>
                     </div>
+                    <button css={signupButton} onClick={handleSignupSubmit}>
+                        가입하기
+                    </button>
                 </div>
             </div>
         </>
