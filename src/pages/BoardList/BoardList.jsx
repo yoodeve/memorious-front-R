@@ -18,11 +18,11 @@ function BoardList() {
         { value: "제목", label: "제목" },
         { value: "작성자", label: "작성자" },
     ];
-    
+
     const search = {
         optionName: options[0].label, // == 카테고리명
-        searchValue: "" // == 검색값
-    }
+        searchValue: "", // == 검색값
+    };
 
     const [selectOptions, setSelectOptions] = useState([]);
     const [selectedOption, setSelectedOption] = useState(options[0]);
@@ -42,11 +42,7 @@ function BoardList() {
                         <span>글쓰기</span>
                     </div>
                     <div css={S.searchContainer}>
-                        <Select 
-                            style={{ width: 150, height: 40 }} 
-                            options={options} 
-                            value={`${selectedOption.value}`}
-                            defaultValue={`${selectedOption.value}`} />
+                        <Select style={{ width: 150, height: 40 }} options={options} value={`${selectedOption.value}`} defaultValue={`${selectedOption.value}`} />
                         <input css={S.searchInput} type="text" />
                         <div className="icon-box">
                             <HiSearch size={20} />
@@ -70,25 +66,29 @@ function BoardList() {
                         </tr>
                     </thead>
                     <tbody>
-                        {<tr><td></td></tr>}
+                        {
+                            <tr>
+                                <td></td>
+                            </tr>
+                        }
                         <tr>
-                            <td>2</td>
+                            <td>4</td>
                             <td>건의 있어요</td>
-                            <td>아들1</td>
-                            <td>11/13</td>
+                            <td>아들2</td>
+                            <td>11/16</td>
                             <td>1</td>
                         </tr>
                         <tr>
-                            <td>1</td>
-                            <td>11/13 가족회의록</td>
+                            <td>3</td>
+                            <td>11/15 가족회의록</td>
                             <td>엄마</td>
-                            <td>11/13</td>
+                            <td>11/15</td>
                             <td>3</td>
                         </tr>
                         <tr>
-                            <td>1</td>
-                            <td>11/13 가족회의록</td>
-                            <td>엄마</td>
+                            <td>2</td>
+                            <td>12월 가족 여행 계획</td>
+                            <td>아빠</td>
                             <td>11/13</td>
                             <td>3</td>
                         </tr>
