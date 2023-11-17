@@ -66,11 +66,6 @@ function BoardList() {
                         </tr>
                     </thead>
                     <tbody>
-                        {
-                            <tr>
-                                <td></td>
-                            </tr>
-                        }
                         <tr>
                             <td>4</td>
                             <td>건의 있어요</td>
