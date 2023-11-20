@@ -1,5 +1,7 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
+import { useQuery } from "react-query";
 import { css } from "@emotion/react";
 import { Reset } from "styled-reset";
 import SidebarContainer from "../../component/Sidebar";
@@ -37,22 +39,40 @@ const contentsContainer = css`
 
 function SideBar() {
     const navigate = useNavigate();
+    const getPrincipal = useQuery(
+        ["getPrincipal"],
+        async () => {
+            try {
+                const option = {
+                    headers: {
+                        Authorization: localStorage.getItem("accessToken"),
+                    },
+                };
+                return await instance.get("/api/account/principal", option);
+            } catch (err) {
+                throw new Error(err);
+            }
+        },
+        {
+            retry: 0,
+            refetchInterval: 1000 * 60 * 10,
+            refetchOnWindowFocus: false,
+        },
+    );
+
+    /* 자동 로그인 라우팅 */
     useEffect(() => {
-        instance
-            .get("/api/auth/authenticate")
-            .then(() => {})
-            .catch(() => {
-                navigate("/auth/oauth2/signup", { replace: false });
-            });
+        if (localStorage.getItem("accessToken") == null) {
+            navigate("/auth/oauth2/signin", { replace: false });
+        }
     }, []);
+
     return (
         <>
             <Reset />
             <div id="parent-container" css={mainContainer}>
                 <SidebarContainer />
-                <div css={contentsContainer}>
-                    <Outlet />
-                </div>
+                <div css={contentsContainer}>{!getPrincipal.isLoading && <Outlet />}</div>
             </div>
         </>
     );

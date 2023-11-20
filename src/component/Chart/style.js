@@ -131,9 +131,33 @@ export const userSelectedButton = css`
         background-color: #e6a156;
     }
 `;
-// export const ChartSidebar = css``;
-// export const ChartSidebar = css``;
-// export const ChartSidebar = css``;
+
+export const chartContainer = css`
+    width: fit-content;
+    height: 400px;
+    overflow-y: scroll;
+`;
+export const chartWrapper = css`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+`;
+
+export const fbsWrapper = fbsScroll => css`
+    position: absolute;
+    top: ${fbsScroll}px;
+    transition: top 1s ease;
+`;
+export const stepWrapper = css`
+    position: absolute;
+    top: 400px;
+`;
+export const pulseWrapper = css`
+    position: absolute;
+    top: 800px;
+`;
 // export const ChartSidebar = css``;
 // export const ChartSidebar = css``;
 // export const ChartSidebar = css``;

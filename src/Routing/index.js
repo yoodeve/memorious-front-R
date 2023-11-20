@@ -1,14 +1,16 @@
 import React from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import CalendarPage from "../pages/Calendar/CalendarPage";
+import CreateFamily from "../pages/CreateFamily/CreateFamily";
+import NotFound from "../pages/NotFound";
 import SideBar from "../pages/SideBar/SideBar";
 import GlobalStyle from "../style/Global";
-import CalendarPage from "../pages/Calendar/CalendarPage";
 import ChartRoute from "./ChartRoute";
 import MemoRoute from "./MemoRoute";
-import SettingRoute from "./SettingRoute";
-import CreateFamily from "../pages/CreateFamily/CreateFamily";
 import Oauth2Route from "./Oauth2Route";
+import SettingRoute from "./SettingRoute";
 // import TokenLayout from "../component/TokenLayout";
+import Invitation from "../pages/Invitation/Invitation";
 import BoardRoute from "./BoardRoute";
 
 function Routing() {
@@ -29,6 +31,8 @@ function Routing() {
                     </Route>
                     <Route path="/auth/oauth2/*" element={<Oauth2Route />} />
                     <Route path="/create/family" element={<CreateFamily />} />
+                    <Route path="/invitation/auth/*" element={<Invitation />} />
+                    <Route path="*" element={<NotFound />} />
                 </Routes>
             </BrowserRouter>
         </>
