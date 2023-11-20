@@ -1,12 +1,61 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useQuery } from "react-query";
 import { useNavigate } from "react-router";
+import InviteConfirmModal from "../../component/Invite/InviteConfirmModal";
 import { instance } from "../../config";
 
 function CreateFamily() {
     const navigate = useNavigate();
+    const [isInvited, setIsInvited] = useState(false);
     const [familyData, setFamilyData] = useState({
         familyName: "",
     });
+
+    const getPrincipal = useQuery(
+        ["getPrincipal"],
+        async () => {
+            try {
+                const option = {
+                    headers: {
+                        Authorization: localStorage.getItem("accessToken"),
+                    },
+                };
+                return await instance.get("/api/account/principal", option);
+            } catch (err) {
+                throw new Error(err);
+            }
+        },
+        {
+            retry: 0,
+            refetchInterval: 1000 * 60 * 10,
+            refetchOnWindowFocus: false,
+        },
+    );
+
+    const principal = getPrincipal?.data?.data;
+    const email = principal?.email;
+
+    // 초대이력에 본인과 같은 이메일이 있으면
+    useEffect(() => {
+        const isInvitation = async () => {
+            try {
+                if (principal && principal.email) {
+                    const response = await instance.get("api/invitation/history");
+                    setIsInvited(response?.data);
+                    console.log(response?.data);
+                } else {
+                    console.log("principal이 null");
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        if (principal && email) {
+            isInvitation();
+        }
+    }, [principal]);
+
     const handleInputChange = e => {
         setFamilyData({
             ...familyData,
@@ -24,7 +73,7 @@ function CreateFamily() {
             };
 
             await instance.post("api/create/family", familyData, option);
-            alert("가족 페이지 생성이 완료되었습니다.");
+            window.alert("가족 페이지 생성이 완료되었습니다.");
             navigate("/");
         } catch (error) {
             console.error(error);
@@ -39,6 +88,7 @@ function CreateFamily() {
             </div>
             <p>가족으로부터 초대받으셨나요? 초대받은 이메일을 확인해주세요</p>
             <button onClick={createFamilySubmit}>가입하기</button>
+            <InviteConfirmModal open={isInvited} setOpen={setIsInvited} />
         </>
     );
 }

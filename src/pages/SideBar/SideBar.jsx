@@ -60,15 +60,13 @@ function SideBar() {
         },
     );
 
-    /* @라우팅 */
+    /* 자동 로그인 라우팅 */
     useEffect(() => {
-        instance
-            .get("/api/auth/authenticate")
-            .then(() => {})
-            .catch(() => {
-                navigate("/auth/oauth2/signup", { replace: false });
-            });
+        if (localStorage.getItem("accessToken") == null) {
+            navigate("/auth/oauth2/signin", { replace: false });
+        }
     }, []);
+
     return (
         <>
             <Reset />

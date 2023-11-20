@@ -1,9 +1,8 @@
+import { Input, Modal, Select } from "antd";
 import React, { useState } from "react";
-import { Modal, Input, Select } from "antd";
-import axios from "axios";
+import { instance } from "../../config";
 import { emailOptions } from "../../constants/emailOptions";
 import InviteResultModal from "./InviteResultModal";
-// import { useQueryClient } from "react-query";
 
 /*
 todo : 이메일 정규식 검증 및 req/resp
@@ -12,66 +11,69 @@ function InviteModal({ open, setOpen }) {
     const defaultEmail = {
         local: "",
         domain: "",
-        domainSelectBox: "naver.com",
+        domainSelectBox: emailOptions[0].value,
     };
-    const [emailInputValue, setEmailInputValue] = useState(defaultEmail);
+    const [emailInput, setEmailInput] = useState(defaultEmail);
     const [resultModalOpen, setResultModalOpen] = useState(false);
-    const [emailAddress, setEmailAddress] = useState("");
     const [isSuccess, setIsSuccess] = useState(false);
-    // const queyrClient = useQueryClient();
-    // const principalState = queyrClient.getQueryState("getPrincipal");
-    // const principal = principalState.data.data;
 
+    const customDomainSelect = emailOptions[emailOptions.length - 1].value;
+    const email = `${emailInput.local}@${emailInput.domainSelectBox === customDomainSelect ? emailInput.domain : emailInput.domainSelectBox}`;
     // <<< 모달창 관련 >>>
     const handleOk = async () => {
-        const emailInput = `${emailInputValue.local}@${emailInputValue.domainSelectBox === "직접 입력" ? emailInputValue.domain : emailInputValue.domainSelectBox}`;
-        setEmailAddress(emailInput);
         try {
-            const option = {
-                headers: {
-                    Authorization: localStorage.getItem("accessToken"),
-                },
-            };
-            await axios.post("/invitation/mail", { emailInput }, option);
+            const response = await instance.post("api/invitation/mail", { email });
             setIsSuccess(true);
+            console.log("response", response);
         } catch (error) {
             setIsSuccess(false);
+            console.log("error", error);
         } finally {
             setOpen(false);
             setResultModalOpen(true);
         }
     };
 
+    // <<<모달 종료시>>>
     const handleCancel = () => {
         setOpen(false);
-        setEmailInputValue(defaultEmail);
+        setEmailInput(defaultEmail);
     };
 
     // <<< Input local Part관련 >>>
     const onLocalChange = e => {
-        setEmailInputValue({
-            ...emailInputValue,
+        setEmailInput({
+            ...emailInput,
             local: e.target.value,
         });
     };
 
+    // << Domain 입력 부분 >>>
     const onDomainChange = e => {
-        if (emailInputValue.domainSelectBox === "직접 입력") {
-            setEmailInputValue({
-                ...emailInputValue,
-                domain: e.target.value,
-            });
-        } else {
-            setEmailInputValue({
-                ...emailInputValue,
-                domain: emailInputValue.domainSelectBox,
-            });
-        }
+        setEmailInput({
+            ...emailInput,
+            domain: e.target.value,
+        });
+        console.log(emailInput.domain);
+
+        // 직접입력 일때만 Change를 반영함
+        // if (emailInput.domainSelectBox === customDomainSelect) {
+        //     setEmailInput({
+        //         ...emailInput,
+        //         domain: e.target.value,
+        //     });
+        // } else {
+        //     setEmailInput({
+        //         ...emailInput,
+        //         domain: emailInput.domainSelectBox,
+        //     });
+        // }
     };
 
+    // <<< Domain Select 부분 >>>
     const onDomainSelectBoxChange = value => {
-        setEmailInputValue({
-            ...emailInputValue,
+        setEmailInput({
+            ...emailInput,
             domainSelectBox: value,
         });
     };
@@ -80,12 +82,12 @@ function InviteModal({ open, setOpen }) {
         <>
             <Modal centered title="가족초대하기" open={open} onOk={handleOk} onCancel={handleCancel}>
                 <p>초대하실 가족의 이메일을 입력해주세요.</p>
-                <Input name="local" onChange={onLocalChange} value={emailInputValue.local} onPressEnter={handleOk} style={{ width: "40%" }} />
+                <Input name="local" onChange={onLocalChange} value={emailInput.local} onPressEnter={handleOk} style={{ width: "40%" }} />
                 @
-                <Input name="domain" onChange={onDomainChange} defaultValue={emailOptions[0].value} value={emailInputValue.domainSelectBox === "직접 입력" ? emailInputValue.domain : emailInputValue.domainSelectBox} style={{ width: "20%" }} />
-                <Select name="domainSelectBox" options={emailOptions} onChange={onDomainSelectBoxChange} value={emailInputValue.domainSelectBox} style={{ width: "25%" }} />
+                <Input name="domain" onChange={onDomainChange} value={emailInput.domainSelectBox === customDomainSelect ? emailInput.domain : emailInput.domainSelectBox} style={{ width: "20%" }} />
+                <Select name="domainSelectBox" options={emailOptions} onChange={onDomainSelectBoxChange} value={emailInput.domainSelectBox} style={{ width: "25%" }} />
             </Modal>
-            <InviteResultModal open={resultModalOpen} setOpen={setResultModalOpen} email={emailAddress} isSuccess={isSuccess} />
+            <InviteResultModal open={resultModalOpen} setOpen={setResultModalOpen} email={email} isSuccess={isSuccess} />
         </>
     );
 }

@@ -1,23 +1,23 @@
+import { Dropdown } from "antd";
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Dropdown } from "antd";
+import InviteModal from "../Invite/InviteModal";
 import { sidebarMenuList } from "./sidebarMenu";
 import { bottomSettingMenuBox, groupBox, groupBoxWrapper, imageBox, sideBarLabel, sidebarContainer } from "./style";
-import InviteModal from "../Invite/InviteModal";
 /** @jsxImportSource @emotion/react */
 
 function SidebarContainer() {
     const { pathname } = useLocation();
 
     const navigate = useNavigate();
-    const [open, setOpen] = useState(false);
+    const [modalOpen, setModalOpen] = useState(false);
 
     const navigateToPage = route => () => {
         navigate(route);
     };
 
     const handleInviteClick = () => {
-        setOpen(true);
+        setModalOpen(true);
     };
 
     const items = [
@@ -57,7 +57,7 @@ function SidebarContainer() {
                     <Dropdown menu={{ items }} placement="topRight" arrow={{ pointAtCenter: true }}>
                         <span>설정</span>
                     </Dropdown>
-                    <InviteModal open={open} setOpen={setOpen} />
+                    <InviteModal open={modalOpen} setOpen={setModalOpen} />
                     <span>로그아웃</span>
                 </div>
             </div>

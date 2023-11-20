@@ -1,4 +1,4 @@
-export const CyclePreset = [
+export const RepeatCyclePreset = [
     {
         value: "0",
         label: "반복 안함",
@@ -12,11 +12,11 @@ export const CyclePreset = [
         label: "매주",
     },
     {
-        value: "30",
+        value: "month",
         label: "매달",
     },
     {
-        value: "365",
+        value: "year",
         label: "매년",
     },
     {
