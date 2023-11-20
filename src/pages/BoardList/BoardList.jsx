@@ -50,7 +50,9 @@ function BoardList() {
                     </div>
                 </div>
                 <div css={S.categoryBox}>
-                    {/* {categoryList.map(category => {<div css={S.category}>`${category}`</div>})} */}
+                    {/* {categoryList.map(category => {
+                        <div css={S.category}>`${category}`</div>;
+                    })} */}
                     <div css={S.category}>공지</div>
                     <div css={S.category}>회의록</div>
                     <div css={S.category}>식단</div>
@@ -62,42 +64,38 @@ function BoardList() {
                             <th>제목</th>
                             <th>작성자</th>
                             <th>작성일</th>
-                            <th>조회수</th>
+                            {/* <th>조회수</th> */}
                         </tr>
                     </thead>
                     <tbody>
-                        {
+                        {/* {
                             <tr>
                                 <td></td>
                             </tr>
-                        }
+                        } */}
                         <tr>
                             <td>4</td>
                             <td>건의 있어요</td>
                             <td>아들2</td>
                             <td>11/16</td>
-                            <td>1</td>
                         </tr>
                         <tr>
                             <td>3</td>
                             <td>11/15 가족회의록</td>
                             <td>엄마</td>
                             <td>11/15</td>
-                            <td>3</td>
                         </tr>
                         <tr>
                             <td>2</td>
                             <td>12월 가족 여행 계획</td>
                             <td>아빠</td>
                             <td>11/13</td>
-                            <td>3</td>
                         </tr>
                         <tr>
                             <td>1</td>
                             <td>11/13 가족회의록</td>
                             <td>엄마</td>
                             <td>11/13</td>
-                            <td>3</td>
                         </tr>
                     </tbody>
                 </table>

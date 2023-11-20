@@ -1,13 +1,12 @@
 import { css } from "@emotion/react";
 
 export const layout = css`
-    padding: 10px;
     width: 100%;
     height: 100%;
     padding: 30px;
-    background-color: #f5efe6;
     * {
         font-size: 16px;
+        color: #6f6257;
     }
 `;
 
@@ -21,12 +20,12 @@ export const writeAndSearchBox = css`
 export const writeBoardBox = css`
     display: flex;
     align-items: center;
-    border: 1px solid #6f6257;
+    border: none;
     border-radius: 6px;
     padding: 5px;
-    width: 100px;
-    height: 40px;
-    background-color: #fffbf5;
+    height: 35px;
+    color: #6f6257;
+    background-color: #f5efe6;
     cursor: pointer;
     & *:first-of-type {
         margin-right: 10px;
@@ -66,7 +65,7 @@ export const categoryBox = css`
     align-items: center;
     border-radius: 40px;
     margin: 20px 0;
-    padding: 15px;
+    padding: 10px;
     background-color: #8c8179;
     & *:not(:first-of-type) {
         margin-left: 10px;
@@ -74,8 +73,9 @@ export const categoryBox = css`
 `;
 
 export const category = css`
-    padding: 10px 15px;
+    padding: 8px 12px;
     border-radius: 20px;
+    font-size: 15px;
     background-color: #fffbf5;
     cursor: pointer;
 `;
