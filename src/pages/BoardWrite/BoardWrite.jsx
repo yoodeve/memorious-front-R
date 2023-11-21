@@ -7,19 +7,20 @@ import * as S from "./style";
 import { instance } from "../../config";
 import ReactSelect from "react-select";
 import { useNavigate } from "react-router-dom";
+import { Select } from "antd";
 
 function BoardWrite() {
     const navigate = useNavigate();
     const [boardData, setBoardData] = useState({
         title: "",
         content: "",
-        categoryId: 0,
+        categoryId: null,
         categoryName: "",
     });
 
     const [newCategory, setNewCategory] = useState("");
-    const [selectOptions, setSelectOptions] = useState([]);
-    const [selectedOption, setSelectedOption] = useState(selectOptions[0]);
+    const [options, setOptions] = useState([]);
+    const [selectedOption, setSelectedOption] = useState(options[0]);
 
     const queryClient = useQueryClient();
 
@@ -34,10 +35,10 @@ function BoardWrite() {
         }
     }, []);
 
-    // api 요청으로 받아온 카테고리 리스트를 selectOptions 배열에 저장
+    // get categoryList -> options
     useEffect(() => {
         instance.get("api/board/categories").then(response => {
-            setSelectOptions(
+            setOptions(
                 response.data.map(category => {
                     return {
                         value: category.boardCategoryId,
@@ -48,6 +49,7 @@ function BoardWrite() {
         });
     }, []);
 
+    // 카테고리 추가
     const handleAddCategory = () => {
         const categoryName = window.prompt("새로 추가할 카테고리를 입력하세요."); //모달창으로
         if (!categoryName) {
@@ -56,31 +58,53 @@ function BoardWrite() {
         setNewCategory(categoryName);
     };
 
-    // 새 카테고리가 추가될 때마다 selectedOption set
     useEffect(() => {
-        if (!!newCategory) {
+        if (newCategory) {
             const newOption = { value: 0, label: newCategory };
 
             setSelectedOption(newOption);
-            if (!selectOptions.map(option => option.value).includes(newOption.value)) {
-                setSelectOptions([...selectOptions, newOption]);
+            setOptions([...options, newOption]);
+
+            // 쌤한테 물어보기: value를 0으로 뒀을 때, 두 개 이상 추가는 안되게
+            //아래 로직은 아닌 거 같음
+            // console.log("options >> ", options);
+            // const result = options.filter(option => option.value === 0);
+            // console.log(result.length); //0이 나오면 인덱스 0이 없는 거임
+
+            // if (result.length === 0) {
+            //     setOptions([...options, newOption]);
+            // }
+
+            if (!options.map(option => option.value).includes(newOption.value)) {
+                console.log("여기 옴?");
+                if (!options.map(option => option.label).includes(newOption.label)) {
+                    setOptions([...options, newOption]);
+                }
             }
         }
     }, [newCategory]);
 
     //quill
-
     const modules = {
         toolbar: {
             container: [[{ header: [1, 2, 3, false] }], ["bold", "underline"], ["image"]],
         },
     };
+
     // 셀렉트 옵션을 클릭하면 selectedOption을 set 해줌
-    const handleSelectChange = option => {
+    const handleSelectChange = (value, option) => {
+        console.log("선택된 option", option);
         setSelectedOption(option);
+        // console.log("selectedOption >> ", selectedOption);
+
+        // setBoardData({
+        //     ...boardData,
+        //     categoryId: option.value,
+        //     categoryName: option.label,
+        // });
+        // console.log("옵션선택 후 boardData >> ", boardData);
     };
 
-    //선택된 카테고리(selectedOption)에 따라 boardData의 카테고리 정보가 변경
     useEffect(() => {
         setBoardData({
             ...boardData,
@@ -106,13 +130,10 @@ function BoardWrite() {
     // 게시글 작성 submit
     const handleWriteSubmit = async () => {
         try {
-            const option = {
-                headers: {
-                    Authorization: localStorage.getItem("accessToken"),
-                },
-            };
-
-            await instance.post("api/board/content", boardData, option);
+            console.log("options >> ", options);
+            console.log("selectedOption >> ", selectedOption);
+            console.log("boardData >> ", boardData);
+            await instance.post("api/board/content", boardData);
             alert("게시글 작성이 완료되었습니다.");
             navigate("/board");
         } catch (error) {
@@ -124,7 +145,8 @@ function BoardWrite() {
         <div css={S.layout}>
             <div css={S.categoryContainer}>
                 <div css={S.selectBox}>
-                    <ReactSelect options={selectOptions} onChange={handleSelectChange} value={selectedOption} defaultValue={selectedOption} placeholder="카테고리 선택" isSearchable={false} />
+                    <Select style={{ width: "150px", height: "40px" }} options={options} onChange={handleSelectChange} value={selectedOption} placeholder="카테고리 선택" />
+                    {/* <ReactSelect options={selectOptions} onChange={handleSelectChange} value={selectedOption} defaultValue={selectedOption} placeholder="카테고리 선택" isSearchable={false} /> */}
                 </div>
                 <button css={S.addCategory} onClick={handleAddCategory}>
                     카테고리 추가
