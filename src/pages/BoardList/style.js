@@ -90,6 +90,8 @@ export const table = css`
     background-color: #fffbf5;
     overflow: hidden;
     border-style: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 
     & th,
     td {
@@ -103,10 +105,6 @@ export const table = css`
     & th {
         background-color: #6f6257;
         color: #fff;
-
-        &:last-child {
-            width: 10%;
-        }
     }
 
     & td {
