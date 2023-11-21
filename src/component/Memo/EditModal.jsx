@@ -36,7 +36,7 @@ function EditModal({ memoDesc, open, setOpen }) {
             await mutationEdit.mutate({
                 author: principal.data.data.userId,
                 memoContent: newMemo,
-                createdDate: dayjs().format("YYYY-MM-DD hh:mm"),
+                createdDate: dayjs().format("YY-MM-DD HH:mm"),
             });
             onClose();
         } catch (error) {
@@ -70,8 +70,7 @@ function EditModal({ memoDesc, open, setOpen }) {
         >
             <TextArea
                 onChange={onMemoChange}
-                placeholder={memoDesc.memoContent}
-                value={newMemo}
+                value={newMemo !== "" ? newMemo : memoDesc.memoContent}
                 autoSize={{
                     minRows: 3,
                     maxRows: 3,

@@ -17,24 +17,24 @@ function ChartGraph() {
     const [pulseData, setPulseData] = useState([]);
 
     const getChartData = async () => {
-        const response = await instance.post("/api/chart/graph", { userList: [...userList.map(e => e.userId)], startDate: dayjs("2023-11-09") });
+        const response = await instance.post("/api/chart/graph", { userList: [...userList.filter(user => user.checked).map(e => e.userId)], startDate: dayjs("2023-11-09") });
         const fbs = userList.map(user => {
             const userData = response.data[user.nickname];
-            if (userData.fbs) {
+            if (userData) {
                 return Object.values(userData.fbs);
             }
             return [];
         });
         const step = userList.map(user => {
             const userData = response.data[user.nickname];
-            if (userData.fbs) {
+            if (userData) {
                 return Object.values(userData.step);
             }
             return [];
         });
         const pulse = userList.map(user => {
             const userData = response.data[user.nickname];
-            if (userData.fbs) {
+            if (userData) {
                 return Object.values(userData.pulse);
             }
             return [];

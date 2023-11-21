@@ -23,14 +23,12 @@ function ChartSidebar() {
     }, []);
 
     return (
-        userList.length > 0 && (
-            <div css={chartSidebarContainer}>
-                <ChartSidebarPeriodTab />
-                {userList?.map((ele, i) => {
-                    return <ChartProfileArea key={ele.userId} userList={userList} index={i} user={ele} />;
-                })}
-            </div>
-        )
+        <div css={chartSidebarContainer}>
+            <ChartSidebarPeriodTab />
+            {userList?.map((ele, i) => {
+                return <ChartProfileArea key={ele.userId} index={i} user={ele} />;
+            })}
+        </div>
     );
 }
 
