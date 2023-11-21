@@ -70,8 +70,10 @@ export const memoBoard = css`
     border-radius: 6px;
     display: flex;
     flex-direction: column;
-    width: 100%;
+    align-items: center;
+    width: fit-content;
     overflow-y: auto;
+    overflow-x: hidden;
     background-color: #6f6257;
     ::-webkit-scrollbar {
         width: 3px;
@@ -87,12 +89,12 @@ export const memoBoard = css`
     }
     .memo-scroll-board {
         width: 100%;
-        min-width: 700px;
+        min-width: 1000px;
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         grid-template-rows: repeat(3, 1fr);
-        gap: 10px;
-        padding: 10px;
+        gap: 30px;
+        padding: 60px;
     }
 `;
 

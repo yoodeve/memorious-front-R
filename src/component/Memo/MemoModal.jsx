@@ -7,9 +7,9 @@ import { instance } from "../../config";
 
 function MemoModal({ setOpen, open }) {
     const queryClient = useQueryClient();
-
+    const { data } = queryClient.getQueryState(["getPrincipal"]);
     const [memoContent, setMemoContent] = useState();
-    const mutation = useMutation(data => instance.post("/api/memo", data), {
+    const mutation = useMutation(d => instance.post("/api/memo", d), {
         onSuccess: () => {
             queryClient.refetchQueries(["getMemo"]);
         },
@@ -24,7 +24,7 @@ function MemoModal({ setOpen, open }) {
 
     const onOk = async () => {
         try {
-            mutation.mutate({ author: "나", memoContent, createdDate: dayjs().format("YYYY-MM-DD hh:mm") });
+            mutation.mutate({ author: data.data.userId, memoContent, createdDate: dayjs().format("YYYY-MM-DD hh:mm") });
             setMemoContent("");
             setOpen(false);
         } catch (error) {

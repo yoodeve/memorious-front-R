@@ -8,6 +8,7 @@ import { instance } from "../../config";
 
 function EditModal({ memoDesc, open, setOpen }) {
     const queryClient = useQueryClient();
+    const principal = queryClient.getQueryState(["getPrincipal"]);
     const [newMemo, setNewMemo] = useState("");
     const onMemoChange = e => {
         setNewMemo(e.target.value);
@@ -33,7 +34,7 @@ function EditModal({ memoDesc, open, setOpen }) {
     const onMemoEditClick = async () => {
         try {
             await mutationEdit.mutate({
-                author: "나",
+                author: principal.data.data.userId,
                 memoContent: newMemo,
                 createdDate: dayjs().format("YYYY-MM-DD hh:mm"),
             });
