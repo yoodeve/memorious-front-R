@@ -38,9 +38,8 @@ function BoardList() {
             const option = {
                 params: searchParams,
             };
-            console.log(option);
 
-            // return await instance.get(`/boards/${category}/${page}`, option);
+            return await instance.get(`/boards/${category}/${page}`, option);
         },
         {
             refetchOnWindowFocus: false,
@@ -132,33 +131,9 @@ function BoardList() {
                                     </tr>
                                 );
                             })}
-                        {/* <tr>
-                            <td>4</td>
-                            <td>건의 있어요</td>
-                            <td>아들2</td>
-                            <td>11/16</td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>11/15 가족회의록</td>
-                            <td>엄마</td>
-                            <td>11/15</td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>12월 가족 여행 계획</td>
-                            <td>아빠</td>
-                            <td>11/13</td>
-                        </tr>
-                        <tr>
-                            <td>1</td>
-                            <td>11/13 가족회의록</td>
-                            <td>엄마</td>
-                            <td>11/13</td>
-                        </tr> */}
                     </tbody>
                 </table>
-                <div css={S.pageNumbers}>{/* {pagination()} */}</div>
+                <div css={S.pageNumbers}></div>
             </div>
         </>
     );
