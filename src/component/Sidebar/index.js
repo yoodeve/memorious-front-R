@@ -19,6 +19,11 @@ function SidebarContainer() {
     const handleInviteClick = () => {
         setModalOpen(true);
     };
+    const handleLogoutClick = () => {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("InvitationToken");
+        window.location.reload();
+    };
 
     const items = [
         {
@@ -58,7 +63,7 @@ function SidebarContainer() {
                         <span>설정</span>
                     </Dropdown>
                     <InviteModal open={modalOpen} setOpen={setModalOpen} />
-                    <span>로그아웃</span>
+                    <span onClick={handleLogoutClick}>로그아웃</span>
                 </div>
             </div>
         </div>
