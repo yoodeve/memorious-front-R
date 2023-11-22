@@ -2,6 +2,7 @@
 import dayjs from "dayjs";
 import React, { useEffect, useRef, useState } from "react";
 import { IoIosArrowRoundForward, IoMdArrowForward } from "react-icons/io";
+import { useQueryClient } from "react-query";
 import { instance } from "../../../../config";
 import { LabelColorPreset } from "../../../../constants/Calendar/LabelColorPreset";
 import { RepeatCyclePreset } from "../../../../constants/Calendar/RepeatCyclePreset";
@@ -33,6 +34,7 @@ function AddScheduleModal({ open, setOpen, date }) {
         repeatEndDate: "0000:00:00",
         repeatCount: "",
         description: "",
+        userId: "",
     };
 
     const [selectedRepeatLabel, setSelectedRepeatLabel] = useState(RepeatCyclePreset[0].label);
@@ -48,7 +50,16 @@ function AddScheduleModal({ open, setOpen, date }) {
         { id: 3, name: "주성광" },
     ];
     const [users, setUsers] = useState(mockUsers);
+    const queryClient = useQueryClient();
+    const principal = queryClient.getQueryState(["getPrincipal"]);
+    const getFamilyList = async () => {
+        const response = await instance.get("/api/chart/family", { params: { familyId: principal?.data.data.familyId } });
+        setUsers(response.data);
+    };
 
+    useEffect(() => {
+        getFamilyList();
+    }, []);
     // 제목입력에 focus 줌
     const inputRef = useRef(null);
     useEffect(() => {
@@ -63,7 +74,7 @@ function AddScheduleModal({ open, setOpen, date }) {
         console.log("요청 값", scheduleInput);
 
         try {
-            const response = await instance.post("/api/calendar/schedule", scheduleInput);
+            const response = await instance.post("/api/calendar/schedule", { ...scheduleInput, userId: principal?.data.data.userId });
             console.log(response);
         } catch (error) {
             console.log(error);
