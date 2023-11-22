@@ -1,43 +1,48 @@
 import React, { useEffect, useState } from "react";
 /** @jsxImportSource @emotion/react */
 import dayjs from "dayjs";
-import Badge from "../../component/Calendar/Modal/Badge/Badge";
+import { useRecoilState } from "recoil";
 import AddScheduleModal from "../../component/Calendar/Modal/AddModal/AddScheduleModal";
+import Badge from "../../component/Calendar/Modal/Badge/Badge";
 import EditScheduleModal from "../../component/Calendar/Modal/EditModal/EditScheduleModal";
 import StyledCalendar from "../../component/Calendar/Styled/StyledCalendar/StyledCalendar";
-import { SEmptyBox, SMainContainer, SScheduleBox, SScheduleText, STimeText, SdateCellBox } from "./style";
 import { instance } from "../../config";
+import { calendarRecoil } from "../../store/atoms/calendarAtoms";
+import convertToAmPmFormat from "../../utils/Calendar/convertToAmPmFormat";
+import getVisibleDates from "../../utils/Calendar/getVisibleDates";
+import preprocessData from "../../utils/Calendar/preprocessData";
+import sortCalendarData from "../../utils/Calendar/sortCalendarData";
+import useDynamicHeight from "../../utils/Calendar/useDynamicHeight";
+import { SEmptyBox, SMainContainer, SScheduleBox, SScheduleText, STimeText, SdateCellBox } from "./style";
 
 function CalendarPage() {
     const now = dayjs();
+    const [currentDate, setCurrentDate] = useState(now);
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [addModalOpen, setAddModalOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState(now);
-    const [customHeight, setCustomHeight] = useState(133);
-    const [rowNumber, setRowNumber] = useState(5);
-    const [responseData, setResponseData] = useState([]);
-    let initialArray = [];
-
-    // 시간 변환
-    const convertToAmPmFormat = timeString => {
-        const [hours] = timeString.split(":");
-
-        // const formattedTime = `${hours}시`;
-
-        // 12시간제로 표시(데이터셀이 너무 작다)
-        let period = "오전";
-        let formattedHours = parseInt(hours, 10);
-        if (formattedHours >= 12) {
-            period = "오후";
-            formattedHours -= 12;
+    const { customHeight, rowNumber } = useDynamicHeight(currentDate);
+    const [scheduleData, setScheduleData] = useRecoilState(calendarRecoil);
+    const fetchData = async () => {
+        try {
+            const response = await instance.get(`/api/calendar/schedule/${now.format("YYYY-MM")}`);
+            // console.log("원본 응답데이터", response);
+            // 데이터를 정렬하고 전처리(주단위로 나누고, 특정 인덱스를 추가) 함.
+            const processedData = response.data.sort(sortCalendarData).map(preprocessData).flat();
+            setScheduleData(processedData);
+        } catch (error) {
+            console.log(error);
         }
-        if (formattedHours === 0) {
-            formattedHours = 12;
-        }
-        const formattedTime = `${period} ${formattedHours}시`;
-
-        return formattedTime;
     };
+
+    useEffect(() => {
+        fetchData();
+        getVisibleDates(now);
+    }, []);
+
+    useEffect(() => {
+        console.log("정렬 + 전처리 완료 Data", scheduleData);
+    }, [scheduleData]);
 
     // 특정한 '일정'을 클릭하면 추가모달과 동일한 수정모달이 나옴
     // todo : 수정버튼을 포함한 조회모달
@@ -53,139 +58,33 @@ function CalendarPage() {
         setSelectedDate(date);
     };
 
-    const sortResponseData = (a, b) => {
-        // 시작 날짜순 정렬
-        const startDiff = dayjs(a.startDate).diff(b.startDate);
-        if (startDiff !== 0) {
-            return startDiff;
-        }
-
-        // startDate와 endDate의 차이가 가장 큰 객체를 가장 앞으로 이동
-        const diffA = dayjs(a.endDate).diff(a.startDate);
-        const diffB = dayjs(b.endDate).diff(b.startDate);
-
-        if (diffA > diffB) {
-            return -1;
-            // eslint-disable-next-line no-else-return
-        } else if (diffA < diffB) {
-            return 1;
-        }
-        // isAllDay가 true이면 a를 더 앞으로 이동
-        if (a.isAllDay) {
-            return -1;
-        }
-
-        // isAllDay가 true이면 b를 더 앞으로 이동
-        if (b.isAllDay) {
-            return 1;
-        }
-
-        // isAllDay가 false이고 startTime이 가장 이른 시간
-        const startTimeA = dayjs(`${a.startDate} ${a.startTime}`);
-        const startTimeB = dayjs(`${b.startDate} ${b.startTime}`);
-
-        return startTimeA.diff(startTimeB);
-    };
-
-    const getWeekRange = date => {
-        // 해당 주의 일요일
-        const startOfWeek = dayjs(date).startOf("week");
-        // 해당 주의 토요일
-        const endOfWeek = dayjs(date).endOf("week");
-
-        return { startOfWeek, endOfWeek };
-    };
-
-    // 여러날의 일정은 주단위로 나눠줌
-    const preprocessData = schedule => {
-        let startDate = dayjs(schedule.startDate);
-        const endDate = dayjs(schedule.endDate);
-        const weeklySchedules = [];
-        let nthIndex = 1;
-
-        if (schedule.startDate !== schedule.endDate) {
-            while (startDate.isBefore(endDate) || startDate.isSame(endDate)) {
-                const { startOfWeek, endOfWeek } = getWeekRange(startDate);
-
-                // 주의 시작일이 해당 일정의 시작일 이전이면 시작일을 해당 일정의 시작일로 설정
-                const adjustedStartOfWeek = startDate.isAfter(startOfWeek) ? startDate : startOfWeek;
-                // 주의 종료일이 해당 일정의 종료일 이후이면 종료일을 해당 일정의 종료일로 설정
-                const adjustedEndOfWeek = endDate.isBefore(endOfWeek) ? endDate : endOfWeek;
-
-                const dayDiff = adjustedEndOfWeek.diff(adjustedStartOfWeek, "day") + 1;
-                weeklySchedules.push({
-                    ...schedule,
-                    startDate: adjustedStartOfWeek.format("YYYY-MM-DD"),
-                    endDate: adjustedEndOfWeek.format("YYYY-MM-DD"),
-                    dayDiff,
-                    nthIndex,
-                });
-
-                // startDate를 다음주의 첫 날로 변경
-                startDate = startOfWeek.add(1, "week");
-                nthIndex += 1;
-            }
-        } else {
-            // 당일 일정들
-            weeklySchedules.push({ ...schedule, dayDiff: 0 });
-        }
-        return weeklySchedules;
-    };
-
     // 각각의 셀에 알맞은 일정을 표시하도록 데이터를 가공
     const getfilteredData = date => {
-        const filteredData = [];
         const returnData = [];
         const thisDateString = date.format("YYYY-MM-DD");
-
-        const sortedData = responseData.sort(sortResponseData); // 순서 정렬
-
-        sortedData.forEach(schedule => {
-            filteredData.push(...preprocessData(schedule));
-        });
-
-        filteredData.forEach(schedule => {
+        let i = 0;
+        scheduleData.forEach(schedule => {
             const scheduleStart = dayjs(schedule.startDate);
             const scheduleEnd = dayjs(schedule.endDate);
 
-            // 당일끝나는 일정이 아니고, 시작날짜가 현재날짜 같은것
+            /* 각각의 데이터셀에서 출력할 데이터만 선별함 */
+            // 1순위 : 당일 일정이 아니고, 시작날짜가 셀의 날짜와 같은것
             if (schedule.dayDiff !== 0 && schedule.startDate === thisDateString) {
-                returnData.push({ ...schedule, isBetween: false });
+                i += 1;
+                returnData.push({ ...schedule, isBetween: false, index: i });
+                // 2순위 : 당일 일정x, 시작날짜와 같지 않음 + 종료날짜 이전
             } else if (schedule.dayDiff !== 0 && date.isAfter(scheduleStart) && (date.isBefore(scheduleEnd) || date.isSame(scheduleEnd, "day"))) {
-                returnData.push({ ...schedule, isBetween: true, title: " z" });
+                i += 1;
+                returnData.push({ ...schedule, isBetween: true, title: " z", index: i });
+                // 3순위 : 당일 일정이고, 시작날짜가 셀의날짜와 같음
             } else if (schedule.dayDiff === 0 && schedule.startDate === thisDateString) {
-                returnData.push({ ...schedule, isBetween: false });
+                i += 1;
+                returnData.push({ ...schedule, isBetween: false, index: i });
             }
-            // if (schedule.startDate !== schedule.endDate) {
-            //     // 시작날짜가 같으면 먼저 push
-            //     if (date.isSame(scheduleStart)) {
-            //         returnData.push({ ...schedule, isBetween: false });
-            //         // 시작 시작날짜를 넘고, 종료날짜보다 작거나 같은경우 is
-            //     } else if (date.isAfter(scheduleStart) && (date.isBefore(scheduleEnd) || date.isSame(scheduleEnd))) {
-            //         returnData.push({ ...schedule, isBetween: true, title: " " });
-            //     }
-            // } else if (schedule.dayDiff === 0 && !schedule.isAllDay) {
-            //     // startDate가 현재 날짜와 같은 경우
-            //     returnData.push({ ...schedule, isBetween: false });
-            // }
         });
 
         return returnData;
     };
-
-    useEffect(() => {
-        const fetchData = async () => {
-            console.log("in UseEffect", initialArray);
-            try {
-                const response = await instance.get(`/api/calendar/schedule/${now.format("YYYY-MM")}`);
-                setResponseData(response.data);
-            } catch (error) {
-                console.log(error);
-            }
-        };
-
-        fetchData();
-    }, []);
 
     // 각 날짜의 cell 안을 렌더링(일정)
     const cellRender = date => {
@@ -200,15 +99,15 @@ function CalendarPage() {
                             <div css={SEmptyBox}> {schedule.title} </div>
                         ) : (
                             <>
-                                <div onClick={e => handleScheduleClick(e, date)} css={SScheduleBox(schedule?.dayDiff, schedule?.isAllDay, schedule?.labelColor)} key={`${schedule?.id}-${schedule?.nthIndex}`}>
+                                <div onClick={e => handleScheduleClick(e, date)} css={SScheduleBox(schedule?.dayDiff, schedule?.isAllDay, schedule?.labelColor)} key={`${schedule?.id}-${schedule?.weekIndex}`}>
                                     {/* 종일이 아닐 때의 스타일 추가 */}
                                     {schedule?.isAllDay && schedule?.dayDiff === 0 ? null : (
                                         <>
                                             {!schedule?.isAllDay && schedule?.dayDiff === 0 && <Badge color={schedule?.labelColor} />}
-                                            {!schedule?.isAllDay && <span css={STimeText}>{convertToAmPmFormat(schedule?.startTime)}</span>}
+                                            {!schedule?.isAllDay && schedule?.dayDiff === 0 && <span css={STimeText}>{convertToAmPmFormat(schedule?.startTime)}</span>}
                                         </>
                                     )}
-                                    <li css={SScheduleText(schedule?.labelColor, schedule?.isAllDay, schedule?.dayDiff)} key={`${schedule?.id}-${schedule?.nthIndex}`}>
+                                    <li css={SScheduleText(schedule?.labelColor, schedule?.isAllDay, schedule?.dayDiff)} key={`${schedule?.id}-${schedule?.weekIndex}`}>
                                         {schedule.title}
                                     </li>
                                 </div>
@@ -219,42 +118,11 @@ function CalendarPage() {
             </div>
         );
     };
-
-    // 화면 비율에따라 5행 / 6행 다르게 표시
-    useEffect(() => {
-        const updateDynamicHeight = () => {
-            const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
-            const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-            let calculatedHeight;
-            const viewportRatio = viewportWidth / viewportHeight;
-
-            // 세로비율이 16:10만큼 커지면 행+
-            if (viewportRatio <= 1.9) {
-                calculatedHeight = (viewportHeight - 265) / 6;
-                setRowNumber(6);
-            } else {
-                calculatedHeight = (viewportHeight - 240) / 5;
-                setRowNumber(5);
-            }
-            setCustomHeight(calculatedHeight);
-        };
-
-        // 페이지 로드 및 리사이즈 이벤트에 대한 이벤트 리스너 등록
-        window.addEventListener("resize", updateDynamicHeight);
-        updateDynamicHeight(); // 페이지 로드 시 초기 설정
-
-        // 언마운트 시 이벤트 리스너 정리
-        return () => {
-            window.removeEventListener("resize", updateDynamicHeight);
-        };
-    }, []);
-
     const onPanelChange = date => {
-        // 캘린더의 첫 날짜와 끝 날짜를 업데이트합니다
-        initialArray = [];
-        initialArray.push(date);
-        console.log("onPanelChange", initialArray);
+        setCurrentDate(date);
+        getVisibleDates(date);
     };
+
     return (
         <>
             {addModalOpen ? <AddScheduleModal open={addModalOpen} setOpen={setAddModalOpen} date={selectedDate} /> : <></>}
