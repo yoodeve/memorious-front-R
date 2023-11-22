@@ -23,6 +23,8 @@ function CalendarPage() {
     const [selectedDate, setSelectedDate] = useState(now);
     const { customHeight, rowNumber } = useDynamicHeight(currentDate);
     const [scheduleData, setScheduleData] = useRecoilState(calendarRecoil);
+    const [filteredData, setFilteredData] = useState([]);
+
     const fetchData = async () => {
         try {
             const response = await instance.get(`/api/calendar/schedule/${now.format("YYYY-MM")}`);
@@ -34,6 +36,34 @@ function CalendarPage() {
             console.log(error);
         }
     };
+    // 각각의 셀에 알맞은 일정을 표시하도록 데이터를 가공
+    const getfilteredData = () => {
+        const dateArray = getVisibleDates(currentDate);
+        const returnData = dateArray.map(() => []);
+
+        let index = 1;
+        scheduleData.forEach(schedule => {
+            for (let i = 0; i < dateArray.length; i++) {
+                const scheduleStart = dayjs(schedule.startDate);
+                const scheduleEnd = dayjs(schedule.endDate);
+                if (returnData[i].length === 0) {
+                    returnData[i].push({ date: dateArray[i].format("YYYY-MM-DD") });
+                }
+
+                if (schedule.dayDiff !== 0 && schedule.startDate === dateArray[i].format("YYYY-MM-DD")) {
+                    returnData[i].push({ ...schedule, index, isBetween: false });
+                } else if (schedule.dayDiff !== 0 && dateArray[i].isAfter(scheduleStart) && (dateArray[i].isBefore(scheduleEnd) || dateArray[i].isSame(scheduleEnd, "day"))) {
+                    returnData[i].push({ ...schedule, index, isBetween: true });
+                } else if (schedule.dayDiff === 0 && schedule.startDate === dateArray[i].format("YYYY-MM-DD")) {
+                    returnData[i].push({ ...schedule, index, isBetween: false });
+                }
+            }
+            index += 1;
+        });
+
+        console.log(returnData);
+        setFilteredData(returnData);
+    };
 
     useEffect(() => {
         fetchData();
@@ -42,6 +72,7 @@ function CalendarPage() {
 
     useEffect(() => {
         console.log("정렬 + 전처리 완료 Data", scheduleData);
+        getfilteredData();
     }, [scheduleData]);
 
     // 특정한 '일정'을 클릭하면 추가모달과 동일한 수정모달이 나옴
@@ -58,66 +89,48 @@ function CalendarPage() {
         setSelectedDate(date);
     };
 
-    // 각각의 셀에 알맞은 일정을 표시하도록 데이터를 가공
-    const getfilteredData = date => {
-        const returnData = [];
-        const thisDateString = date.format("YYYY-MM-DD");
-        let i = 0;
-        scheduleData.forEach(schedule => {
-            const scheduleStart = dayjs(schedule.startDate);
-            const scheduleEnd = dayjs(schedule.endDate);
-
-            /* 각각의 데이터셀에서 출력할 데이터만 선별함 */
-            // 1순위 : 당일 일정이 아니고, 시작날짜가 셀의 날짜와 같은것
-            if (schedule.dayDiff !== 0 && schedule.startDate === thisDateString) {
-                i += 1;
-                returnData.push({ ...schedule, isBetween: false, index: i });
-                // 2순위 : 당일 일정x, 시작날짜와 같지 않음 + 종료날짜 이전
-            } else if (schedule.dayDiff !== 0 && date.isAfter(scheduleStart) && (date.isBefore(scheduleEnd) || date.isSame(scheduleEnd, "day"))) {
-                i += 1;
-                returnData.push({ ...schedule, isBetween: true, title: " z", index: i });
-                // 3순위 : 당일 일정이고, 시작날짜가 셀의날짜와 같음
-            } else if (schedule.dayDiff === 0 && schedule.startDate === thisDateString) {
-                i += 1;
-                returnData.push({ ...schedule, isBetween: false, index: i });
-            }
-        });
-
-        return returnData;
-    };
-
     // 각 날짜의 cell 안을 렌더링(일정)
     const cellRender = date => {
-        // console.log(date.format("MM-DD"));
-        // console.log("result", getfilteredData(date));
-        const filteredSchedule = getfilteredData(date);
+        const formattedDate = date.format("YYYY-MM-DD");
+        const matchingDateArray = filteredData.find(entry => entry[0] && entry[0].date === formattedDate);
+        console.log("date", formattedDate);
+        console.log(matchingDateArray);
+        if (matchingDateArray && Array.isArray(matchingDateArray[1])) {
+            console.log("true");
+            return (
+                <div css={SdateCellBox(customHeight)} onClick={() => handleAddSchedule(date)}>
+                    <ul className="schedules">
+                        {matchingDateArray.map(schedule =>
+                            schedule.isBetween ? (
+                                <div css={SEmptyBox}> {schedule.title} </div>
+                            ) : (
+                                <>
+                                    <div onClick={e => handleScheduleClick(e, date)} css={SScheduleBox(schedule?.dayDiff, schedule?.isAllDay, schedule?.labelColor)} key={`${schedule?.id}-${schedule?.weekIndex}`}>
+                                        {/* 종일이 아닐 때의 스타일 추가 */}
+                                        {schedule?.isAllDay && schedule?.dayDiff === 0 ? null : (
+                                            <>
+                                                {!schedule?.isAllDay && schedule?.dayDiff === 0 && <Badge color={schedule?.labelColor} />}
+                                                {!schedule?.isAllDay && schedule?.dayDiff === 0 && <span css={STimeText}>{convertToAmPmFormat(schedule?.startTime)}</span>}
+                                            </>
+                                        )}
+                                        <li css={SScheduleText(schedule?.labelColor, schedule?.isAllDay, schedule?.dayDiff)} key={`${schedule?.id}-${schedule?.weekIndex}`}>
+                                            {schedule.title}
+                                        </li>
+                                    </div>
+                                </>
+                            ),
+                        )}
+                    </ul>
+                </div>
+            );
+        }
         return (
             <div css={SdateCellBox(customHeight)} onClick={() => handleAddSchedule(date)}>
-                <ul className="schedules">
-                    {filteredSchedule.map(schedule =>
-                        schedule.isBetween ? (
-                            <div css={SEmptyBox}> {schedule.title} </div>
-                        ) : (
-                            <>
-                                <div onClick={e => handleScheduleClick(e, date)} css={SScheduleBox(schedule?.dayDiff, schedule?.isAllDay, schedule?.labelColor)} key={`${schedule?.id}-${schedule?.weekIndex}`}>
-                                    {/* 종일이 아닐 때의 스타일 추가 */}
-                                    {schedule?.isAllDay && schedule?.dayDiff === 0 ? null : (
-                                        <>
-                                            {!schedule?.isAllDay && schedule?.dayDiff === 0 && <Badge color={schedule?.labelColor} />}
-                                            {!schedule?.isAllDay && schedule?.dayDiff === 0 && <span css={STimeText}>{convertToAmPmFormat(schedule?.startTime)}</span>}
-                                        </>
-                                    )}
-                                    <li css={SScheduleText(schedule?.labelColor, schedule?.isAllDay, schedule?.dayDiff)} key={`${schedule?.id}-${schedule?.weekIndex}`}>
-                                        {schedule.title}
-                                    </li>
-                                </div>
-                            </>
-                        ),
-                    )}
-                </ul>
+                {/* Render other content if needed */}
             </div>
         );
     };
+
     const onPanelChange = date => {
         setCurrentDate(date);
         getVisibleDates(date);

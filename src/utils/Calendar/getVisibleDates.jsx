@@ -8,11 +8,10 @@ const getVisibleDates = date => {
     const calendarDays = [];
     let currentDay = firstDayOfCal;
     while (currentDay.isBefore(lastDayOfCal) || currentDay.isSame(lastDayOfCal, "day")) {
-        calendarDays.push(currentDay.format("YY-MM-DD"));
+        calendarDays.push(currentDay);
         currentDay = currentDay.add(1, "day");
     }
 
-    console.log(calendarDays);
     return calendarDays;
 };
 
