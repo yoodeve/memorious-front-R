@@ -1,21 +1,21 @@
-/* eslint-disable */
-import React, { useCallback, useEffect, useState } from "react";
+/* eslint-disable no-unused-vars */
+import React, { useEffect, useState } from "react";
 import { Reset } from "styled-reset";
 import { useNavigate, useParams } from "react-router-dom";
+import { useQuery, useQueryClient } from "react-query";
 /** @jsxImportSource @emotion/react */
 import { HiSearch } from "react-icons/hi";
 import { AiOutlinePlus } from "react-icons/ai";
 import { Select } from "antd";
 import * as S from "./style";
 import { instance } from "../../config";
-import { useQuery } from "react-query";
 
 function BoardList() {
     const navigate = useNavigate();
     const { category, page } = useParams();
 
     /* option: antd Select 이용 */
-    //검색 필터링
+    // 검색 필터링
     const options = [
         { value: "전체", label: "전체" },
         { value: "제목", label: "제목" },
@@ -25,27 +25,42 @@ function BoardList() {
     const [selectedOption, setSelectedOption] = useState(options[0]);
 
     const search = {
-        optionName: options[0].label, // == 카테고리명
-        searchValue: "", // == 검색값
+        optionName: options[0].label,
+        searchValue: "",
     };
 
     const [searchParams, setSearchParams] = useState(search);
 
+    const queryClient = useQueryClient();
+
+    const principalState = queryClient.getQueryState("getPrincipal");
+
+    if (!principalState?.data?.data) {
+        alert("로그인 후 이용 바랍니다.");
+        window.location.replace("/auth/oauth2/signin");
+    }
+
     const getBoardList = useQuery(
         ["getBoardList", category, page],
         async () => {
-            const option = {
-                params: searchParams,
-            };
-            return await instance.get(`api/boards/${category}/${page}`, option);
+            try {
+                const option = {
+                    params: searchParams,
+                    headers: {
+                        Authorization: localStorage.getItem("accessToken"),
+                    },
+                };
+                return await instance.get(`api/boards/${category}/${page}`, option);
+            } catch (error) {
+                throw new Error(error);
+            }
         },
         {
             refetchOnWindowFocus: false,
         },
     );
-    // console.log(getBoardList);
 
-    //검색창 내용 바뀔 때
+    // 검색창 내용 바뀔 때
     const handleSearchInputChange = e => {
         setSearchParams({
             ...searchParams,
@@ -53,7 +68,7 @@ function BoardList() {
         });
     };
 
-    //선택 옵션(제목/작성자) 바뀔 때
+    // 선택 옵션(제목/작성자) 바뀔 때
     const handleSearchOptionSelect = value => {
         console.log(value);
         setSelectedOption(value);
@@ -63,11 +78,11 @@ function BoardList() {
         });
     };
 
-    //검색 버튼 클릭
+    // 검색 버튼 클릭
     const handleSearchButtonClick = () => {
         navigate(`/board/${category}/1`);
-        //navigate(라우팅)만 한다 해서 state들은 날라가지 않고 유지됨-> 재렌더링이 필요함 = refetch
-        //주소창에서 엔터 치는 것(상태가 모두 초기화됨)과 렌더링은 다르다
+        // navigate(라우팅)만 한다 해서 state들은 날라가지 않고 유지됨-> 재렌더링이 필요함 = refetch
+        // 주소창에서 엔터 치는 것(상태가 모두 초기화됨)과 렌더링은 다르다
         getBoardList.refetch();
     };
 
@@ -77,8 +92,8 @@ function BoardList() {
     useEffect(() => {
         instance.get("/api/board/categories").then(response => {
             setCategoryList(
-                response.data.map(category => {
-                    return { id: category.boardCategoryId, value: category.boardCategoryName };
+                response.data.map(categoryData => {
+                    return { id: categoryData.boardCategoryId, value: categoryData.boardCategoryName };
                 }),
             );
         });
@@ -87,6 +102,9 @@ function BoardList() {
     // 카테고리 클릭 시 uri 변경
     const handleCategoryClick = () => {};
 
+    console.log(principalState);
+    console.log(getBoardList);
+    console.log(getBoardList?.data?.data);
     return (
         <>
             <Reset />
@@ -102,7 +120,7 @@ function BoardList() {
                         <span>글쓰기</span>
                     </div>
                     <div css={S.searchContainer}>
-                        <Select style={{ width: 150, height: 40 }} options={options} value={selectedOption} onChange={handleSearchOptionSelect}></Select>
+                        <Select style={{ width: 150, height: 40 }} options={options} value={selectedOption} onChange={handleSearchOptionSelect} />
                         <input css={S.searchInput} type="text" onChange={handleSearchInputChange} />
                         <div className="icon-box" onClick={handleSearchButtonClick}>
                             <HiSearch size={20} />
@@ -114,8 +132,12 @@ function BoardList() {
                         전체
                     </div>
                     {/* 카테고리 목록 가져오기 */}
-                    {categoryList.map(category => {
-                        return <div key={category.id} onClick={handleCategoryClick} css={S.category}>{`${category.value}`}</div>;
+                    {categoryList.map(categoryData => {
+                        return (
+                            <div key={categoryData.id} onClick={handleCategoryClick} css={S.category}>
+                                {`${categoryData.value}`}
+                            </div>
+                        );
                     })}
                 </div>
                 <table css={S.table}>
@@ -142,7 +164,7 @@ function BoardList() {
                             })}
                     </tbody>
                 </table>
-                <div css={S.pageNumbers}></div>
+                {/* <div css={S.pageNumbers}></div> */}
             </div>
         </>
     );

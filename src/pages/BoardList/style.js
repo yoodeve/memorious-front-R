@@ -114,8 +114,6 @@ export const table = css`
 `;
 
 export const boardTitle = css`
-    /* max-width: 500px;
-    width: 500px; */
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

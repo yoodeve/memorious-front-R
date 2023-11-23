@@ -25,16 +25,13 @@ function BoardWrite() {
     const queryClient = useQueryClient();
 
     // 로그인 안돼있을 시
-    useEffect(() => {
-        const principal = queryClient.getQueryState("getPrincipal");
+    const principalState = queryClient.getQueryState("getPrincipal");
 
-        if (!principal.data) {
-            alert("로그인 후 이용 바랍니다.");
-            window.location.replace("/auth/oauth2/signin");
-            return;
-        }
-    }, []);
-
+    if (!principalState?.data?.data) {
+        alert("로그인 후 이용 바랍니다.");
+        window.location.replace("/auth/oauth2/signin");
+    }
+    
     // get categoryList -> options
     useEffect(() => {
         instance.get("api/board/categories").then(response => {
@@ -57,32 +54,38 @@ function BoardWrite() {
         }
         setNewCategory(categoryName);
     };
-
+    const remove = value => {
+        setOptions(options.filter(option => option.value !== value));
+    }
     useEffect(() => {
         if (newCategory) {
             const newOption = { value: 0, label: newCategory };
 
             setSelectedOption(newOption);
-            setOptions([...options, newOption]);
+            const tempOptions = [...options];
+            tempOptions[tempOptions.length] = newOption;
+            setOptions(tempOptions);
+            // 처음에 없을 경우
+            // setOptions([...options, newOption]);
 
             // 쌤한테 물어보기: value를 0으로 뒀을 때, 두 개 이상 추가는 안되게
-            //아래 로직은 아닌 거 같음
-            // console.log("options >> ", options);
+            
             // const result = options.filter(option => option.value === 0);
-            // console.log(result.length); //0이 나오면 인덱스 0이 없는 거임
-
-            // if (result.length === 0) {
-            //     setOptions([...options, newOption]);
+            
+            // if (!result.length === 0) {
+            //     // value가 0인 옵션이 있음-> 그 요소를 제거함
+            //     setOptions(options.filter(option => option.value === 0))
             // }
-
-            if (!options.map(option => option.value).includes(newOption.value)) {
-                console.log("여기 옴?");
-                if (!options.map(option => option.label).includes(newOption.label)) {
-                    setOptions([...options, newOption]);
-                }
-            }
+            // setOptions([...options, newOption]);
+            
+            // if (options.map(option => option.value).includes(newOption.value)) {
+            //     setOptions(options.filter(option => option.value === 0))
+            // }
+            // setOptions([...options, newOption]);
         }
     }, [newCategory]);
+    
+    console.log("options >> ", options);
 
     //quill
     const modules = {
