@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { Reset } from "styled-reset";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "react-query";
 /** @jsxImportSource @emotion/react */
 import { HiSearch } from "react-icons/hi";
@@ -21,6 +21,19 @@ function BoardList() {
         { value: "제목", label: "제목" },
         { value: "작성자", label: "작성자" },
     ];
+
+    const [categoryList, setCategoryList] = useState([]);
+
+    // 카테고리 리스트 뽑아오기
+    useEffect(() => {
+        instance.get("/api/board/categories").then(response => {
+            setCategoryList(
+                response.data.map(categoryData => {
+                    return { id: categoryData.boardCategoryId, value: categoryData.boardCategoryName };
+                }),
+            );
+        });
+    }, []);
 
     const [selectedOption, setSelectedOption] = useState(options[0]);
 
@@ -60,6 +73,26 @@ function BoardList() {
         },
     );
 
+    const getBoardCount = useQuery(
+        ["getBoardCount", category, page],
+        async () => {
+            try {
+                const option = {
+                    params: searchParams,
+                    // headers: {
+                    //     Authorization: localStorage.getItem("accessToken"),
+                    // },
+                };
+                return instance.get(`api/boards/${category}/count`, option);
+            } catch (error) {
+                throw new Error(error);
+            }
+        },
+        {
+            refetchOnWindowFocus: false,
+        },
+    );
+
     // 검색창 내용 바뀔 때
     const handleSearchInputChange = e => {
         setSearchParams({
@@ -70,7 +103,6 @@ function BoardList() {
 
     // 선택 옵션(제목/작성자) 바뀔 때
     const handleSearchOptionSelect = value => {
-        console.log(value);
         setSelectedOption(value);
         setSearchParams({
             ...searchParams,
@@ -86,25 +118,19 @@ function BoardList() {
         getBoardList.refetch();
     };
 
-    const [categoryList, setCategoryList] = useState([]);
+    const handleOnKeyPress = e => {
+        if (e.key === "Enter") {
+            handleSearchButtonClick();
+        }
+    };
 
-    // 카테고리 리스트 뽑아오기
-    useEffect(() => {
-        instance.get("/api/board/categories").then(response => {
-            setCategoryList(
-                response.data.map(categoryData => {
-                    return { id: categoryData.boardCategoryId, value: categoryData.boardCategoryName };
-                }),
-            );
-        });
-    }, []);
+    console.log("getBoardList >> ", getBoardList);
+    console.log("getBoardList?.data?.data >> ", getBoardList?.data?.data);
 
-    // 카테고리 클릭 시 uri 변경
-    const handleCategoryClick = () => {};
-
-    console.log(principalState);
-    console.log(getBoardList);
-    console.log(getBoardList?.data?.data);
+    if (getBoardList.isLoading || getBoardCount.isLoading) {
+        return <>Loading...</>; // 로딩 스피너 추가
+    }
+    console.log(getBoardCount);
     return (
         <>
             <Reset />
@@ -121,22 +147,23 @@ function BoardList() {
                     </div>
                     <div css={S.searchContainer}>
                         <Select style={{ width: 150, height: 40 }} options={options} value={selectedOption} onChange={handleSearchOptionSelect} />
-                        <input css={S.searchInput} type="text" onChange={handleSearchInputChange} />
+                        <input css={S.searchInput} type="text" onChange={handleSearchInputChange} onKeyDown={handleOnKeyPress} />
                         <div className="icon-box" onClick={handleSearchButtonClick}>
                             <HiSearch size={20} />
                         </div>
                     </div>
                 </div>
                 <div css={S.categoryBox}>
-                    <div key={0} onClick={handleCategoryClick} css={S.category}>
-                        전체
-                    </div>
+                    <Link key={0} to="/board/all/1" css={S.category}>
+                        <div>전체</div>
+                    </Link>
+
                     {/* 카테고리 목록 가져오기 */}
                     {categoryList.map(categoryData => {
                         return (
-                            <div key={categoryData.id} onClick={handleCategoryClick} css={S.category}>
-                                {`${categoryData.value}`}
-                            </div>
+                            <Link key={categoryData.id} to={`/board/${categoryData.value}/1`} css={S.category}>
+                                <div>{`${categoryData.value}`}</div>
+                            </Link>
                         );
                     })}
                 </div>
