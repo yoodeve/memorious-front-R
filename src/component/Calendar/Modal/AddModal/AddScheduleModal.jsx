@@ -2,7 +2,7 @@
 import dayjs from "dayjs";
 import React, { useEffect, useRef, useState } from "react";
 import { IoIosArrowRoundForward, IoMdArrowForward } from "react-icons/io";
-import { useQueryClient } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import { instance } from "../../../../config";
 import { LabelColorPreset } from "../../../../constants/Calendar/LabelColorPreset";
 import { RepeatCyclePreset } from "../../../../constants/Calendar/RepeatCyclePreset";
@@ -13,9 +13,14 @@ import { SCycleBox, SFlexBox, SPanelBox, SRepeatBox, SRepeatEnd, SRepeatTypeBox,
 
 function AddScheduleModal({ open, setOpen, date }) {
     // 시간 선택시 UX를 위해 기본 시간을 중앙에 있는 값으로 변경
+    const queryClient = useQueryClient();
     const defaultStTime = date.set("hour", 12).set("m", 0).format("HH:mm");
     const defaultEndTime = date.set("hour", 13).set("m", 0).format("HH:mm");
-
+    const mutation = useMutation(data => instance.post("/api/calendar/schedule", data), {
+        onSuccess: () => {
+            queryClient.refetchQueries(["getSchedule"]);
+        },
+    });
     // dayjs to String
     const formattedDate = date.format("YYYY-MM-DD");
 
@@ -50,7 +55,6 @@ function AddScheduleModal({ open, setOpen, date }) {
         { id: 3, name: "주성광" },
     ];
     const [users, setUsers] = useState(mockUsers);
-    const queryClient = useQueryClient();
     const principal = queryClient.getQueryState(["getPrincipal"]);
     const getFamilyList = async () => {
         const response = await instance.get("/api/chart/family", { params: { familyId: principal?.data.data.familyId } });
@@ -74,7 +78,8 @@ function AddScheduleModal({ open, setOpen, date }) {
         console.log("요청 값", scheduleInput);
 
         try {
-            const response = await instance.post("/api/calendar/schedule", { ...scheduleInput, userId: principal?.data.data.userId });
+            mutation.mutate({ ...scheduleInput, userId: principal?.data.data.userId });
+            const response = await instance.post("/api/calendar/schedule");
             console.log(response);
         } catch (error) {
             console.log(error);
