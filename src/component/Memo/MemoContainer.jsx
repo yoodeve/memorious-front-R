@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import dayjs from "dayjs";
 import { useInView } from "react-intersection-observer";
 import { useSetRecoilState } from "recoil";
 import { memoBoard, memoContent, memoWrapper } from "./style";
@@ -39,7 +40,7 @@ function MemoContainer({ memoList }) {
                                     <div className="content-area">
                                         <pre>{e.memoContent}</pre>
                                     </div>
-                                    <p className="date-label">{e.createdDate}</p>
+                                    <p className="date-label">{dayjs(e.createdDate).format("YY-MM-DD HH:mm")}</p>
                                 </div>
                             );
                         })}

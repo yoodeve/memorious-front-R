@@ -9,7 +9,7 @@ import { instance } from "../../config";
 function EditModal({ memoDesc, open, setOpen }) {
     const queryClient = useQueryClient();
     const principal = queryClient.getQueryState(["getPrincipal"]);
-    const { nickname } = principal.data.data;
+    const { userId, nickname } = principal.data.data;
     const [newMemo, setNewMemo] = useState("");
     const onMemoChange = e => {
         setNewMemo(e.target.value);
@@ -21,11 +21,17 @@ function EditModal({ memoDesc, open, setOpen }) {
         },
     });
 
-    const mutationDelete = useMutation(() => instance.delete(`/api/memo/${memoDesc.memoId}`), {
-        onSuccess: () => {
-            queryClient.refetchQueries(["getMemo"]);
+    const mutationDelete = useMutation(
+        d => {
+            console.log(d);
+            return instance.delete(`/api/memo/${memoDesc.memoId}/${userId}`);
         },
-    });
+        {
+            onSuccess: () => {
+                queryClient.refetchQueries(["getMemo"]);
+            },
+        },
+    );
 
     const onClose = () => {
         setNewMemo("");
