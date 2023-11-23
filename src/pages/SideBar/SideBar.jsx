@@ -24,6 +24,8 @@ export const mainContainer = css`
         font-family: "Pretendard-Medium";
         font-size: 14px;
         pre {
+            font-size: 0.9rem;
+            line-height: 1rem;
             white-space: pre-wrap;
         }
     }
