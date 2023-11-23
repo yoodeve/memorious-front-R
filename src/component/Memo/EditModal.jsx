@@ -9,6 +9,7 @@ import { instance } from "../../config";
 function EditModal({ memoDesc, open, setOpen }) {
     const queryClient = useQueryClient();
     const principal = queryClient.getQueryState(["getPrincipal"]);
+    const { nickname } = principal.data.data;
     const [newMemo, setNewMemo] = useState("");
     const onMemoChange = e => {
         setNewMemo(e.target.value);
@@ -56,17 +57,26 @@ function EditModal({ memoDesc, open, setOpen }) {
             centered
             open={open}
             closeIcon
-            footer={[
-                <Button key={1} danger onClick={onMemoDeleteClick}>
-                    삭제
-                </Button>,
-                <Button key={2} type="primary" onClick={onMemoEditClick}>
-                    수정
-                </Button>,
-                <Button key={3} onClick={onClose}>
-                    닫기
-                </Button>,
-            ]}
+            onCancel={onClose}
+            footer={
+                nickname === memoDesc.author
+                    ? [
+                          <Button key={1} danger onClick={onMemoDeleteClick}>
+                              삭제
+                          </Button>,
+                          <Button key={2} type="primary" onClick={onMemoEditClick}>
+                              수정
+                          </Button>,
+                          <Button key={3} onClick={onClose}>
+                              닫기
+                          </Button>,
+                      ]
+                    : [
+                          <Button key={3} onClick={onClose}>
+                              닫기
+                          </Button>,
+                      ]
+            }
         >
             <TextArea
                 onChange={onMemoChange}

@@ -136,6 +136,18 @@ export const chartContainer = css`
     width: fit-content;
     height: 400px;
     overflow-y: scroll;
+    ::-webkit-scrollbar {
+        width: 3px;
+        opacity: 0.2;
+    }
+    ::-webkit-scrollbar-track {
+        background-color: #fffbf5;
+    }
+    ::-webkit-scrollbar-thumb {
+        background-color: #e6a156;
+        height: auto;
+        border-radius: 6px;
+    }
 `;
 export const chartWrapper = css`
     display: flex;
