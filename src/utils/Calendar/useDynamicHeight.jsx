@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import getWeekCount from "./getWeekCount";
 // 화면 비율에따라 5행 / 6행 다르게 표시
 const useDynamicHeight = date => {
-    const [customHeight, setCustomHeight] = useState(133);
+    const defaultHeight = 133;
+    const [customHeight, setCustomHeight] = useState(defaultHeight);
     const [rowNumber, setRowNumber] = useState(5);
 
     const updateDynamicHeight = () => {
@@ -39,6 +40,9 @@ const useDynamicHeight = date => {
     useEffect(() => {
         updateDynamicHeight();
     }, [date]);
+    useEffect(() => {
+        updateDynamicHeight();
+    }, [customHeight]);
     return { customHeight, rowNumber };
 };
 

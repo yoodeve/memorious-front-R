@@ -96,7 +96,7 @@ export const SCalendar = styled(Calendar)`
     tbody tr td .ant-picker-cell-inner.ant-picker-calendar-date .ant-picker-calendar-date-content {
         height: 100%;
         margin-left: 0px;
-        overflow-y: visible;
+        overflow-y: scroll !important;
     }
 
     /* 일자 텍스트 부분 */

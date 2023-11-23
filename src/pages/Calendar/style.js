@@ -15,20 +15,20 @@ export const SdateCellBox = height => css`
 `;
 
 // 일정li를 담는 div
-export const SScheduleBox = (dayDiff, isAllDay, color) => css`
-    display: flex;
-    position: relative;
-    left: 0px;
+export const SScheduleBox = (dayDiff, isAllDay, color, index, visibleSchedulesNum) => css`
+    display: ${index > visibleSchedulesNum ? "none" : "flex"};
+    position: absolute;
+    top: ${25.2 * index}px;
     justify-content: center;
     align-items: center;
-    width: ${dayDiff === 0 || dayDiff === 1 ? 100 : (100 + 0.5) * dayDiff}%;
+    width: ${dayDiff === 0 || dayDiff === 1 ? 96 : (100 + 0.42) * dayDiff - 4}%;
     margin-bottom: 2%;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.6s;
     background-color: ${!isAllDay && dayDiff === 0 ? "transparent" : color};
     color: ${!isAllDay && dayDiff === 0 ? "black" : "white"};
-
+    z-index: 2;
     :hover {
         filter: brightness(95%);
     }
@@ -37,8 +37,8 @@ export const SScheduleBox = (dayDiff, isAllDay, color) => css`
     }
 `;
 export const SEmptyBox = css`
-    /* position: absolute;
-    z-index: 1; */
+    position: absolute;
+    z-index: 1;
     width: 0%;
     margin-bottom: 2%;
     font-size: 1em;
@@ -52,10 +52,10 @@ export const SEmptyBox = css`
 // todo : 마지막 날짜인 경우 오른쪽 margin 필요
 // 일정 li
 export const SScheduleText = (color, isAllDay, dayDiff) => css`
-    width: 100%; //크기를 지정해 셀 내용 보장
+    width: ${dayDiff === 0 || dayDiff === 1 ? 96 : (100 + 0.42) * dayDiff - 4}%;
     padding: 0.5px 3px 0.5px 4px;
-    /* background-color: ${!isAllDay && dayDiff === 0 ? "transparent" : color}; */
-    /* color: ${isAllDay ? "white" : "black"}; */
+    background-color: ${!isAllDay && dayDiff === 0 ? "transparent" : color};
+    color: ${isAllDay ? "white" : "black"};
     /* 아래쪽으로 내려가는것을 막음 */
     overflow: hidden;
     text-overflow: ellipsis;

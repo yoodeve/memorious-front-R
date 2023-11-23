@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 /** @jsxImportSource @emotion/react */
 import dayjs from "dayjs";
 import { useRecoilState } from "recoil";
+import { useQuery } from "react-query";
 import AddScheduleModal from "../../component/Calendar/Modal/AddModal/AddScheduleModal";
 import Badge from "../../component/Calendar/Modal/Badge/Badge";
 import EditScheduleModal from "../../component/Calendar/Modal/EditModal/EditScheduleModal";
@@ -24,11 +25,16 @@ function CalendarPage() {
     const { customHeight, rowNumber } = useDynamicHeight(currentDate);
     const [scheduleData, setScheduleData] = useRecoilState(calendarRecoil);
     const [filteredData, setFilteredData] = useState([]);
+    const [visibleSchedulesNum, setVisibleSchedulesNum] = useState(4);
 
+    useEffect(() => {
+        const num = Math.floor((customHeight - 28) / 19.5);
+        setVisibleSchedulesNum(num);
+        console.log(num);
+    }, [customHeight]);
     const fetchData = async () => {
         try {
             const response = await instance.get(`/api/calendar/schedule/${now.format("YYYY-MM")}`);
-            // console.log("원본 응답데이터", response);
             // 데이터를 정렬하고 전처리(주단위로 나누고, 특정 인덱스를 추가) 함.
             const processedData = response.data.sort(sortCalendarData).map(preprocessData).flat();
             setScheduleData(processedData);
@@ -36,32 +42,55 @@ function CalendarPage() {
             console.log(error);
         }
     };
+    // eslint-disable-next-line no-unused-vars
+    const getSchedule = useQuery(["getSchedule"], fetchData, {
+        retryOnMount: true,
+        refetchOnWindowFocus: false,
+    });
     // 각각의 셀에 알맞은 일정을 표시하도록 데이터를 가공
     const getfilteredData = () => {
         const dateArray = getVisibleDates(currentDate);
         const returnData = dateArray.map(() => []);
 
-        let index = 1;
         scheduleData.forEach(schedule => {
             for (let i = 0; i < dateArray.length; i++) {
                 const scheduleStart = dayjs(schedule.startDate);
                 const scheduleEnd = dayjs(schedule.endDate);
+                let index = 1;
                 if (returnData[i].length === 0) {
                     returnData[i].push({ date: dateArray[i].format("YYYY-MM-DD") });
                 }
-
+                if (i > 0) {
+                    if (returnData[i].length !== 1) {
+                        index = returnData[i].length;
+                    }
+                    returnData[i - 1].forEach(value => {
+                        if (value?.isLast && value?.index < index) {
+                            index -= 1;
+                        }
+                        if (value?.scheduleId === schedule.scheduleId) {
+                            index = value?.index;
+                        }
+                    });
+                    returnData[i].forEach(value => {
+                        if (value?.index === index) {
+                            index += 1;
+                        }
+                    });
+                }
                 if (schedule.dayDiff !== 0 && schedule.startDate === dateArray[i].format("YYYY-MM-DD")) {
-                    returnData[i].push({ ...schedule, index, isBetween: false });
+                    returnData[i].push({ ...schedule, index, isBetween: false, isLast: false });
                 } else if (schedule.dayDiff !== 0 && dateArray[i].isAfter(scheduleStart) && (dateArray[i].isBefore(scheduleEnd) || dateArray[i].isSame(scheduleEnd, "day"))) {
-                    returnData[i].push({ ...schedule, index, isBetween: true });
+                    if (dateArray[i].isSame(scheduleEnd, "day")) {
+                        returnData[i].push({ ...schedule, index, isBetween: true, isLast: true });
+                    } else {
+                        returnData[i].push({ ...schedule, index, isBetween: true, isLast: false });
+                    }
                 } else if (schedule.dayDiff === 0 && schedule.startDate === dateArray[i].format("YYYY-MM-DD")) {
-                    returnData[i].push({ ...schedule, index, isBetween: false });
+                    returnData[i].push({ ...schedule, index, isBetween: false, isLast: false });
                 }
             }
-            index += 1;
         });
-
-        console.log(returnData);
         setFilteredData(returnData);
     };
 
@@ -71,7 +100,6 @@ function CalendarPage() {
     }, []);
 
     useEffect(() => {
-        console.log("정렬 + 전처리 완료 Data", scheduleData);
         getfilteredData();
     }, [scheduleData]);
 
@@ -93,10 +121,7 @@ function CalendarPage() {
     const cellRender = date => {
         const formattedDate = date.format("YYYY-MM-DD");
         const matchingDateArray = filteredData.find(entry => entry[0] && entry[0].date === formattedDate);
-        console.log("date", formattedDate);
-        console.log(matchingDateArray);
-        if (matchingDateArray && Array.isArray(matchingDateArray[1])) {
-            console.log("true");
+        if (matchingDateArray && Array.isArray(matchingDateArray)) {
             return (
                 <div css={SdateCellBox(customHeight)} onClick={() => handleAddSchedule(date)}>
                     <ul className="schedules">
@@ -105,7 +130,7 @@ function CalendarPage() {
                                 <div css={SEmptyBox}> {schedule.title} </div>
                             ) : (
                                 <>
-                                    <div onClick={e => handleScheduleClick(e, date)} css={SScheduleBox(schedule?.dayDiff, schedule?.isAllDay, schedule?.labelColor)} key={`${schedule?.id}-${schedule?.weekIndex}`}>
+                                    <div onClick={e => handleScheduleClick(e, date)} css={SScheduleBox(schedule?.dayDiff, schedule?.isAllDay, schedule?.labelColor, schedule?.index, visibleSchedulesNum)} key={`${schedule?.id}-${schedule?.weekIndex}`}>
                                         {/* 종일이 아닐 때의 스타일 추가 */}
                                         {schedule?.isAllDay && schedule?.dayDiff === 0 ? null : (
                                             <>
@@ -116,6 +141,7 @@ function CalendarPage() {
                                         <li css={SScheduleText(schedule?.labelColor, schedule?.isAllDay, schedule?.dayDiff)} key={`${schedule?.id}-${schedule?.weekIndex}`}>
                                             {schedule.title}
                                         </li>
+                                        <div css={SScheduleText}>{schedule?.index > visibleSchedulesNum ? "" : null}</div>
                                     </div>
                                 </>
                             ),
