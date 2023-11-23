@@ -49,7 +49,7 @@ function SidebarContainer() {
                 <div css={groupBox}>
                     {sidebarMenuList.map(e => (
                         <div key={e.title} className="group-box">
-                            <div className={pathname.includes(e.route) ? "filled" : ""} onClick={navigateToPage(e.route)} css={sideBarLabel}>
+                            <div className={pathname.includes(e.route) ? "filled" : ""} onClick={e.route && navigateToPage(e.route)} css={sideBarLabel(e.route)}>
                                 {e.title}
                             </div>
                         </div>
