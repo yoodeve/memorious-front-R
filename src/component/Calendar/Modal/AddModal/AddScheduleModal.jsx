@@ -2,6 +2,7 @@
 import dayjs from "dayjs";
 import React, { useEffect, useRef, useState } from "react";
 import { IoIosArrowRoundForward, IoMdArrowForward } from "react-icons/io";
+import { useMutation, useQueryClient } from "react-query";
 import { instance } from "../../../../config";
 import { LabelColorPreset } from "../../../../constants/Calendar/LabelColorPreset";
 import { RepeatCyclePreset } from "../../../../constants/Calendar/RepeatCyclePreset";
@@ -12,9 +13,14 @@ import { SCycleBox, SFlexBox, SPanelBox, SRepeatBox, SRepeatEnd, SRepeatTypeBox,
 
 function AddScheduleModal({ open, setOpen, date }) {
     // 시간 선택시 UX를 위해 기본 시간을 중앙에 있는 값으로 변경
+    const queryClient = useQueryClient();
     const defaultStTime = date.set("hour", 12).set("m", 0).format("HH:mm");
     const defaultEndTime = date.set("hour", 13).set("m", 0).format("HH:mm");
-
+    const mutation = useMutation(data => instance.post("/api/calendar/schedule", data), {
+        onSuccess: () => {
+            queryClient.refetchQueries(["getSchedule"]);
+        },
+    });
     // dayjs to String
     const formattedDate = date.format("YYYY-MM-DD");
 
@@ -33,6 +39,7 @@ function AddScheduleModal({ open, setOpen, date }) {
         repeatEndDate: "0000:00:00",
         repeatCount: "",
         description: "",
+        userId: "",
     };
 
     const [selectedRepeatLabel, setSelectedRepeatLabel] = useState(RepeatCyclePreset[0].label);
@@ -48,7 +55,15 @@ function AddScheduleModal({ open, setOpen, date }) {
         { id: 3, name: "주성광" },
     ];
     const [users, setUsers] = useState(mockUsers);
+    const principal = queryClient.getQueryState(["getPrincipal"]);
+    const getFamilyList = async () => {
+        const response = await instance.get("/api/chart/family", { params: { familyId: principal?.data.data.familyId } });
+        setUsers(response.data);
+    };
 
+    useEffect(() => {
+        getFamilyList();
+    }, []);
     // 제목입력에 focus 줌
     const inputRef = useRef(null);
     useEffect(() => {
@@ -59,13 +74,12 @@ function AddScheduleModal({ open, setOpen, date }) {
 
     // 확인버튼 클릭시
     const handleOk = async () => {
-        // setOpen(false);
-        // todo : 수정 필요
-        // repeatEndDate: prevScheduleInput.repeatType === "date" ? prevScheduleInput.repeatEndDate : "0000-00-00",
+        setOpen(false);
+        console.log("요청 값", scheduleInput);
 
-        console.log(scheduleInput);
         try {
-            const response = await instance.post("/api/calendar/schedule", scheduleInput);
+            mutation.mutate({ ...scheduleInput, userId: principal?.data.data.userId });
+            const response = await instance.post("/api/calendar/schedule");
             console.log(response);
         } catch (error) {
             console.log(error);
@@ -152,7 +166,7 @@ function AddScheduleModal({ open, setOpen, date }) {
         const timeDiff = endTime.diff(stTime, "minute");
 
         // 같은 날짜인데 종료시간이 시작시간보다 빠를 경우 시작시간을 종료시간의 한시간 전으로 바꿈
-        if (scheduleInput.startDate === scheduleInput.endDate && timeDiff < 60) {
+        if (scheduleInput.startDate === scheduleInput.endDate && timeDiff < 9) {
             setScheduleInput({
                 ...scheduleInput,
                 startTime: time.subtract(1, "hour").format("HH:mm"),
@@ -170,7 +184,6 @@ function AddScheduleModal({ open, setOpen, date }) {
     // 체크한 참석자들을 Input에 저장
     const handleChange = attendees => {
         // attendees : key(userId) / name(username)
-        console.log(attendees);
         const keys = attendees.map(attendee => attendee.key);
         const options = attendees.map(attendee => ({
             value: attendee.key,
@@ -182,9 +195,6 @@ function AddScheduleModal({ open, setOpen, date }) {
             ...scheduleInput,
             attendee: keys,
         });
-
-        console.log(attendeeValue);
-        console.log(scheduleInput.attendee);
     };
 
     // 서버로부터 받아올 사용자 데이터( [ { }, {} ] )에서 검색
@@ -218,7 +228,7 @@ function AddScheduleModal({ open, setOpen, date }) {
         setSelectedRepeatLabel(menu.label);
         setScheduleInput({
             ...scheduleInput,
-            repeatCycle: menu.label,
+            repeatCycle: menu.value,
         });
     };
 
