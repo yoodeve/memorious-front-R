@@ -40,7 +40,6 @@ const contentsContainer = css`
 `;
 
 function SideBar() {
-    const navigate = useNavigate();
     const getPrincipal = useQuery(
         ["getPrincipal"],
         async () => {
@@ -50,8 +49,11 @@ function SideBar() {
                         Authorization: localStorage.getItem("accessToken"),
                     },
                 };
+
                 return await instance.get("/api/account/principal", option);
             } catch (err) {
+                alert("로그인 후 이용바랍니다.");
+                window.location.replace("/auth/oauth2/signin");
                 throw new Error(err);
             }
         },
@@ -62,13 +64,14 @@ function SideBar() {
         },
     );
 
-    /* 자동 로그인 라우팅 */
-    useEffect(() => {
-        if (localStorage.getItem("accessToken") == null) {
-            navigate("/auth/oauth2/signin", { replace: false });
-        }
-    }, []);
-
+    // /* 자동 로그인 라우팅 */
+    // useEffect(() => {
+    //     if (!localStorage.getItem("accessToken")) {
+    //         alert("로그인");
+    //         window.location.replace("/auth/oauth2/signin", { replace: false });
+    //     }
+    // }, []);
+    console.log(getPrincipal);
     return (
         <>
             <Reset />
