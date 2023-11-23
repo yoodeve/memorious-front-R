@@ -3,7 +3,7 @@ import { useRecoilValue } from "recoil";
 import dayjs from "dayjs";
 import FbsChart from "./FbsChart";
 import { instance } from "../../config";
-import { rcUserOnChartArray } from "../../store/atoms/chartAtoms";
+import { rcChartStartDate, rcUserOnChartArray } from "../../store/atoms/chartAtoms";
 import StepChart from "./StepChart";
 import PulseChart from "./PulseChart";
 import { chartContainer, chartWrapper } from "./style";
@@ -11,13 +11,14 @@ import { chartContainer, chartWrapper } from "./style";
 
 function ChartGraph() {
     const userList = useRecoilValue(rcUserOnChartArray);
+    const startDate = useRecoilValue(rcChartStartDate);
     const fbsRef = useRef();
     const [fbsData, setFbsData] = useState([]);
     const [stepData, setStepData] = useState([]);
     const [pulseData, setPulseData] = useState([]);
 
     const getChartData = async () => {
-        const response = await instance.post("/api/chart/graph", { userList: [...userList.filter(user => user.checked).map(e => e.userId)], startDate: dayjs("2023-11-09") });
+        const response = await instance.post("/api/chart/graph", { userList: [...userList.filter(user => user.checked).map(e => e.userId)], startDate: dayjs().subtract(startDate, "month") });
         const fbs = userList.map(user => {
             const userData = response.data[user.nickname];
             if (userData) {
@@ -49,7 +50,7 @@ function ChartGraph() {
         if (userList) {
             getChartData();
         }
-    }, [userList]);
+    }, [userList, startDate]);
 
     return (
         <div css={chartContainer}>

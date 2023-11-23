@@ -10,7 +10,7 @@ export const chartProfileDummyDataObj = [
     { profileImgSrc: "", profileName: "꽁치" },
 ];
 
-export const chartPeriodArray = ["1달", "3달", "6달"];
+export const chartPeriodArray = ["1", "3", "6"];
 
 export const tableColumns = [
     {
