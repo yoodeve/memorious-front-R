@@ -59,12 +59,12 @@ export const sideBarLabel = isRoute => css`
     height: 40px;
     padding: 10px 0;
     border: 1px solid ${isRoute ? "#6f6257" : "#aaa"};
-    margin: 10px;
+    margin: 5px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 8px;
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     font-family: "Pretendard-Bold";
     color: ${isRoute ? "#6f6257" : "#aaa"};
     cursor: pointer;
