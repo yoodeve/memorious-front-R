@@ -10,7 +10,7 @@ export const chartProfileDummyDataObj = [
     { profileImgSrc: "", profileName: "꽁치" },
 ];
 
-export const chartPeriodArray = ["1달", "3달", "6달"];
+export const chartPeriodArray = ["1", "3", "6"];
 
 export const tableColumns = [
     {
@@ -23,7 +23,7 @@ export const tableColumns = [
             if (i === 0) {
                 return <ChartTableFirstRowInput type="date" />;
             }
-            return dayjs(t).format("YYYY-MM-DD");
+            return t ? dayjs(t).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD");
         },
     },
     {
@@ -46,7 +46,7 @@ export const tableColumns = [
             if (i === 0) {
                 return <ChartTableFirstRowInput type="fbs" />;
             }
-            return t.toLocaleString("ko-KR");
+            return t ? t.toLocaleString("ko-KR") : <></>;
         },
     },
     {
@@ -59,7 +59,7 @@ export const tableColumns = [
             if (i === 0) {
                 return <ChartTableFirstRowInput type="step" />;
             }
-            return t.toLocaleString("ko-KR");
+            return t ? t.toLocaleString("ko-KR") : <></>;
         },
     },
     {
@@ -72,7 +72,16 @@ export const tableColumns = [
             if (i === 0) {
                 return <ChartTableFirstRowInput type="pulse" />;
             }
-            return t.toLocaleString("ko-KR");
+            return t ? t.toLocaleString("ko-KR") : "";
         },
+    },
+];
+export const dummyTableData = [
+    {
+        date: "",
+        buttons: "",
+        fbs: "",
+        step: "",
+        pulse: "",
     },
 ];
