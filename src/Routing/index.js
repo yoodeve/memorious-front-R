@@ -28,9 +28,9 @@ function Routing() {
                         <Route path="chart/*" element={<ChartRoute />} />
                         <Route path="map" element={<>맵</>} />
                         <Route path="setting/*" element={<SettingRoute />} />
+                        <Route path="/create/family" element={<CreateFamily />} />
                     </Route>
                     <Route path="/auth/oauth2/*" element={<Oauth2Route />} />
-                    <Route path="/create/family" element={<CreateFamily />} />
                     <Route path="/invitation/auth/*" element={<Invitation />} />
                     <Route path="*" element={<NotFound />} />
                 </Routes>

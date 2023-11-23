@@ -8,7 +8,7 @@ function BoardRoute() {
     return (
         <Routes>
             <Route index element={<Navigate replace to="all/1" />} />
-            <Route path="all/1" element={<BoardList />} />
+            {/* <Route path="all/1" element={<BoardList />} /> */}
             <Route path=":category/:page" element={<BoardList />} />
             <Route path=":boardId" element={<BoardDetail />} />
             {/* <Route path="/board/edit/:boardId" element={<BoardEdit />} /> */}
