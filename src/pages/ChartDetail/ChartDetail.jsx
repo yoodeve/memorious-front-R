@@ -4,7 +4,7 @@ import { Table } from "antd";
 import Chart from "../../component/Chart/Chart";
 import ChartTableContainer from "../../component/ChartDetail/ChartTableContainer";
 import { instance } from "../../config";
-import { tableColumns } from "../../component/Chart/chartDummyData";
+import { dummyTableData, tableColumns } from "../../component/Chart/chartDummyData";
 
 function ChartDetail() {
     const queryClient = useQueryClient();
@@ -30,7 +30,7 @@ function ChartDetail() {
             <ChartTableContainer>
                 <h1>내건강데이터 입력하기</h1>
                 <div className="table-wrapper">
-                    <Table className="s-table" headerColor="#6F6257" dataSource={tableData} columns={tableColumns} style={tableCss} position="bottomCenter" />
+                    <Table className="s-table" headerColor="#6F6257" dataSource={tableData.length > 0 ? tableData : dummyTableData} columns={tableColumns} style={tableCss} position="bottomCenter" />
                 </div>
             </ChartTableContainer>
         </Chart>

@@ -3,20 +3,21 @@ import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 import dayjs from "dayjs";
 import { useRecoilValue } from "recoil";
-import { rcUserOnChartArray } from "../../store/atoms/chartAtoms";
+import { rcChartStartDate, rcUserOnChartArray } from "../../store/atoms/chartAtoms";
 
 function FbsChart({ chartData }) {
     const chartRef = useRef();
     const userList = useRecoilValue(rcUserOnChartArray);
+    const start = useRecoilValue(rcChartStartDate);
 
     useEffect(() => {
         if (userList.length > 0 && chartData.length > 0) {
             const formatTime = d3.timeFormat("%m/%d");
-            const w = 550;
+            const w = 650;
             const h = 300;
 
-            const startDate = dayjs().subtract(1, "week");
-            const endDate = dayjs(startDate).add(chartData[0].length - 1, "day");
+            const startDate = dayjs().subtract(start, "month");
+            const endDate = dayjs();
 
             const maxYValue = Math.max(...chartData.flat());
 
@@ -61,8 +62,8 @@ function FbsChart({ chartData }) {
                     .data([lineData])
                     .attr("d", generateLine)
                     .attr("fill", "none")
-                    .attr("stroke-width", 3)
-                    .attr("stroke", `#${index % 3 === 0 ? "666666" : index % 3 === 1 ? "e6a156" : "952323"}`)
+                    .attr("stroke-width", 6)
+                    .attr("stroke", `#${index % 4 === 0 ? "666666" : index % 4 === 1 ? "445D48" : index % 4 === 2 ? "e6a156" : "952323"}`)
                     .attr("stroke-dasharray", function () {
                         return this.getTotalLength();
                     })
