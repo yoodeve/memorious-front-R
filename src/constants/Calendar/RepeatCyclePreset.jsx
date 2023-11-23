@@ -1,6 +1,6 @@
 export const RepeatCyclePreset = [
     {
-        value: "0",
+        value: "",
         label: "반복 안함",
     },
     {
@@ -20,7 +20,7 @@ export const RepeatCyclePreset = [
         label: "매년",
     },
     {
-        value: "",
+        value: "3",
         label: "직접 입력",
     },
 ];
