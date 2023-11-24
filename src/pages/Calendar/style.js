@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { css } from "@emotion/react";
 
 export const SMainContainer = css`
@@ -5,6 +6,7 @@ export const SMainContainer = css`
     height: 100%;
     display: grid;
     place-items: center;
+    overflow: hidden;
 `;
 
 //  onClick을 사용하기 위한 div(antd onSelect 버블링 발생)
@@ -19,9 +21,10 @@ export const SScheduleBox = (dayDiff, isAllDay, color, index, visibleSchedulesNu
     display: ${index > visibleSchedulesNum ? "none" : "flex"};
     position: absolute;
     top: ${25.2 * index}px;
+    left: 2px;
     justify-content: center;
     align-items: center;
-    width: ${dayDiff === 0 || dayDiff === 1 ? 96 : (100 + 0.42) * dayDiff - 4}%;
+    width: ${dayDiff === 0 || dayDiff === 1 ? 92 : (100 + 0.435) * dayDiff - 8}%;
     margin-bottom: 2%;
     border-radius: 5px;
     cursor: pointer;
@@ -54,8 +57,6 @@ export const SEmptyBox = css`
 export const SScheduleText = (color, isAllDay, dayDiff) => css`
     width: ${dayDiff === 0 || dayDiff === 1 ? 96 : (100 + 0.42) * dayDiff - 4}%;
     padding: 0.5px 3px 0.5px 4px;
-    background-color: ${!isAllDay && dayDiff === 0 ? "transparent" : color};
-    color: ${isAllDay ? "white" : "black"};
     /* 아래쪽으로 내려가는것을 막음 */
     overflow: hidden;
     text-overflow: ellipsis;

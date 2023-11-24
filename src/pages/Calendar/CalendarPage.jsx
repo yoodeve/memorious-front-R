@@ -28,7 +28,7 @@ function CalendarPage() {
     const [visibleSchedulesNum, setVisibleSchedulesNum] = useState(4);
 
     useEffect(() => {
-        const num = Math.floor((customHeight - 28) / 19.5);
+        const num = Math.floor((customHeight - 28) / 23.5);
         setVisibleSchedulesNum(num);
     }, [customHeight]);
 
@@ -60,7 +60,7 @@ function CalendarPage() {
     useEffect(() => {
         console.log("useEffect - currentDate");
         if (currentDate) {
-            getVisibleDates(now);
+            getVisibleDates(currentDate);
             fetchData();
         }
     }, [currentDate]);
@@ -72,6 +72,7 @@ function CalendarPage() {
         // 스케쥴 데이터를 돌면서
         scheduleData.forEach(schedule => {
             // 캘린더에 보여지는 날짜 수(42)만큼 반복
+            let uqKey = 1;
             for (let i = 0; i < dateArray.length; i++) {
                 const scheduleStart = dayjs(schedule.startDate);
                 const scheduleEnd = dayjs(schedule.endDate);
@@ -103,19 +104,20 @@ function CalendarPage() {
 
                 // 1: (여러날 일정 먼저) 시작날짜가 같으면 보여준다
                 if (schedule.dayDiff !== 0 && schedule.startDate === dateArray[i].format("YYYY-MM-DD")) {
-                    returnData[i].push({ ...schedule, index, isBetween });
+                    returnData[i].push({ ...schedule, index, isBetween, uqKey });
                     // 2: 시작날짜를 넘었고, 종료날짜 전이면 보여지지 않아야하므로, isBetween = true
                 } else if (schedule.dayDiff !== 0 && dateArray[i].isAfter(scheduleStart) && (dateArray[i].isBefore(scheduleEnd) || dateArray[i].isSame(scheduleEnd, "day"))) {
                     isBetween = true;
                     if (dateArray[i].isSame(scheduleEnd, "day")) {
-                        returnData[i].push({ ...schedule, index, isBetween });
+                        returnData[i].push({ ...schedule, index, isBetween, uqKey });
                     } else {
-                        returnData[i].push({ ...schedule, index, isBetween });
+                        returnData[i].push({ ...schedule, index, isBetween, uqKey });
                     }
                     // 3: 하루짜리 일정을 표시해준다.
                 } else if (schedule.dayDiff === 0 && schedule.startDate === dateArray[i].format("YYYY-MM-DD")) {
-                    returnData[i].push({ ...schedule, index, isBetween: false, isLast: false });
+                    returnData[i].push({ ...schedule, index, isBetween, uqKey });
                 }
+                uqKey += 1;
             }
         });
         setFilteredData(returnData);
@@ -143,16 +145,20 @@ function CalendarPage() {
     const cellRender = date => {
         const formattedDate = date.format("YYYY-MM-DD");
         const matchingDateArray = filteredData.find(entry => entry[0] && entry[0].date === formattedDate);
+        console.log("date", formattedDate);
+        console.log("date", matchingDateArray);
         if (matchingDateArray && Array.isArray(matchingDateArray)) {
             return (
-                <div css={SdateCellBox(customHeight)} onClick={() => handleAddSchedule(date)}>
+                <div css={SdateCellBox(customHeight)} onClick={() => handleAddSchedule(date)} key={formattedDate}>
                     <ul className="schedules">
                         {matchingDateArray.map(schedule =>
-                            schedule.isBetween ? (
-                                <div css={SEmptyBox}> {schedule.title} </div>
+                            schedule?.isBetween ? (
+                                <div css={SEmptyBox} key={`${schedule?.scheduleId}-${schedule?.weekIndex}-${schedule?.uqKey}-1`}>
+                                    {schedule?.title}
+                                </div>
                             ) : (
                                 <>
-                                    <div onClick={e => handleScheduleClick(e, date)} css={SScheduleBox(schedule?.dayDiff, schedule?.isAllDay, schedule?.labelColor, schedule?.index, visibleSchedulesNum)} key={`${schedule?.id}-${schedule?.weekIndex}`}>
+                                    <div onClick={e => handleScheduleClick(e, date)} css={SScheduleBox(schedule?.dayDiff, schedule?.isAllDay, schedule?.labelColor, schedule?.index, visibleSchedulesNum)} key={`${schedule?.scheduleId}-${schedule?.weekIndex}-${schedule?.uqKey}-2`}>
                                         {/* 종일이 아닐 때의 스타일 추가 */}
                                         {schedule?.isAllDay && schedule?.dayDiff === 0 ? null : (
                                             <>
@@ -160,10 +166,12 @@ function CalendarPage() {
                                                 {!schedule?.isAllDay && schedule?.dayDiff === 0 && <span css={STimeText}>{convertToAmPmFormat(schedule?.startTime)}</span>}
                                             </>
                                         )}
-                                        <li css={SScheduleText(schedule?.labelColor, schedule?.isAllDay, schedule?.dayDiff)} key={`${schedule?.id}-${schedule?.weekIndex}`}>
-                                            {schedule.title}
+                                        <li css={SScheduleText(schedule?.labelColor, schedule?.isAllDay, schedule?.dayDiff)} key={`${schedule?.scheduleId}-${schedule?.weekIndex}-${schedule?.uqKey}-3`}>
+                                            {schedule?.title}
                                         </li>
-                                        <div css={SScheduleText}>{schedule?.index > visibleSchedulesNum ? "" : null}</div>
+                                        <div css={SScheduleText} key={`${schedule?.scheduleId}-${schedule?.weekIndex}-${schedule?.uqKey}-4`}>
+                                            {schedule?.index > visibleSchedulesNum ? "" : null}
+                                        </div>
                                     </div>
                                 </>
                             ),
@@ -174,7 +182,7 @@ function CalendarPage() {
         }
         return (
             <div css={SdateCellBox(customHeight)} onClick={() => handleAddSchedule(date)}>
-                {/* Render other content if needed */}
+                {/* 만약 데이터가 없어도 셀 크기를 유지함 */}
             </div>
         );
     };
