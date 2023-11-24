@@ -3,13 +3,6 @@ import ChartTableFirstRowInput from "../ChartDetail/ChartFirstRowInput";
 import ChartDetailAddBtn from "../ChartDetail/ChartDetailAddBtn";
 import ChartDetailEditBtn from "../ChartDetail/ChartDetailEditBtn";
 
-export const chartProfileDummyDataObj = [
-    { profileImgSrc: "", profileName: "유정" },
-    { profileImgSrc: "", profileName: "정어리" },
-    { profileImgSrc: "", profileName: "고등어" },
-    { profileImgSrc: "", profileName: "꽁치" },
-];
-
 export const chartPeriodArray = ["1", "3", "6"];
 
 export const tableColumns = [
