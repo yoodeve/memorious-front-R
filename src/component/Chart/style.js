@@ -77,10 +77,12 @@ export const profileWrapper = css`
     justify-content: space-around;
     align-items: center;
     .profile-img-wrapper {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background-color: #fff;
+        img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #fff;
+        }
     }
     button {
     }

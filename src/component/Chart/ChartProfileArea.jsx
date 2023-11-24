@@ -23,7 +23,6 @@ function ChartProfileArea({ index, user }) {
 
     useLayoutEffect(() => {
         chartLabel?.forEach(e => {
-            console.log(e);
             setChecked(e.checked);
         });
     }, [chartLabel]);
