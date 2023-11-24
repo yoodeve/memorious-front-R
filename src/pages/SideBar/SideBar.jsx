@@ -69,7 +69,6 @@ function SideBar() {
     //         window.location.replace("/auth/oauth2/signin", { replace: false });
     //     }
     // }, []);
-    console.log(getPrincipal);
     return (
         <>
             <Reset />

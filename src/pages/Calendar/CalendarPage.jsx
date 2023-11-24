@@ -30,11 +30,12 @@ function CalendarPage() {
     useEffect(() => {
         const num = Math.floor((customHeight - 28) / 19.5);
         setVisibleSchedulesNum(num);
-        console.log(num);
     }, [customHeight]);
+
     const fetchData = async () => {
         try {
-            const response = await instance.get(`/api/calendar/schedule/${now.format("YYYY-MM")}`);
+            console.log("fetch!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            const response = await instance.get(`/api/calendar/schedule/${currentDate.format("YYYY-MM")}`);
             // 데이터를 정렬하고 전처리(주단위로 나누고, 특정 인덱스를 추가) 함.
             const processedData = response.data.sort(sortCalendarData).map(preprocessData).flat();
             setScheduleData(processedData);
@@ -42,50 +43,76 @@ function CalendarPage() {
             console.log(error);
         }
     };
+
     // eslint-disable-next-line no-unused-vars
     const getSchedule = useQuery(["getSchedule"], fetchData, {
         retryOnMount: true,
         refetchOnWindowFocus: false,
     });
+
+    // 월 바뀔때 date를 바꿔줌
+    const onMonthChange = date => {
+        setCurrentDate(date);
+        getVisibleDates(date);
+        console.log("달 바꼈어유");
+    };
+
+    useEffect(() => {
+        console.log("useEffect - currentDate");
+        if (currentDate) {
+            getVisibleDates(now);
+            fetchData();
+        }
+    }, [currentDate]);
+
     // 각각의 셀에 알맞은 일정을 표시하도록 데이터를 가공
     const getfilteredData = () => {
         const dateArray = getVisibleDates(currentDate);
         const returnData = dateArray.map(() => []);
-
+        // 스케쥴 데이터를 돌면서
         scheduleData.forEach(schedule => {
+            // 캘린더에 보여지는 날짜 수(42)만큼 반복
             for (let i = 0; i < dateArray.length; i++) {
                 const scheduleStart = dayjs(schedule.startDate);
                 const scheduleEnd = dayjs(schedule.endDate);
                 let index = 1;
+                let isBetween = false;
+                // 배열 맨 처음에는 날짜를 달아줌
                 if (returnData[i].length === 0) {
                     returnData[i].push({ date: dateArray[i].format("YYYY-MM-DD") });
                 }
+
+                // i가 0이면 날짜를 참고하게되므로, 제외
                 if (i > 0) {
-                    if (returnData[i].length !== 1) {
-                        index = returnData[i].length;
-                    }
-                    returnData[i - 1].forEach(value => {
-                        if (value?.isLast && value?.index < index) {
-                            index -= 1;
+                    // 지 배열을 돌아보면서 빈 인덱스를 찾는다.
+                    for (let j = 0; j < returnData[i].length; j++) {
+                        if (returnData[i].every(value => value.index !== j + 1)) {
+                            // value.index가 i + 1이 아닌 경우 (비어 있는 경우)
+                            index = j + 1;
+                            break;
                         }
-                        if (value?.scheduleId === schedule.scheduleId) {
+                    }
+                    // 전 날 배열을 참조
+                    returnData[i - 1].forEach(value => {
+                        // 같은 일정이고, 같은 주에 속하면 이전날과 같은 인덱스를 유지한다.
+                        if (value?.scheduleId === schedule.scheduleId && value?.weekIndex === schedule.weekIndex) {
                             index = value?.index;
                         }
                     });
-                    returnData[i].forEach(value => {
-                        if (value?.index === index) {
-                            index += 1;
-                        }
-                    });
                 }
+
+                // 1: (여러날 일정 먼저) 시작날짜가 같으면 보여준다
                 if (schedule.dayDiff !== 0 && schedule.startDate === dateArray[i].format("YYYY-MM-DD")) {
-                    returnData[i].push({ ...schedule, index, isBetween: false, isLast: false });
+                    returnData[i].push({ ...schedule, index, isBetween });
+                    // 2: 시작날짜를 넘었고, 종료날짜 전이면 보여지지 않아야하므로, isBetween = true
                 } else if (schedule.dayDiff !== 0 && dateArray[i].isAfter(scheduleStart) && (dateArray[i].isBefore(scheduleEnd) || dateArray[i].isSame(scheduleEnd, "day"))) {
+                    isBetween = true;
                     if (dateArray[i].isSame(scheduleEnd, "day")) {
-                        returnData[i].push({ ...schedule, index, isBetween: true, isLast: true });
+                        returnData[i].push({ ...schedule, index, isBetween });
                     } else {
-                        returnData[i].push({ ...schedule, index, isBetween: true, isLast: false });
+                        returnData[i].push({ ...schedule, index, isBetween });
                     }
+                    // 3: 하루짜리 일정을 표시해준다.
                 } else if (schedule.dayDiff === 0 && schedule.startDate === dateArray[i].format("YYYY-MM-DD")) {
                     returnData[i].push({ ...schedule, index, isBetween: false, isLast: false });
                 }
@@ -93,11 +120,6 @@ function CalendarPage() {
         });
         setFilteredData(returnData);
     };
-
-    useEffect(() => {
-        fetchData();
-        getVisibleDates(now);
-    }, []);
 
     useEffect(() => {
         getfilteredData();
@@ -157,17 +179,12 @@ function CalendarPage() {
         );
     };
 
-    const onPanelChange = date => {
-        setCurrentDate(date);
-        getVisibleDates(date);
-    };
-
     return (
         <>
             {addModalOpen ? <AddScheduleModal open={addModalOpen} setOpen={setAddModalOpen} date={selectedDate} /> : <></>}
             <EditScheduleModal open={editModalOpen} setOpen={setEditModalOpen} />
             <div css={SMainContainer}>
-                <StyledCalendar cellRender={cellRender} rowNumber={rowNumber} onPanelChange={onPanelChange} />
+                <StyledCalendar cellRender={cellRender} rowNumber={rowNumber} onPanelChange={onMonthChange} />
             </div>
         </>
     );
