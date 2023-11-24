@@ -33,7 +33,8 @@ function MemoMain() {
     // eslint-disable-next-line no-unused-vars
     const getMemo = useQuery(["getMemo", pageNum], fetchMemo, {
         retryOnMount: true,
-        refetchOnWindowFocus: false,
+        refetchOnWindowFocus: true,
+        refetchOnReconnect: true,
     });
 
     return (
