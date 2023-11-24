@@ -77,6 +77,7 @@ export const category = css`
     border-radius: 20px;
     font-size: 15px;
     background-color: #fffbf5;
+    text-decoration: none;
     cursor: pointer;
 `;
 

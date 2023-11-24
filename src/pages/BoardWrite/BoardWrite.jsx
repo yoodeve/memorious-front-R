@@ -85,7 +85,6 @@ function BoardWrite() {
         }
     }, [newCategory]);
     
-    console.log("options >> ", options);
 
     //quill
     const modules = {

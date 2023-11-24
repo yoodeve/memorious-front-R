@@ -5,6 +5,7 @@ export const layout = css`
     border-radius: 6px;
     padding: 20px;
     width: 90%;
+    height: 80vh;
     background-color: #f5efe6;
     & * {
         font-size: 14px;
@@ -13,7 +14,7 @@ export const layout = css`
 
     .quill-container {
         width: 100%;
-        height: 600px;
+        height: 500px;
         border-radius: 6px;
     }
 `;
@@ -71,7 +72,7 @@ export const writeBoardButton = css`
     padding: 10px 15px;
     outline: none;
     font-size: 16px;
-    color: #fffbf5;
     background-color: #6f6257;
+    color: #fffbf5;
     cursor: pointer;
 `;
