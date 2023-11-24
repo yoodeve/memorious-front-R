@@ -21,7 +21,6 @@ const useDynamicHeight = date => {
         }
         // 높이에 따라 height를 조절()
         if (getWeekCount(date) === 6) {
-            console.log(getWeekCount);
             calculatedHeight = (viewportHeight - 268) / 6;
             setRowNumber(6);
         }
