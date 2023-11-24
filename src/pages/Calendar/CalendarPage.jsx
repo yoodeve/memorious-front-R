@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 /** @jsxImportSource @emotion/react */
+import { useQuery } from "react-query";
 import dayjs from "dayjs";
 import { useRecoilState } from "recoil";
-import { useQuery } from "react-query";
 import AddScheduleModal from "../../component/Calendar/Modal/AddModal/AddScheduleModal";
 import Badge from "../../component/Calendar/Modal/Badge/Badge";
 import EditScheduleModal from "../../component/Calendar/Modal/EditModal/EditScheduleModal";
@@ -18,6 +18,7 @@ import { SEmptyBox, SMainContainer, SScheduleBox, SScheduleText, STimeText, Sdat
 
 function CalendarPage() {
     const now = dayjs();
+    // const queryClient = useQueryClient();
     const [currentDate, setCurrentDate] = useState(now);
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [addModalOpen, setAddModalOpen] = useState(false);
@@ -49,7 +50,6 @@ function CalendarPage() {
         retryOnMount: true,
         refetchOnWindowFocus: false,
     });
-
     // 월 바뀔때 date를 바꿔줌
     const onMonthChange = date => {
         setCurrentDate(date);
@@ -60,8 +60,9 @@ function CalendarPage() {
     useEffect(() => {
         console.log("useEffect - currentDate");
         if (currentDate) {
+            console.log(123);
             getVisibleDates(currentDate);
-            fetchData();
+            getSchedule.refetch();
         }
     }, [currentDate]);
 
@@ -145,8 +146,6 @@ function CalendarPage() {
     const cellRender = date => {
         const formattedDate = date.format("YYYY-MM-DD");
         const matchingDateArray = filteredData.find(entry => entry[0] && entry[0].date === formattedDate);
-        console.log("date", formattedDate);
-        console.log("date", matchingDateArray);
         if (matchingDateArray && Array.isArray(matchingDateArray)) {
             return (
                 <div css={SdateCellBox(customHeight)} onClick={() => handleAddSchedule(date)} key={formattedDate}>
