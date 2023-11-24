@@ -6,7 +6,7 @@ import { useQuery, useQueryClient } from "react-query";
 /** @jsxImportSource @emotion/react */
 import { HiSearch } from "react-icons/hi";
 import { AiOutlinePlus } from "react-icons/ai";
-import { Select } from "antd";
+import { Select, Table } from "antd";
 import * as S from "./style";
 import { instance } from "../../config";
 
@@ -53,6 +53,7 @@ function BoardList() {
         window.location.replace("/auth/oauth2/signin");
     }
 
+    const [boardList, setBoardList] = useState([]);
     const getBoardList = useQuery(
         ["getBoardList", category, page],
         async () => {
@@ -63,27 +64,9 @@ function BoardList() {
                         Authorization: localStorage.getItem("accessToken"),
                     },
                 };
-                return await instance.get(`api/boards/${category}/${page}`, option);
-            } catch (error) {
-                throw new Error(error);
-            }
-        },
-        {
-            refetchOnWindowFocus: false,
-        },
-    );
-
-    const getBoardCount = useQuery(
-        ["getBoardCount", category, page],
-        async () => {
-            try {
-                const option = {
-                    params: searchParams,
-                    // headers: {
-                    //     Authorization: localStorage.getItem("accessToken"),
-                    // },
-                };
-                return instance.get(`api/boards/${category}/count`, option);
+                const response = await instance.get(`api/boards/${category}/${page}`, option);
+                console.log(response);
+                setBoardList(response.data);
             } catch (error) {
                 throw new Error(error);
             }
@@ -124,13 +107,33 @@ function BoardList() {
         }
     };
 
-    console.log("getBoardList >> ", getBoardList);
-    console.log("getBoardList?.data?.data >> ", getBoardList?.data?.data);
+    // console.log("getBoardList >> ", getBoardList);
+    // console.log("getBoardList?.data?.data >> ", getBoardList?.data?.data);
 
-    // if (getBoardList.isLoading || getBoardCount.isLoading) {
-    //     return <>Loading...</>; // 로딩 스피너 추가
-    // }
-    console.log(getBoardCount);
+    /** antd table */
+    const columns = [
+        {
+            title: "번호", // 타이틀(보여짐)
+            dataIndex: "boardId", // 객체의 키값
+            key: "boardId", // 키
+        },
+        {
+            title: "제목", // 타이틀(보여짐)
+            dataIndex: "title", // 객체의 키값
+            key: "title", // 키
+        },
+        {
+            title: "작성자", // 타이틀(보여짐)
+            dataIndex: "nickname", // 객체의 키값
+            key: "author", // 키
+        },
+        {
+            title: "작성일", // 타이틀(보여짐)
+            dataIndex: "createDate", // 객체의 키값
+            key: "createDate", // 키
+        },
+    ];
+
     return (
         <>
             <Reset />
@@ -167,31 +170,7 @@ function BoardList() {
                         );
                     })}
                 </div>
-                <table css={S.table}>
-                    <thead>
-                        <tr>
-                            <th>번호</th>
-                            <th>제목</th>
-                            <th>작성자</th>
-                            <th>작성일</th>
-                            {/* <th>조회수</th> */}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {!getBoardList?.isLoading &&
-                            getBoardList?.data?.data?.map(board => {
-                                return (
-                                    <tr key={board.boardId} onClick={() => navigate(`/board/${board.boardId}`)}>
-                                        <td>{board.boardId}</td>
-                                        <td css={S.boardTitle}>{board.title}</td>
-                                        <td>{board.nickname}</td>
-                                        <td>{board.createDate}</td>
-                                    </tr>
-                                );
-                            })}
-                    </tbody>
-                </table>
-                {/* <div css={S.pageNumbers}></div> */}
+                <Table columns={columns} dataSource={boardList} />
             </div>
         </>
     );
