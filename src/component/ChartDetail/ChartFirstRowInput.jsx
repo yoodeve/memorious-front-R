@@ -6,12 +6,12 @@ import { rcTableData } from "../../store/atoms/chartTableAtoms";
 
 function ChartTableFirstRowInput({ type }) {
     const [healthInfo, setHealthInfo] = useRecoilState(rcTableData);
-
     const onChange = e => {
         const { value, name } = e.target;
+        const onlyNumber = value.replace(/[^0-9]/g, "");
         setHealthInfo({
             ...healthInfo,
-            [name]: value,
+            [name]: onlyNumber,
         });
     };
 

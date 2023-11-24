@@ -54,19 +54,19 @@ export const groupBox = css`
     }
 `;
 
-export const sideBarLabel = css`
+export const sideBarLabel = isRoute => css`
     width: 220px;
     height: 40px;
     padding: 10px 0;
-    border: 1px solid #6f6257;
-    margin: 10px;
+    border: 1px solid ${isRoute ? "#6f6257" : "#aaa"};
+    margin: 5px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 8px;
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     font-family: "Pretendard-Bold";
-    color: #6f6257;
+    color: ${isRoute ? "#6f6257" : "#aaa"};
     cursor: pointer;
     &.filled {
         background-color: #6f6257;

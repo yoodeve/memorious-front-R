@@ -62,7 +62,7 @@ export const memoWrapper = css`
     align-items: center;
     width: 100%;
     max-width: 900px;
-    height: 600px;
+    height: 650px;
     padding: 0 50px 50px 50px;
 `;
 
@@ -93,8 +93,8 @@ export const memoBoard = css`
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         grid-template-rows: repeat(3, 1fr);
-        gap: 30px;
-        padding: 60px;
+        gap: 50px;
+        padding: 50px;
     }
 `;
 

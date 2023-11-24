@@ -3,12 +3,14 @@ import dayjs from "dayjs";
 import React, { useEffect, useRef, useState } from "react";
 import { IoIosArrowRoundForward, IoMdArrowForward } from "react-icons/io";
 import { useMutation, useQueryClient } from "react-query";
+import { useRecoilState } from "recoil";
 import { instance } from "../../../../config";
 import { LabelColorPreset } from "../../../../constants/Calendar/LabelColorPreset";
 import { RepeatCyclePreset } from "../../../../constants/Calendar/RepeatCyclePreset";
 import LabelColorBadge from "./LabelColorBadge/LabelColorBadge";
 import { SAttendeeSelect, SCheckbox, SColorPicker, SCycleInput, SCycleSelect, SDatePicker, SDescriptionInput, SLocationInput, SModal, SRadio, SRadioGroup, SRangePicker, SRepeatInput, SSelectOption, STimePicker, STitleInput } from "./StyledComponents/style";
 import { SCycleBox, SFlexBox, SPanelBox, SRepeatBox, SRepeatEnd, SRepeatTypeBox, STime } from "./style";
+import { calendarRecoil } from "../../../../store/atoms/calendarAtoms";
 /** @jsxImportSource @emotion/react */
 
 function AddScheduleModal({ open, setOpen, date }) {
@@ -16,14 +18,10 @@ function AddScheduleModal({ open, setOpen, date }) {
     const queryClient = useQueryClient();
     const defaultStTime = date.set("hour", 12).set("m", 0).format("HH:mm");
     const defaultEndTime = date.set("hour", 13).set("m", 0).format("HH:mm");
-    const mutation = useMutation(data => instance.post("/api/calendar/schedule", data), {
-        onSuccess: () => {
-            queryClient.refetchQueries(["getSchedule"]);
-        },
-    });
     // dayjs to String
     const formattedDate = date.format("YYYY-MM-DD");
-
+    // 본인 정보를 가져옴
+    const principal = queryClient.getQueryState(["getPrincipal"]);
     const defaultSchedule = {
         title: "",
         labelColor: "#8BBB11",
@@ -39,7 +37,7 @@ function AddScheduleModal({ open, setOpen, date }) {
         repeatEndDate: "0000:00:00",
         repeatCount: "",
         description: "",
-        userId: "",
+        userId: principal?.data.data.userId,
     };
 
     const [selectedRepeatLabel, setSelectedRepeatLabel] = useState(RepeatCyclePreset[0].label);
@@ -47,44 +45,60 @@ function AddScheduleModal({ open, setOpen, date }) {
     const [colorPickerOpen, setColorPickerOpen] = useState(false);
     const [repeatEndDate, setRepeatEndDate] = useState(formattedDate);
     const [attendeeValue, setAttendeeValue] = useState([]);
+    const [familyList, setFamilyList] = useState([]);
+    // eslint-disable-next-line no-unused-vars
+    const [scheduleData, setScheduleData] = useRecoilState(calendarRecoil);
+    const inputRef = useRef(null);
 
-    // 가상의 가족 데이터(사이트 로드시 가족 정보를 불러온 값)
-    const mockUsers = [
-        { id: 1, name: "한유정" },
-        { id: 2, name: "우주영" },
-        { id: 3, name: "주성광" },
-    ];
-    const [users, setUsers] = useState(mockUsers);
-    const principal = queryClient.getQueryState(["getPrincipal"]);
+    // 본인 userId를 토대로 가족을 가져옴
     const getFamilyList = async () => {
         const response = await instance.get("/api/chart/family", { params: { familyId: principal?.data.data.familyId } });
-        setUsers(response.data);
+        setFamilyList(response.data);
     };
 
+    const mutation = useMutation(data => instance.get(`/api/calendar/schedule/${date.format("YYYY-MM")}`, data), {
+        onSuccess: () => {
+            queryClient.refetchQueries(["getSchedule"]);
+        },
+    });
+
+    // 확인버튼 클릭시
+    const handleOk = async () => {
+        console.log("요청 값", scheduleInput);
+        if (scheduleInput.title === "") {
+            alert("제목을 입력해주세요");
+            return;
+        }
+        if (scheduleInput.title.length > 30) {
+            alert("30자 이하로 입력 해 주세요.");
+            return;
+        }
+        setOpen(false);
+        // insertSchedule 요청
+        try {
+            const response = await instance.post("/api/calendar/schedule", scheduleInput);
+            console.log("insert 요청 성공", response);
+        } catch (error) {
+            console.log(error);
+        }
+
+        // getSchedule
+        try {
+            const response = mutation.mutate({ userId: principal?.data.data.userId });
+            console.log("refetch 요청 성공");
+            setScheduleData(response.data);
+        } catch (error) {
+            console.log("error", error);
+        }
+    };
+
+    // 제목입력에 focus 줌
     useEffect(() => {
         getFamilyList();
-    }, []);
-    // 제목입력에 focus 줌
-    const inputRef = useRef(null);
-    useEffect(() => {
         if (inputRef.current) {
             inputRef.current.focus();
         }
     }, []);
-
-    // 확인버튼 클릭시
-    const handleOk = async () => {
-        setOpen(false);
-        console.log("요청 값", scheduleInput);
-
-        try {
-            mutation.mutate({ ...scheduleInput, userId: principal?.data.data.userId });
-            const response = await instance.post("/api/calendar/schedule");
-            console.log(response);
-        } catch (error) {
-            console.log(error);
-        }
-    };
 
     const handleCancel = () => {
         setOpen(false);
@@ -184,6 +198,7 @@ function AddScheduleModal({ open, setOpen, date }) {
     // 체크한 참석자들을 Input에 저장
     const handleChange = attendees => {
         // attendees : key(userId) / name(username)
+        console.log("attendees", attendees);
         const keys = attendees.map(attendee => attendee.key);
         const options = attendees.map(attendee => ({
             value: attendee.key,
@@ -195,13 +210,6 @@ function AddScheduleModal({ open, setOpen, date }) {
             ...scheduleInput,
             attendee: keys,
         });
-    };
-
-    // 서버로부터 받아올 사용자 데이터( [ { }, {} ] )에서 검색
-    const handleSearch = input => {
-        // mockUser의 user 중 input를 포함하는것
-        const filteredUsers = mockUsers.filter(user => user.name.toLowerCase().includes(input.toLowerCase()));
-        setUsers(filteredUsers);
     };
 
     // <=====    반복 RadioGroup 상태 변경      =====>
@@ -259,10 +267,10 @@ function AddScheduleModal({ open, setOpen, date }) {
                         <STimePicker css={STime} onSelect={handleEndTimeChange} value={dayjs(scheduleInput.endTime, "HH:mm")} minuteStep="10" format="HH:mm" size="large" />
                     </div>
                 )}
-                <SAttendeeSelect labelInValue showSearch key={attendeeValue.key} value={attendeeValue.value} label={attendeeValue.label} mode="multiple" placeholder="참석자" filterOption={false} onSearch={handleSearch} onChange={handleChange} size="large">
-                    {users.map(user => (
-                        <SSelectOption key={user.id} value={user.name}>
-                            {user.name}
+                <SAttendeeSelect labelInValue showSearch key={attendeeValue.key} value={attendeeValue.value} label={attendeeValue.label} mode="multiple" placeholder="참석자" filterOption={false} onChange={handleChange} size="large">
+                    {familyList.map(user => (
+                        <SSelectOption key={user.userId} value={user.nickname}>
+                            {user.nickname}
                         </SSelectOption>
                     ))}
                 </SAttendeeSelect>

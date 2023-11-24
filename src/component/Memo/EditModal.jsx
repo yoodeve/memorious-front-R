@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import dayjs from "dayjs";
 import { useMutation, useQueryClient } from "react-query";
 import TextArea from "antd/es/input/TextArea";
-import { Button } from "antd";
+import { Button, message } from "antd";
 import { EditModalContainer } from "./style";
 import { instance } from "../../config";
 
 function EditModal({ memoDesc, open, setOpen }) {
+    const [messageApi, contextHolder] = message.useMessage();
     const queryClient = useQueryClient();
     const principal = queryClient.getQueryState(["getPrincipal"]);
     const { userId, nickname } = principal.data.data;
@@ -22,8 +23,7 @@ function EditModal({ memoDesc, open, setOpen }) {
     });
 
     const mutationDelete = useMutation(
-        d => {
-            console.log(d);
+        () => {
             return instance.delete(`/api/memo/${memoDesc.memoId}/${userId}`);
         },
         {
@@ -40,6 +40,10 @@ function EditModal({ memoDesc, open, setOpen }) {
 
     const onMemoEditClick = async () => {
         try {
+            if (newMemo === "") {
+                messageApi.warning("메모를 입력해주세요.");
+                return;
+            }
             await mutationEdit.mutate({
                 author: principal.data.data.userId,
                 memoContent: newMemo,
@@ -57,42 +61,45 @@ function EditModal({ memoDesc, open, setOpen }) {
     };
 
     return (
-        <EditModalContainer
-            destroyOnClose
-            title="메모 수정"
-            centered
-            open={open}
-            closeIcon
-            onCancel={onClose}
-            footer={
-                nickname === memoDesc.author
-                    ? [
-                          <Button key={1} danger onClick={onMemoDeleteClick}>
-                              삭제
-                          </Button>,
-                          <Button key={2} type="primary" onClick={onMemoEditClick}>
-                              수정
-                          </Button>,
-                          <Button key={3} onClick={onClose}>
-                              닫기
-                          </Button>,
-                      ]
-                    : [
-                          <Button key={3} onClick={onClose}>
-                              닫기
-                          </Button>,
-                      ]
-            }
-        >
-            <TextArea
-                onChange={onMemoChange}
-                value={newMemo !== "" ? newMemo : memoDesc.memoContent}
-                autoSize={{
-                    minRows: 3,
-                    maxRows: 3,
-                }}
-            />
-        </EditModalContainer>
+        <>
+            {contextHolder}
+            <EditModalContainer
+                destroyOnClose
+                title="메모 수정"
+                centered
+                open={open}
+                closeIcon
+                onCancel={onClose}
+                footer={
+                    nickname === memoDesc.author
+                        ? [
+                              <Button key={1} danger onClick={onMemoDeleteClick}>
+                                  삭제
+                              </Button>,
+                              <Button key={2} type="primary" onClick={onMemoEditClick}>
+                                  수정
+                              </Button>,
+                              <Button key={3} onClick={onClose}>
+                                  닫기
+                              </Button>,
+                          ]
+                        : [
+                              <Button key={3} onClick={onClose}>
+                                  닫기
+                              </Button>,
+                          ]
+                }
+            >
+                <TextArea
+                    onChange={onMemoChange}
+                    value={newMemo !== "" ? newMemo : memoDesc.memoContent}
+                    autoSize={{
+                        minRows: 3,
+                        maxRows: 3,
+                    }}
+                />
+            </EditModalContainer>
+        </>
     );
 }
 

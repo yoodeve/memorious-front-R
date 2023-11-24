@@ -127,9 +127,9 @@ function BoardList() {
     console.log("getBoardList >> ", getBoardList);
     console.log("getBoardList?.data?.data >> ", getBoardList?.data?.data);
 
-    if (getBoardList.isLoading || getBoardCount.isLoading) {
-        return <>Loading...</>; // 로딩 스피너 추가
-    }
+    // if (getBoardList.isLoading || getBoardCount.isLoading) {
+    //     return <>Loading...</>; // 로딩 스피너 추가
+    // }
     console.log(getBoardCount);
     return (
         <>
