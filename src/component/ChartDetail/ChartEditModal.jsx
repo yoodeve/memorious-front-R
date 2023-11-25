@@ -26,7 +26,6 @@ function ChartEditModal({ open, setOpen, record }) {
     };
 
     const onOk = async () => {
-        console.log(record);
         if (!Object.values(record).includes("0")) {
             try {
                 await mutationEdit.mutate(healthInfo);
@@ -36,7 +35,7 @@ function ChartEditModal({ open, setOpen, record }) {
             }
             return;
         }
-        info("warning");
+        info();
     };
 
     return (
