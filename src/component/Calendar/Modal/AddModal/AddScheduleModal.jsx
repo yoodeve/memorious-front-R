@@ -24,7 +24,7 @@ function AddScheduleModal({ open, setOpen, date }) {
     const principal = queryClient.getQueryState(["getPrincipal"]);
     const defaultSchedule = {
         title: "",
-        labelColor: "#8BBB11",
+        labelColor: "#8977f4",
         startDate: formattedDate,
         endDate: formattedDate,
         isAllDay: 1,

@@ -1,4 +1,8 @@
+/* eslint-disable prettier/prettier */
 export const LabelColorPreset = {
     label: "Recommended",
-    colors: ["#8BBB11", "#FA8C16", "#FADB14", "#F5222D", "#52C41A", "#13A8A8", "#1677FF", "#2F54EB", "#722ED1", "#EB2F96"],
+    colors: ["#8977f4", "#f9aa12", "#9aca2b",
+     "#72cdbb", "#5fb0ed", "#e76ad3",
+      "#7e67ad", "#e08d40", "#68881c",
+       "#389783", "#2180c7", "#ad63a1"],
 };

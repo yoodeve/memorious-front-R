@@ -3,7 +3,7 @@ import { css } from "@emotion/react";
 
 export const SPanelBox = css`
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(6, 2fr);
     gap: 8px;
 `;
 
