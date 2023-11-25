@@ -6,9 +6,9 @@ import { sidebarMenuList } from "./sidebarMenu";
 import { bottomSettingMenuBox, groupBox, groupBoxWrapper, imageBox, sideBarLabel, sidebarContainer } from "./style";
 /** @jsxImportSource @emotion/react */
 
-function SidebarContainer() {
+function SidebarContainer({ principal }) {
     const { pathname } = useLocation();
-
+    console.log(principal);
     const navigate = useNavigate();
     const [modalOpen, setModalOpen] = useState(false);
 
@@ -57,7 +57,12 @@ function SidebarContainer() {
                 </div>
             </div>
             <div css={bottomSettingMenuBox}>
-                <span className="my-label">My프로필</span>
+                <div className="profile-area">
+                    <span className="profile-img">
+                        <img src={principal.profileUrl} alt="" />
+                    </span>
+                    <span className="my-label">{principal.nickname}</span>
+                </div>
                 <div className="right-titles">
                     <Dropdown menu={{ items }} placement="topRight" arrow={{ pointAtCenter: true }}>
                         <span>설정</span>

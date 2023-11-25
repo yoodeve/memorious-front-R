@@ -63,18 +63,11 @@ function SideBar() {
         },
     );
 
-    // /* 자동 로그인 라우팅 */
-    // useEffect(() => {
-    //     if (!localStorage.getItem("accessToken")) {
-    //         alert("로그인");
-    //         window.location.replace("/auth/oauth2/signin", { replace: false });
-    //     }
-    // }, []);
     return (
         <>
             <Reset />
             <div id="parent-container" css={mainContainer}>
-                <SidebarContainer />
+                <SidebarContainer principal={!getPrincipal.isLoading && getPrincipal.data.data} />
                 <div css={contentsContainer}>{!getPrincipal.isLoading && <Outlet />}</div>
             </div>
         </>

@@ -30,7 +30,6 @@ export const groupBox = css`
     justify-content: space-evenly;
     align-items: center;
     height: fit-content;
-    background-color: #f5efe6;
     border-radius: 8px;
     &.bottom-box {
         margin-top: 10px;
@@ -91,6 +90,7 @@ export const bottomSettingMenuBox = css`
     width: 280px;
     display: flex;
     justify-content: space-between;
+    align-items: center;
     position: absolute;
     bottom: 25px;
     * {
@@ -98,7 +98,7 @@ export const bottomSettingMenuBox = css`
         font-size: 11px;
     }
     .my-label {
-        margin-left: 20px;
+        margin-left: 10px;
     }
     .right-titles {
         width: 60px;
@@ -107,12 +107,27 @@ export const bottomSettingMenuBox = css`
         justify-content: space-between;
     }
 
-    & > span {
+    span {
         cursor: pointer;
     }
 
-    & > div > span {
+    div span {
         cursor: pointer;
+    }
+    .profile-area {
+        display: flex;
+        align-items: center;
+
+        .profile-img {
+            margin-left: 10px;
+            border-radius: 100%;
+            overflow: hidden;
+            border: 1px solid #6f6257;
+            img {
+                width: 38px;
+                height: 338x;
+            }
+        }
     }
 `;
 
