@@ -43,7 +43,7 @@ const preprocessData = schedule => {
         }
     } else {
         // 당일 일정들
-        weeklySchedules.push({ ...schedule, dayDiff: 0 });
+        weeklySchedules.push({ ...schedule, dayDiff: 0, weekIndex: 0 });
     }
     return weeklySchedules;
 };
