@@ -13,8 +13,9 @@ import convertToAmPmFormat from "../../utils/Calendar/convertToAmPmFormat";
 import getVisibleDates from "../../utils/Calendar/getVisibleDates";
 import preprocessData from "../../utils/Calendar/preprocessData";
 import sortCalendarData from "../../utils/Calendar/sortCalendarData";
+import MoreScheduleModal from "../../component/Calendar/Modal/MoreScheduleModal/MoreScheduleModal";
 import useDynamicHeight from "../../utils/Calendar/useDynamicHeight";
-import { SEmptyBox, SMainContainer, SScheduleBox, SScheduleText, STimeText, SdateCellBox } from "./style";
+import { SEmptyBox, SMainContainer, SMoreText, SScheduleBox, SScheduleText, STimeText, SdateCellBox } from "./style";
 
 function CalendarPage() {
     const now = dayjs();
@@ -22,21 +23,27 @@ function CalendarPage() {
     const [currentDate, setCurrentDate] = useState(now);
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [addModalOpen, setAddModalOpen] = useState(false);
+    const [moreModalOpen, setMoreModalOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState(now);
+    const [selectedScheduleArray, setSelectedScheduleArray] = useState([]);
     const { customHeight, rowNumber } = useDynamicHeight(currentDate);
     const [scheduleData, setScheduleData] = useRecoilState(calendarRecoil);
     const [filteredData, setFilteredData] = useState([]);
     const [visibleSchedulesNum, setVisibleSchedulesNum] = useState(4);
+    const [responseData, setResponseData] = useState([]);
 
     useEffect(() => {
-        const num = Math.floor((customHeight - 28) / 23.5);
-        setVisibleSchedulesNum(num);
+        const num = Math.floor(customHeight / 26);
+        console.log(customHeight);
+        console.log(num - 1);
+        // 보여지는 개수는 최대출력 갯수보다 하나 적다.(...이 떠야하므로 )
+        setVisibleSchedulesNum(num - 1);
     }, [customHeight]);
 
     const fetchData = async () => {
         try {
-            console.log("fetch!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             const response = await instance.get(`/api/calendar/schedule/${currentDate.format("YYYY-MM")}`);
+            setResponseData(response.data);
             // 데이터를 정렬하고 전처리(주단위로 나누고, 특정 인덱스를 추가) 함.
             const processedData = response.data.sort(sortCalendarData).map(preprocessData).flat();
             setScheduleData(processedData);
@@ -58,9 +65,7 @@ function CalendarPage() {
     };
 
     useEffect(() => {
-        console.log("useEffect - currentDate");
         if (currentDate) {
-            console.log(123);
             getVisibleDates(currentDate);
             getSchedule.refetch();
         }
@@ -130,66 +135,84 @@ function CalendarPage() {
 
     // 특정한 '일정'을 클릭하면 추가모달과 동일한 수정모달이 나옴
     // todo : 수정버튼을 포함한 조회모달
-    const handleScheduleClick = (e, data) => {
-        console.log("일정 클릭시 넘어오는 값", data);
-        e.stopPropagation();
-        setEditModalOpen(true);
+
+    const handleContainerClick = (e, date) => {
+        const clickedTagName = e.target.tagName;
+        console.log(clickedTagName);
+        // 클릭이 스케줄인지 또는 셀인지 확인
+        if (clickedTagName === "UL") {
+            setSelectedDate(date);
+            setAddModalOpen(true);
+        } else if (clickedTagName === "LI") {
+            const clickedId = e.target.className.split(" ")[0];
+            const clickedSchedule = responseData.find(schedule => String(schedule.scheduleId) === clickedId);
+            console.log(clickedSchedule);
+            setSelectedDate(date);
+            setEditModalOpen(true);
+        } else if (clickedTagName === "SPAN") {
+            const matchingDateArray = filteredData?.find(entry => entry[0] && entry[0].date === date.format("YYYY-MM-DD"));
+            setSelectedScheduleArray(matchingDateArray);
+            setMoreModalOpen(true);
+        }
     };
 
-    // 셀 클릭시 해당 날짜에 일정 추가 Modal
-    const handleAddSchedule = date => {
-        setAddModalOpen(true);
-        setSelectedDate(date);
+    const renderSchedules = (schedule, maxIndex) => {
+        if (schedule?.isBetween) {
+            return (
+                <div css={SEmptyBox(schedule?.index, visibleSchedulesNum)} key={`${schedule?.scheduleId}-${schedule?.weekIndex}-${schedule?.uqKey}-1`}>
+                    {schedule?.title}
+                </div>
+            );
+        }
+        if (schedule?.index <= visibleSchedulesNum) {
+            return (
+                <>
+                    <div css={SScheduleBox(schedule?.dayDiff, schedule?.isAllDay, schedule?.labelColor, schedule?.index, visibleSchedulesNum)} key={`${schedule?.scheduleId}-${schedule?.weekIndex}-${schedule?.uqKey}-2`}>
+                        {schedule?.isAllDay && schedule?.dayDiff === 0 ? null : (
+                            <>
+                                {!schedule?.isAllDay && schedule?.dayDiff === 0 && <Badge color={schedule?.labelColor} />}
+                                {!schedule?.isAllDay && schedule?.dayDiff === 0 && <span css={STimeText}>{convertToAmPmFormat(schedule?.startTime)}</span>}
+                            </>
+                        )}
+                        <li className={schedule?.scheduleId} css={SScheduleText(schedule?.labelColor, schedule?.isAllDay, schedule?.dayDiff)} key={`${schedule?.scheduleId}-${schedule?.weekIndex}-${schedule?.uqKey}-3`}>
+                            {schedule?.title}
+                        </li>
+                    </div>
+                </>
+            );
+        }
+        if (schedule?.index === visibleSchedulesNum + 1) {
+            return (
+                <>
+                    <div css={SMoreText(schedule?.index)} key={`${schedule?.scheduleId}-${schedule?.weekIndex}-${schedule?.uqKey}-4`}>
+                        <span key={`${schedule?.scheduleId}-${schedule?.weekIndex}-${schedule?.uqKey}-5`}>{maxIndex - visibleSchedulesNum}개 더보기</span>
+                    </div>
+                </>
+            );
+        }
     };
 
     // 각 날짜의 cell 안을 렌더링(일정)
     const cellRender = date => {
         const formattedDate = date.format("YYYY-MM-DD");
-        const matchingDateArray = filteredData.find(entry => entry[0] && entry[0].date === formattedDate);
+        const matchingDateArray = filteredData?.find(entry => entry[0] && entry[0].date === formattedDate);
         if (matchingDateArray && Array.isArray(matchingDateArray)) {
+            const maxIndex = matchingDateArray.length - 1;
+
             return (
-                <div css={SdateCellBox(customHeight)} onClick={() => handleAddSchedule(date)} key={formattedDate}>
-                    <ul className="schedules">
-                        {matchingDateArray.map(schedule =>
-                            schedule?.isBetween ? (
-                                <div css={SEmptyBox} key={`${schedule?.scheduleId}-${schedule?.weekIndex}-${schedule?.uqKey}-1`}>
-                                    {schedule?.title}
-                                </div>
-                            ) : (
-                                <>
-                                    <div onClick={e => handleScheduleClick(e, date)} css={SScheduleBox(schedule?.dayDiff, schedule?.isAllDay, schedule?.labelColor, schedule?.index, visibleSchedulesNum)} key={`${schedule?.scheduleId}-${schedule?.weekIndex}-${schedule?.uqKey}-2`}>
-                                        {/* 종일이 아닐 때의 스타일 추가 */}
-                                        {schedule?.isAllDay && schedule?.dayDiff === 0 ? null : (
-                                            <>
-                                                {!schedule?.isAllDay && schedule?.dayDiff === 0 && <Badge color={schedule?.labelColor} />}
-                                                {!schedule?.isAllDay && schedule?.dayDiff === 0 && <span css={STimeText}>{convertToAmPmFormat(schedule?.startTime)}</span>}
-                                            </>
-                                        )}
-                                        <li css={SScheduleText(schedule?.labelColor, schedule?.isAllDay, schedule?.dayDiff)} key={`${schedule?.scheduleId}-${schedule?.weekIndex}-${schedule?.uqKey}-3`}>
-                                            {schedule?.title}
-                                        </li>
-                                        <div css={SScheduleText} key={`${schedule?.scheduleId}-${schedule?.weekIndex}-${schedule?.uqKey}-4`}>
-                                            {schedule?.index > visibleSchedulesNum ? "" : null}
-                                        </div>
-                                    </div>
-                                </>
-                            ),
-                        )}
-                    </ul>
+                <div css={SdateCellBox(customHeight)} onClick={e => handleContainerClick(e, date, matchingDateArray)}>
+                    <ul className="schedules">{matchingDateArray.map(schedule => renderSchedules(schedule, maxIndex))}</ul>
                 </div>
             );
         }
-        return (
-            <div css={SdateCellBox(customHeight)} onClick={() => handleAddSchedule(date)}>
-                {/* 만약 데이터가 없어도 셀 크기를 유지함 */}
-            </div>
-        );
+        return <div css={SdateCellBox(customHeight)}>{/* 만약 데이터가 없어도 셀 크기를 유지함 */}</div>;
     };
 
     return (
         <>
             {addModalOpen ? <AddScheduleModal open={addModalOpen} setOpen={setAddModalOpen} date={selectedDate} /> : <></>}
             <EditScheduleModal open={editModalOpen} setOpen={setEditModalOpen} />
+            <MoreScheduleModal open={moreModalOpen} setOpen={setMoreModalOpen} dateObject={selectedDate} schedules={selectedScheduleArray} />
             <div css={SMainContainer}>
                 <StyledCalendar cellRender={cellRender} rowNumber={rowNumber} onPanelChange={onMonthChange} />
             </div>
