@@ -77,6 +77,8 @@ export const profileWrapper = css`
     justify-content: space-around;
     align-items: center;
     .profile-img-wrapper {
+        width: fit-content;
+        height: fit-content;
         img {
             width: 40px;
             height: 40px;
@@ -86,6 +88,9 @@ export const profileWrapper = css`
     }
     button {
     }
+`;
+export const file = css`
+    display: none;
 `;
 
 export const chartMainContainer = css`

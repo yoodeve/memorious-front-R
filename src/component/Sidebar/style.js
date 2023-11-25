@@ -134,3 +134,7 @@ export const bottomSettingMenuBox = css`
 export const test = css`
     margin: 20px 0px;
 `;
+
+export const file = css`
+    display: none;
+`;

@@ -1,14 +1,13 @@
 import { Dropdown } from "antd";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import InviteModal from "../Invite/InviteModal";
 import { sidebarMenuList } from "./sidebarMenu";
-import { bottomSettingMenuBox, groupBox, groupBoxWrapper, imageBox, sideBarLabel, sidebarContainer } from "./style";
+import { bottomSettingMenuBox, file, groupBox, groupBoxWrapper, imageBox, sideBarLabel, sidebarContainer } from "./style";
 /** @jsxImportSource @emotion/react */
 
 function SidebarContainer({ principal }) {
     const { pathname } = useLocation();
-    console.log(principal);
     const navigate = useNavigate();
     const [modalOpen, setModalOpen] = useState(false);
 
@@ -18,6 +17,17 @@ function SidebarContainer({ principal }) {
 
     const handleInviteClick = () => {
         setModalOpen(true);
+    };
+
+    const profileFileRef = useRef();
+
+    const handleProfileUploadClick = () => {
+        profileFileRef.current.click();
+    };
+
+    const handleProfileFileChange = e => {
+        const { files } = e.target;
+        console.log(files);
     };
     const handleLogoutClick = () => {
         localStorage.removeItem("accessToken");
@@ -32,10 +42,6 @@ function SidebarContainer({ principal }) {
         },
         {
             key: "2",
-            label: <span onClick={() => navigate("/setting/mypage")}>마이페이지</span>,
-        },
-        {
-            key: "3",
             label: <span onClick={handleInviteClick}>가족초대하기</span>,
         },
     ];
@@ -58,9 +64,10 @@ function SidebarContainer({ principal }) {
             </div>
             <div css={bottomSettingMenuBox}>
                 <div className="profile-area">
-                    <span className="profile-img">
+                    <span onClick={handleProfileUploadClick} className="profile-img">
                         <img src={principal.profileUrl} alt="" />
                     </span>
+                    <input css={file} type="file" onChange={handleProfileFileChange} ref={profileFileRef} />
                     <span className="my-label">{principal.nickname}</span>
                 </div>
                 <div className="right-titles">
