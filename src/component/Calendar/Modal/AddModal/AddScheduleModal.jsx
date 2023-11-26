@@ -2,69 +2,89 @@
 import dayjs from "dayjs";
 import React, { useEffect, useRef, useState } from "react";
 import { IoIosArrowRoundForward, IoMdArrowForward } from "react-icons/io";
-import { useMutation, useQueryClient } from "react-query";
+import { useQueryClient } from "react-query";
 import { useRecoilState } from "recoil";
 import { instance } from "../../../../config";
 import { LabelColorPreset } from "../../../../constants/Calendar/LabelColorPreset";
 import { RepeatCyclePreset } from "../../../../constants/Calendar/RepeatCyclePreset";
+import { calendarRecoil } from "../../../../store/atoms/calendarAtoms";
+import preprocessData from "../../../../utils/Calendar/preprocessData";
+import sortCalendarData from "../../../../utils/Calendar/sortCalendarData";
 import LabelColorBadge from "./LabelColorBadge/LabelColorBadge";
 import { SAttendeeSelect, SCheckbox, SColorPicker, SCycleInput, SCycleSelect, SDatePicker, SDescriptionInput, SLocationInput, SModal, SRadio, SRadioGroup, SRangePicker, SRepeatInput, SSelectOption, STimePicker, STitleInput } from "./StyledComponents/style";
 import { SCycleBox, SFlexBox, SPanelBox, SRepeatBox, SRepeatEnd, SRepeatTypeBox, STime } from "./style";
-import { calendarRecoil } from "../../../../store/atoms/calendarAtoms";
 /** @jsxImportSource @emotion/react */
 
-function AddScheduleModal({ open, setOpen, date }) {
+function AddScheduleModal({ open, setOpen, dateObj, familyList, editData }) {
     // 시간 선택시 UX를 위해 기본 시간을 중앙에 있는 값으로 변경
+    const now = dayjs();
     const queryClient = useQueryClient();
-    const defaultStTime = date.set("hour", 12).set("m", 0).format("HH:mm");
-    const defaultEndTime = date.set("hour", 13).set("m", 0).format("HH:mm");
-    // dayjs to String
-    const formattedDate = date.format("YYYY-MM-DD");
     // 본인 정보를 가져옴
     const principal = queryClient.getQueryState(["getPrincipal"]);
-    const defaultSchedule = {
-        title: "",
-        labelColor: "#8977f4",
-        startDate: formattedDate,
-        endDate: formattedDate,
-        isAllDay: 1,
-        startTime: "",
-        endTime: "",
-        attendee: [], // id만 넘겨줌
-        location: "",
-        repeatType: "none",
-        repeatCycle: RepeatCyclePreset[0].value,
-        repeatEndDate: "0000:00:00",
-        repeatCount: "",
-        description: "",
-        userId: principal?.data.data.userId,
-    };
+    const [scheduleInput, setScheduleInput] = useState({});
+    const [selectedDate, setSelectedDate] = useState(now);
+
+    const isEditMode = !!editData;
+
+    useEffect(() => {
+        if (editData) {
+            setScheduleInput({ ...editData, isAllDay: editData.isAllDay ? 1 : 0 });
+        }
+    }, [editData]);
+
+    useEffect(() => {
+        if (dateObj) {
+            setSelectedDate(dateObj);
+            setScheduleInput({
+                title: "",
+                labelColor: "#8977f4",
+                startDate: dateObj?.format("YYYY-MM-DD"),
+                endDate: dateObj?.format("YYYY-MM-DD"),
+                isAllDay: 1,
+                startTime: "",
+                endTime: "",
+                attendee: [], // id만 넘겨줌
+                location: "",
+                repeatType: "none",
+                repeatCycle: RepeatCyclePreset[0].value,
+                repeatEndDate: "0000:00:00",
+                repeatCount: "",
+                description: "",
+                userId: principal?.data.data.userId,
+            });
+        }
+    }, [dateObj]);
+
+    const defaultStTime = now.set("hour", 12).set("m", 0).format("HH:mm");
+    const defaultEndTime = now.set("hour", 13).set("m", 0).format("HH:mm");
+    const formattedDate = selectedDate?.format("YYYY-MM-DD");
 
     const [selectedRepeatLabel, setSelectedRepeatLabel] = useState(RepeatCyclePreset[0].label);
-    const [scheduleInput, setScheduleInput] = useState(defaultSchedule);
     const [colorPickerOpen, setColorPickerOpen] = useState(false);
     const [repeatEndDate, setRepeatEndDate] = useState(formattedDate);
     const [attendeeValue, setAttendeeValue] = useState([]);
-    const [familyList, setFamilyList] = useState([]);
     // eslint-disable-next-line no-unused-vars
     const [scheduleData, setScheduleData] = useRecoilState(calendarRecoil);
     const inputRef = useRef(null);
 
-    // 본인 userId를 토대로 가족을 가져옴
-    const getFamilyList = async () => {
-        const response = await instance.get("/api/chart/family", { params: { familyId: principal?.data.data.familyId } });
-        setFamilyList(response.data);
+    // const mutation = useMutation(() => instance.get(`/api/calendar/schedule/${date.format("YYYY-MM")}`), {
+    //     onSuccess: () => {
+    //         queryClient.refetchQueries(["getSchedule"]);
+    //     },
+    // });
+
+    const fetchData = async () => {
+        try {
+            const response = await instance.get(`/api/calendar/schedule/${dayjs(scheduleInput.startDate).format("YYYY-MM")}`);
+            // 데이터를 정렬하고 전처리(주단위로 나누고, 특정 인덱스를 추가) 함.
+            const processedData = response.data.sort(sortCalendarData).map(preprocessData).flat();
+            setScheduleData(processedData);
+        } catch (error) {
+            console.log(error);
+        }
     };
-
-    const mutation = useMutation(data => instance.get(`/api/calendar/schedule/${date.format("YYYY-MM")}`, data), {
-        onSuccess: () => {
-            queryClient.refetchQueries(["getSchedule"]);
-        },
-    });
-
     // 확인버튼 클릭시
     const handleOk = async () => {
-        console.log("요청 값", scheduleInput);
         if (scheduleInput.title === "") {
             alert("제목을 입력해주세요");
             return;
@@ -74,27 +94,41 @@ function AddScheduleModal({ open, setOpen, date }) {
             return;
         }
         setOpen(false);
-        // insertSchedule 요청
         try {
-            const response = await instance.post("/api/calendar/schedule", scheduleInput);
-            console.log("insert 요청 성공", response);
+            if (isEditMode) {
+                await instance.put(`/api/calendar/schedule/${editData.scheduleId}`, scheduleInput);
+            } else {
+                await instance.post("/api/calendar/schedule", scheduleInput);
+            }
+        } catch (error) {
+            console.log("error in post or put", error);
+        }
+        try {
+            fetchData();
+        } catch (error) {
+            console.log("error in fetch", error);
+        }
+        setOpen(false);
+    };
+
+    const handleDeleteClick = async () => {
+        try {
+            if (window.confirm("정말로 삭제하시겠습니까?")) {
+                await instance.delete(`/api/calendar/schedule/${editData.scheduleId}`);
+            }
         } catch (error) {
             console.log(error);
         }
-
-        // getSchedule
         try {
-            const response = mutation.mutate({ userId: principal?.data.data.userId });
-            console.log("refetch 요청 성공");
-            setScheduleData(response.data);
+            fetchData();
         } catch (error) {
-            console.log("error", error);
+            console.log("error in fetch", error);
         }
+        setOpen(false);
     };
 
     // 제목입력에 focus 줌
     useEffect(() => {
-        getFamilyList();
         if (inputRef.current) {
             inputRef.current.focus();
         }
@@ -198,7 +232,6 @@ function AddScheduleModal({ open, setOpen, date }) {
     // 체크한 참석자들을 Input에 저장
     const handleChange = attendees => {
         // attendees : key(userId) / name(username)
-        console.log("attendees", attendees);
         const keys = attendees.map(attendee => attendee.key);
         const options = attendees.map(attendee => ({
             value: attendee.key,
@@ -247,16 +280,17 @@ function AddScheduleModal({ open, setOpen, date }) {
             repeatCycle: e.target.value,
         });
     };
+
     return (
         <>
-            <SModal centered title="일정 생성" open={open} onOk={handleOk} onCancel={handleCancel} date={date}>
+            <SModal centered title={isEditMode ? "일정 수정" : "일정 생성"} open={open} setOpen={setOpen} onOk={handleOk} onCancel={handleCancel} okText={isEditMode ? "수정" : "추가"} cancelText="취소">
                 <div css={SFlexBox}>
-                    <STitleInput name="title" ref={inputRef} onChange={handleInputChange} value={scheduleInput.scheduleTitle} placeholder="제목을 입력해주세요.(필수)" size="large" />
-                    <SColorPicker panelRender={panelRender} value={scheduleInput.labelColor} open={colorPickerOpen} onOpenChange={setColorPickerOpen} />
+                    <STitleInput name="title" defaultValue={scheduleInput.title} ref={inputRef} onChange={handleInputChange} value={scheduleInput.title} placeholder={isEditMode ? scheduleInput.title : "제목을 입력해주세요.(필수)"} size="large" />
+                    <SColorPicker defaultValue={scheduleInput.labelColor} panelRender={panelRender} value={scheduleInput.labelColor} open={colorPickerOpen} onOpenChange={setColorPickerOpen} />
                 </div>
 
                 <div css={SFlexBox}>
-                    <SRangePicker onChange={handleDateChange} value={[dayjs(scheduleInput.startDate, "YYYY-MM-DD"), dayjs(scheduleInput.endDate, "YYYY-MM-DD")]} defaultValue={[date, date]} size="large" separator={<IoMdArrowForward />} />
+                    <SRangePicker onChange={handleDateChange} value={[dayjs(scheduleInput.startDate, "YYYY-MM-DD"), dayjs(scheduleInput.endDate, "YYYY-MM-DD")]} size="large" separator={<IoMdArrowForward />} />
                     <SCheckbox checked={scheduleInput.isAllDay} onChange={handleCheckboxChange}>
                         종일
                     </SCheckbox>
@@ -307,6 +341,7 @@ function AddScheduleModal({ open, setOpen, date }) {
                 </div>
 
                 <SDescriptionInput name="description" onChange={handleInputChange} value={scheduleInput.description} placeholder="설명" size="large" />
+                {isEditMode && <button onClick={handleDeleteClick}>삭제</button>}
             </SModal>
         </>
     );

@@ -1,12 +1,11 @@
-import { Input, Modal, Select } from "antd";
+import { Button, Input, Select } from "antd";
 import React, { useState } from "react";
 import { instance } from "../../config";
 import { emailOptions } from "../../constants/emailOptions";
 import InviteResultModal from "./InviteResultModal";
+import { SContentsBox, SModal } from "./style";
+/** @jsxImportSource @emotion/react */
 
-/*
-todo : 이메일 정규식 검증 및 req/resp
-*/
 function InviteModal({ open, setOpen }) {
     const defaultEmail = {
         local: "",
@@ -16,19 +15,20 @@ function InviteModal({ open, setOpen }) {
     const [emailInput, setEmailInput] = useState(defaultEmail);
     const [resultModalOpen, setResultModalOpen] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const customDomainSelect = emailOptions[emailOptions.length - 1].value;
     const email = `${emailInput.local}@${emailInput.domainSelectBox === customDomainSelect ? emailInput.domain : emailInput.domainSelectBox}`;
     // <<< 모달창 관련 >>>
     const handleOk = async () => {
         try {
+            setLoading(true);
             const response = await instance.post("api/invitation/mail", { email });
-            setIsSuccess(true);
-            console.log("response", response);
+            setIsSuccess(response.data);
         } catch (error) {
             setIsSuccess(false);
-            console.log("error", error);
         } finally {
+            setLoading(false);
             setOpen(false);
             setResultModalOpen(true);
         }
@@ -54,20 +54,6 @@ function InviteModal({ open, setOpen }) {
             ...emailInput,
             domain: e.target.value,
         });
-        console.log(emailInput.domain);
-
-        // 직접입력 일때만 Change를 반영함
-        // if (emailInput.domainSelectBox === customDomainSelect) {
-        //     setEmailInput({
-        //         ...emailInput,
-        //         domain: e.target.value,
-        //     });
-        // } else {
-        //     setEmailInput({
-        //         ...emailInput,
-        //         domain: emailInput.domainSelectBox,
-        //     });
-        // }
     };
 
     // <<< Domain Select 부분 >>>
@@ -80,13 +66,32 @@ function InviteModal({ open, setOpen }) {
 
     return (
         <>
-            <Modal centered title="가족초대하기" open={open} onOk={handleOk} onCancel={handleCancel}>
-                <p>초대하실 가족의 이메일을 입력해주세요.</p>
-                <Input name="local" onChange={onLocalChange} value={emailInput.local} onPressEnter={handleOk} style={{ width: "40%" }} />
-                @
-                <Input name="domain" onChange={onDomainChange} value={emailInput.domainSelectBox === customDomainSelect ? emailInput.domain : emailInput.domainSelectBox} style={{ width: "20%" }} />
-                <Select name="domainSelectBox" options={emailOptions} onChange={onDomainSelectBoxChange} value={emailInput.domainSelectBox} style={{ width: "25%" }} />
-            </Modal>
+            <SModal
+                centered
+                title="초대하기"
+                open={open}
+                onOk={handleOk}
+                onCancel={handleCancel}
+                footer={[
+                    <Button key="back" onClick={handleCancel} size="large">
+                        취소
+                    </Button>,
+                    <Button key="submit" type="primary" loading={loading} onClick={handleOk} size="large">
+                        초대
+                    </Button>,
+                ]}
+                width={600}
+            >
+                <div css={SContentsBox}>
+                    {!loading ? <p>초대하실 가족의 이메일을 입력해주세요.</p> : <p> 초대중 ... 잠시만 기다려주세요.</p>}
+                    <div className="emailInputBox">
+                        <Input name="local" onChange={onLocalChange} value={emailInput.local} onPressEnter={handleOk} style={{ width: "30%" }} />
+                        <span>@</span>
+                        <Input name="domain" onChange={onDomainChange} value={emailInput.domainSelectBox === customDomainSelect ? emailInput.domain : emailInput.domainSelectBox} style={{ width: "27%" }} />
+                        <Select name="domainSelectBox" options={emailOptions} onChange={onDomainSelectBoxChange} value={emailInput.domainSelectBox} style={{ width: "28%" }} />
+                    </div>
+                </div>
+            </SModal>
             <InviteResultModal open={resultModalOpen} setOpen={setResultModalOpen} email={email} isSuccess={isSuccess} />
         </>
     );
