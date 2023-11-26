@@ -1,9 +1,9 @@
-import { Button } from "antd";
+import { Button, Input, Select } from "antd";
 import React, { useState } from "react";
 import { instance } from "../../config";
 import { emailOptions } from "../../constants/emailOptions";
 import InviteResultModal from "./InviteResultModal";
-import { SContentsBox, SInput, SModal, SSelect } from "./style";
+import { SContentsBox, SModal } from "./style";
 /** @jsxImportSource @emotion/react */
 
 function InviteModal({ open, setOpen }) {
@@ -16,7 +16,6 @@ function InviteModal({ open, setOpen }) {
     const [resultModalOpen, setResultModalOpen] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [title, setTitle] = useState("가족 초대하기");
 
     const customDomainSelect = emailOptions[emailOptions.length - 1].value;
     const email = `${emailInput.local}@${emailInput.domainSelectBox === customDomainSelect ? emailInput.domain : emailInput.domainSelectBox}`;
@@ -24,7 +23,6 @@ function InviteModal({ open, setOpen }) {
     const handleOk = async () => {
         try {
             setLoading(true);
-            setTitle("초대 중");
             const response = await instance.post("api/invitation/mail", { email });
             setIsSuccess(response.data);
         } catch (error) {
@@ -70,7 +68,7 @@ function InviteModal({ open, setOpen }) {
         <>
             <SModal
                 centered
-                title={title}
+                title="초대하기"
                 open={open}
                 onOk={handleOk}
                 onCancel={handleCancel}
@@ -82,15 +80,15 @@ function InviteModal({ open, setOpen }) {
                         초대
                     </Button>,
                 ]}
-                width={750}
+                width={600}
             >
                 <div css={SContentsBox}>
                     {!loading ? <p>초대하실 가족의 이메일을 입력해주세요.</p> : <p> 초대중 ... 잠시만 기다려주세요.</p>}
                     <div className="emailInputBox">
-                        <SInput name="local" onChange={onLocalChange} value={emailInput.local} onPressEnter={handleOk} style={{ width: "30%" }} size="large" />
-                        <span style={{ margin: "0px, 10px" }}>@</span>
-                        <SInput name="domain" onChange={onDomainChange} value={emailInput.domainSelectBox === customDomainSelect ? emailInput.domain : emailInput.domainSelectBox} style={{ width: "27%" }} size="large" />
-                        <SSelect name="domainSelectBox" options={emailOptions} onChange={onDomainSelectBoxChange} value={emailInput.domainSelectBox} style={{ width: "29%" }} />
+                        <Input name="local" onChange={onLocalChange} value={emailInput.local} onPressEnter={handleOk} style={{ width: "30%" }} />
+                        <span>@</span>
+                        <Input name="domain" onChange={onDomainChange} value={emailInput.domainSelectBox === customDomainSelect ? emailInput.domain : emailInput.domainSelectBox} style={{ width: "27%" }} />
+                        <Select name="domainSelectBox" options={emailOptions} onChange={onDomainSelectBoxChange} value={emailInput.domainSelectBox} style={{ width: "28%" }} />
                     </div>
                 </div>
             </SModal>
