@@ -14,7 +14,7 @@ function EditScheduleModal({ open, setOpen }) {
 
     return (
         <div>
-            <Modal centered title={title} open={open} onOk={handleOk} onCancel={handleCancel}>
+            <Modal centered title={title} open={open} onOk={handleOk} onCancel={handleCancel} okText="추가" cancelText="취소">
                 aaaa
             </Modal>
         </div>

@@ -5,6 +5,7 @@ export const layout = css`
     border-radius: 6px;
     padding: 20px;
     width: 90%;
+    height: 700px;
     background-color: #f5efe6;
     & * {
         font-size: 14px;
@@ -13,20 +14,12 @@ export const layout = css`
 
     .quill-container {
         width: 100%;
-        height: 600px;
+        height: 450px;
         border-radius: 6px;
     }
 `;
 
 export const Container = css``;
-
-export const buttonContainer = css`
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    margin-top: 50px;
-    width: 100%;
-`;
 
 export const categoryContainer = css`
     display: flex;
@@ -63,6 +56,14 @@ export const titleInput = css`
         /* border: 1px solid #6f6257; */
         box-shadow: 0 0 3px 1px #6f6257dd;
     }
+`;
+
+export const buttonContainer = css`
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 60px;
+    width: 100%;
 `;
 
 export const writeBoardButton = css`

@@ -1,12 +1,12 @@
 /* eslint-disable no-unused-vars */
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Reset } from "styled-reset";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "react-query";
 /** @jsxImportSource @emotion/react */
 import { HiSearch } from "react-icons/hi";
 import { AiOutlinePlus } from "react-icons/ai";
-import { Select } from "antd";
+import { Pagination, Select, Table } from "antd";
 import * as S from "./style";
 import { instance } from "../../config";
 
@@ -41,11 +41,9 @@ function BoardList() {
         optionName: options[0].label,
         searchValue: "",
     };
-
     const [searchParams, setSearchParams] = useState(search);
 
     const queryClient = useQueryClient();
-
     const principalState = queryClient.getQueryState("getPrincipal");
 
     if (!principalState?.data?.data) {
@@ -53,6 +51,7 @@ function BoardList() {
         window.location.replace("/auth/oauth2/signin");
     }
 
+    const [boardList, setBoardList] = useState([]);
     const getBoardList = useQuery(
         ["getBoardList", category, page],
         async () => {
@@ -63,27 +62,8 @@ function BoardList() {
                         Authorization: localStorage.getItem("accessToken"),
                     },
                 };
-                return await instance.get(`api/boards/${category}/${page}`, option);
-            } catch (error) {
-                throw new Error(error);
-            }
-        },
-        {
-            refetchOnWindowFocus: false,
-        },
-    );
-
-    const getBoardCount = useQuery(
-        ["getBoardCount", category, page],
-        async () => {
-            try {
-                const option = {
-                    params: searchParams,
-                    // headers: {
-                    //     Authorization: localStorage.getItem("accessToken"),
-                    // },
-                };
-                return instance.get(`api/boards/${category}/count`, option);
+                const response = await instance.get(`api/boards/${category}/${page}`, option);
+                setBoardList(response.data);
             } catch (error) {
                 throw new Error(error);
             }
@@ -124,13 +104,80 @@ function BoardList() {
         }
     };
 
-    console.log("getBoardList >> ", getBoardList);
-    console.log("getBoardList?.data?.data >> ", getBoardList?.data?.data);
+    /** antd table */
+    const columns = [
+        {
+            title: "번호", // 타이틀(보여짐)
+            dataIndex: "boardId", // 객체의 키값
+            key: "boardId", // 키
+            onHeaderCell: () => ({
+                style: {
+                    background: "#6F6257",
+                    color: "#fffbf5",
+                    textAlign: "center",
+                    fontSize: "16px",
+                    width: "10%",
+                },
+            }),
+        },
+        {
+            title: "제목",
+            dataIndex: "title",
+            key: "title",
+            onHeaderCell: () => ({
+                style: {
+                    background: "#6F6257",
+                    color: "#fffbf5",
+                    textAlign: "center",
+                    fontSize: "16px",
+                    width: "60%",
+                },
+            }),
+        },
+        {
+            title: "작성자",
+            dataIndex: "nickname",
+            key: "author",
+            onHeaderCell: () => ({
+                style: {
+                    background: "#6F6257",
+                    color: "#fffbf5",
+                    textAlign: "center",
+                    fontSize: "16px",
+                    width: "10%",
+                },
+            }),
+        },
+        {
+            title: "작성일",
+            dataIndex: "createDate",
+            key: "createDate",
+            onHeaderCell: () => ({
+                style: {
+                    background: "#6F6257",
+                    color: "#fffbf5",
+                    textAlign: "center",
+                    fontSize: "16px",
+                    width: "20%",
+                },
+            }),
+        },
+    ];
 
-    if (getBoardList.isLoading || getBoardCount.isLoading) {
-        return <>Loading...</>; // 로딩 스피너 추가
-    }
-    console.log(getBoardCount);
+    const customPagination = {
+        defaultCurrent: 1,
+        // pageSize: 5,
+        defaultPageSize: 7, // 10으로 만들고 행의 height 줄이기
+    };
+    const onRow = (record, index) => {
+        return {
+            onClick: e => {
+                // console.log("record and index >> ", record, index);
+                navigate(`/board/${record.boardId}`);
+            },
+        };
+    };
+
     return (
         <>
             <Reset />
@@ -167,31 +214,7 @@ function BoardList() {
                         );
                     })}
                 </div>
-                <table css={S.table}>
-                    <thead>
-                        <tr>
-                            <th>번호</th>
-                            <th>제목</th>
-                            <th>작성자</th>
-                            <th>작성일</th>
-                            {/* <th>조회수</th> */}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {!getBoardList?.isLoading &&
-                            getBoardList?.data?.data?.map(board => {
-                                return (
-                                    <tr key={board.boardId} onClick={() => navigate(`/board/${board.boardId}`)}>
-                                        <td>{board.boardId}</td>
-                                        <td css={S.boardTitle}>{board.title}</td>
-                                        <td>{board.nickname}</td>
-                                        <td>{board.createDate}</td>
-                                    </tr>
-                                );
-                            })}
-                    </tbody>
-                </table>
-                {/* <div css={S.pageNumbers}></div> */}
+                <Table columns={columns} className="ant-table" dataSource={boardList} onRow={onRow} pagination={customPagination} />
             </div>
         </>
     );

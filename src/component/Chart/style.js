@@ -77,13 +77,20 @@ export const profileWrapper = css`
     justify-content: space-around;
     align-items: center;
     .profile-img-wrapper {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background-color: #fff;
+        width: fit-content;
+        height: fit-content;
+        img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #fff;
+        }
     }
     button {
     }
+`;
+export const file = css`
+    display: none;
 `;
 
 export const chartMainContainer = css`

@@ -8,6 +8,9 @@ export const layout = css`
         font-size: 16px;
         color: #6f6257;
     }
+    .ant-table-row {
+        background: #fffbf5;
+    }
 `;
 
 export const writeAndSearchBox = css`
@@ -77,6 +80,7 @@ export const category = css`
     border-radius: 20px;
     font-size: 15px;
     background-color: #fffbf5;
+    text-decoration: none;
     cursor: pointer;
 `;
 

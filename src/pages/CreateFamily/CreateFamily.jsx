@@ -6,10 +6,12 @@ import { instance } from "../../config";
 
 function CreateFamily() {
     const navigate = useNavigate();
-    const [isInvited, setIsInvited] = useState(false);
     const [familyData, setFamilyData] = useState({
         familyName: "",
     });
+
+    // <<<<<<       author: 성광         >>>>>>
+    const [isInvited, setIsInvited] = useState(false);
 
     const getPrincipal = useQuery(
         ["getPrincipal"],
@@ -55,6 +57,7 @@ function CreateFamily() {
             isInvitation();
         }
     }, [principal]);
+    // <<<<<<           성광            >>>>>>
 
     const handleInputChange = e => {
         setFamilyData({
