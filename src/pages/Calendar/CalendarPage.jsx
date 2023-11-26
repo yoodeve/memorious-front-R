@@ -1,41 +1,47 @@
 import React, { useEffect, useState } from "react";
 /** @jsxImportSource @emotion/react */
-import { useQuery } from "react-query";
 import dayjs from "dayjs";
+import { useQuery, useQueryClient } from "react-query";
 import { useRecoilState } from "recoil";
 import AddScheduleModal from "../../component/Calendar/Modal/AddModal/AddScheduleModal";
 import Badge from "../../component/Calendar/Modal/Badge/Badge";
-import EditScheduleModal from "../../component/Calendar/Modal/EditModal/EditScheduleModal";
+import MoreScheduleModal from "../../component/Calendar/Modal/MoreScheduleModal/MoreScheduleModal";
 import StyledCalendar from "../../component/Calendar/Styled/StyledCalendar/StyledCalendar";
 import { instance } from "../../config";
 import { calendarRecoil } from "../../store/atoms/calendarAtoms";
-import convertToAmPmFormat from "../../utils/Calendar/convertToAmPmFormat";
+import convertTo24HourFormat from "../../utils/Calendar/convertTo24HourFormat";
 import getVisibleDates from "../../utils/Calendar/getVisibleDates";
 import preprocessData from "../../utils/Calendar/preprocessData";
 import sortCalendarData from "../../utils/Calendar/sortCalendarData";
-import MoreScheduleModal from "../../component/Calendar/Modal/MoreScheduleModal/MoreScheduleModal";
 import useDynamicHeight from "../../utils/Calendar/useDynamicHeight";
 import { SEmptyBox, SMainContainer, SMoreText, SScheduleBox, SScheduleText, STimeText, SdateCellBox } from "./style";
 
 function CalendarPage() {
-    const now = dayjs();
-    // const queryClient = useQueryClient();
-    const [currentDate, setCurrentDate] = useState(now);
-    const [editModalOpen, setEditModalOpen] = useState(false);
+    const [currentDate, setCurrentDate] = useState(dayjs());
+
     const [addModalOpen, setAddModalOpen] = useState(false);
+    const [familyList, setFamilyList] = useState([]);
+
+    const [editModalOpen, setEditModalOpen] = useState(false);
+    const [selectedDate, setSelectedDate] = useState(dayjs());
+    const [selectedSchedule, setSelectedSchedule] = useState({});
+
     const [moreModalOpen, setMoreModalOpen] = useState(false);
-    const [selectedDate, setSelectedDate] = useState(now);
-    const [selectedScheduleArray, setSelectedScheduleArray] = useState([]);
+    const [selectedDateSchedule, setSelectedDateSchedule] = useState([]);
+    const [moreModalPosition, setMoreModalPosition] = useState({});
+
     const { customHeight, rowNumber } = useDynamicHeight(currentDate);
+    const [visibleSchedulesNum, setVisibleSchedulesNum] = useState(4);
+
+    const [responseData, setResponseData] = useState([]);
     const [scheduleData, setScheduleData] = useRecoilState(calendarRecoil);
     const [filteredData, setFilteredData] = useState([]);
-    const [visibleSchedulesNum, setVisibleSchedulesNum] = useState(4);
-    const [responseData, setResponseData] = useState([]);
+
+    const queryClient = useQueryClient();
+    const principal = queryClient.getQueryState(["getPrincipal"]);
 
     useEffect(() => {
         const num = Math.floor(customHeight / 26);
-        console.log(customHeight);
-        console.log(num - 1);
         // 보여지는 개수는 최대출력 갯수보다 하나 적다.(...이 떠야하므로 )
         setVisibleSchedulesNum(num - 1);
     }, [customHeight]);
@@ -52,21 +58,27 @@ function CalendarPage() {
         }
     };
 
+    const getFamilyList = async () => {
+        const response = await instance.get("/api/chart/family", { params: { familyId: principal?.data.data.familyId } });
+        setFamilyList(response.data);
+    };
+
+    useEffect(() => {
+        getFamilyList();
+    }, []);
     // eslint-disable-next-line no-unused-vars
     const getSchedule = useQuery(["getSchedule"], fetchData, {
         retryOnMount: true,
         refetchOnWindowFocus: false,
     });
+
     // 월 바뀔때 date를 바꿔줌
     const onMonthChange = date => {
         setCurrentDate(date);
-        getVisibleDates(date);
-        console.log("달 바꼈어유");
     };
 
     useEffect(() => {
         if (currentDate) {
-            getVisibleDates(currentDate);
             getSchedule.refetch();
         }
     }, [currentDate]);
@@ -137,26 +149,38 @@ function CalendarPage() {
     // todo : 수정버튼을 포함한 조회모달
 
     const handleContainerClick = (e, date) => {
+        setSelectedDate(date);
         const clickedTagName = e.target.tagName;
-        console.log(clickedTagName);
-        // 클릭이 스케줄인지 또는 셀인지 확인
-        if (clickedTagName === "UL") {
-            setSelectedDate(date);
+        const clickX = e.clientX;
+        const clickY = e.clientY;
+        // 빈 곳 클릭 => 일정 추가
+        if (clickedTagName === "UL" || clickedTagName === "DIV") {
             setAddModalOpen(true);
+
+            // 일정 클릭시 수정
         } else if (clickedTagName === "LI") {
             const clickedId = e.target.className.split(" ")[0];
             const clickedSchedule = responseData.find(schedule => String(schedule.scheduleId) === clickedId);
-            console.log(clickedSchedule);
-            setSelectedDate(date);
+            setSelectedSchedule(clickedSchedule);
             setEditModalOpen(true);
-        } else if (clickedTagName === "SPAN") {
+
+            // 더보기 클릭시
+        } else if (clickedTagName === "P") {
             const matchingDateArray = filteredData?.find(entry => entry[0] && entry[0].date === date.format("YYYY-MM-DD"));
-            setSelectedScheduleArray(matchingDateArray);
+            setSelectedDateSchedule(matchingDateArray);
+            const modalPosition = {
+                top: clickY,
+                left: clickX,
+            };
+            setMoreModalPosition(modalPosition);
             setMoreModalOpen(true);
         }
     };
 
     const renderSchedules = (schedule, maxIndex) => {
+        if (schedule?.date) {
+            return null;
+        }
         if (schedule?.isBetween) {
             return (
                 <div css={SEmptyBox(schedule?.index, visibleSchedulesNum)} key={`${schedule?.scheduleId}-${schedule?.weekIndex}-${schedule?.uqKey}-1`}>
@@ -168,10 +192,10 @@ function CalendarPage() {
             return (
                 <>
                     <div css={SScheduleBox(schedule?.dayDiff, schedule?.isAllDay, schedule?.labelColor, schedule?.index, visibleSchedulesNum)} key={`${schedule?.scheduleId}-${schedule?.weekIndex}-${schedule?.uqKey}-2`}>
-                        {schedule?.isAllDay && schedule?.dayDiff === 0 ? null : (
+                        {schedule?.isAllDay ? null : (
                             <>
-                                {!schedule?.isAllDay && schedule?.dayDiff === 0 && <Badge color={schedule?.labelColor} />}
-                                {!schedule?.isAllDay && schedule?.dayDiff === 0 && <span css={STimeText}>{convertToAmPmFormat(schedule?.startTime)}</span>}
+                                {schedule?.dayDiff === 0 && <Badge color={schedule?.labelColor} />}
+                                <span css={STimeText}>{convertTo24HourFormat(schedule?.startTime)}</span>
                             </>
                         )}
                         <li className={schedule?.scheduleId} css={SScheduleText(schedule?.labelColor, schedule?.isAllDay, schedule?.dayDiff)} key={`${schedule?.scheduleId}-${schedule?.weekIndex}-${schedule?.uqKey}-3`}>
@@ -185,7 +209,7 @@ function CalendarPage() {
             return (
                 <>
                     <div css={SMoreText(schedule?.index)} key={`${schedule?.scheduleId}-${schedule?.weekIndex}-${schedule?.uqKey}-4`}>
-                        <span key={`${schedule?.scheduleId}-${schedule?.weekIndex}-${schedule?.uqKey}-5`}>{maxIndex - visibleSchedulesNum}개 더보기</span>
+                        <p key={`${schedule?.scheduleId}-${schedule?.weekIndex}-${schedule?.uqKey}-5`}>{maxIndex - visibleSchedulesNum}개 더보기</p>
                     </div>
                 </>
             );
@@ -205,14 +229,18 @@ function CalendarPage() {
                 </div>
             );
         }
-        return <div css={SdateCellBox(customHeight)}>{/* 만약 데이터가 없어도 셀 크기를 유지함 */}</div>;
+        return (
+            <div css={SdateCellBox(customHeight)} onClick={e => handleContainerClick(e, date, matchingDateArray)}>
+                {/* 만약 데이터가 없어도 셀 크기를 유지함 */}
+            </div>
+        );
     };
 
     return (
         <>
-            {addModalOpen ? <AddScheduleModal open={addModalOpen} setOpen={setAddModalOpen} date={selectedDate} /> : <></>}
-            <EditScheduleModal open={editModalOpen} setOpen={setEditModalOpen} />
-            <MoreScheduleModal open={moreModalOpen} setOpen={setMoreModalOpen} dateObject={selectedDate} schedules={selectedScheduleArray} />
+            <AddScheduleModal open={addModalOpen} setOpen={setAddModalOpen} dateObj={selectedDate} familyList={familyList} />
+            <AddScheduleModal open={editModalOpen} setOpen={setEditModalOpen} familyList={familyList} editData={selectedSchedule} />
+            <MoreScheduleModal open={moreModalOpen} setOpen={setMoreModalOpen} dateObject={selectedDate} schedules={selectedDateSchedule} position={moreModalPosition} />
             <div css={SMainContainer}>
                 <StyledCalendar cellRender={cellRender} rowNumber={rowNumber} onPanelChange={onMonthChange} />
             </div>

@@ -38,20 +38,17 @@ export const SScheduleBox = (dayDiff, isAllDay, color, index, visibleSchedulesNu
     display: ${index > visibleSchedulesNum ? "none" : "flex"};
     position: absolute;
     top: ${26 * index}px;
-    justify-content: center;
     align-items: center;
-    width: ${dayDiff === 0 || dayDiff === 1 ? 92 : (100 + 0.435) * dayDiff - 8}%;
+    width: ${dayDiff === 0 || dayDiff === 1 ? 96 : (100 + 0.435) * dayDiff - 4}%;
     border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.6s;
+    padding-left: 3px;
     background-color: ${!isAllDay && dayDiff === 0 ? "transparent" : color};
+    transition: background-color 0.6s;
+    cursor: pointer;
     color: ${!isAllDay && dayDiff === 0 ? "black" : "white"};
     z-index: 9;
     :hover {
         filter: brightness(95%);
-    }
-    // 겹치는 일정 사이의 간격 조절
-    & + & {
     }
 `;
 
@@ -62,7 +59,7 @@ export const SMoreText = index => css`
     width: 92%;
     align-items: center;
     cursor: pointer;
-    padding: 0.5px 3px 0.5px 4px;
+    padding: 1px 3px 1px 4px;
     transition: background-color 0.6s;
     margin: 2% 0%;
     border-radius: 5px;
@@ -86,17 +83,16 @@ export const SScheduleText = dayDiff => css`
 // 시간 표시(종일이 아닌 경우)
 export const STimeText = css`
     display: flex;
-    padding-left: 4px;
+    padding-left: 2px;
     align-items: center; // 수직 가운데 정렬
-    align-self: center;
     white-space: nowrap;
     text-align: center;
-    font-size: 1em;
+    font-size: 0.8em;
 `;
 
 export const SModalScheduleBox = (dayDiff, isAllDay, color) => css`
     display: flex;
-    width: 120px;
+    width: 250px;
     justify-content: center;
     align-items: center;
     margin-bottom: 2%;
@@ -110,8 +106,8 @@ export const SModalScheduleBox = (dayDiff, isAllDay, color) => css`
     }
 `;
 
-export const SModalScheduleText = dayDiff => css`
-    width: ${dayDiff === 0 || dayDiff === 1 ? 96 : (100 + 0.42) * dayDiff - 4}%;
+export const SModalScheduleText = css`
+    width: 250px;
     padding: 0.5px 3px 0.5px 4px;
     /* 아래쪽으로 내려가는것을 막음 */
     overflow: hidden;

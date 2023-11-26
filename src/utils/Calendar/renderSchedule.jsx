@@ -1,25 +1,28 @@
-import { Badge } from "antd";
+import React from "react";
 import { SModalScheduleBox, SModalScheduleText, STimeText } from "../../pages/Calendar/style";
 import convertToAmPmFormat from "./convertToAmPmFormat";
 /** @jsxImportSource @emotion/react */
+// import Badge from "../../component/Calendar/Modal/Badge/Badge";
+import Badge from "../../component/Calendar/Modal/Badge/Badge";
 
 const renderSchedule = schedule => {
-    if (!schedule?.isBetween) {
-        return (
-            <>
-                <div css={SModalScheduleBox(schedule?.dayDiff, schedule?.isAllDay, schedule?.labelColor)} key={`${schedule?.scheduleId}-${schedule?.weekIndex}-${schedule?.uqKey}-2`}>
-                    {schedule?.isAllDay && schedule?.dayDiff === 0 ? null : (
-                        <>
-                            {!schedule?.isAllDay && schedule?.dayDiff === 0 && <Badge color={schedule?.labelColor} />}
-                            {!schedule?.isAllDay && schedule?.dayDiff === 0 && <span css={STimeText}>{convertToAmPmFormat(schedule?.startTime)}</span>}
-                        </>
-                    )}
-                    <li className={schedule?.scheduleId} css={SModalScheduleText(schedule?.dayDiff)} key={`${schedule?.scheduleId}-${schedule?.weekIndex}-${schedule?.uqKey}-3`}>
-                        {schedule?.title}
-                    </li>
-                </div>
-            </>
-        );
+    if (schedule?.date) {
+        return null;
     }
+    return (
+        <>
+            <div css={SModalScheduleBox(schedule?.dayDiff, schedule?.isAllDay, schedule?.labelColor)} key={`${schedule?.scheduleId}-${schedule?.weekIndex}-${schedule?.uqKey}-6`}>
+                {schedule?.isAllDay ? null : (
+                    <React.Fragment key={`${schedule?.scheduleId}-${schedule?.weekIndex}-${schedule?.uqKey}-8`}>
+                        {schedule?.dayDiff === 0 && <Badge color={schedule?.labelColor} />}
+                        <span css={STimeText}>{convertToAmPmFormat(schedule?.startTime)}</span>
+                    </React.Fragment>
+                )}
+                <li className={schedule?.scheduleId} css={SModalScheduleText} key={`${schedule?.scheduleId}-${schedule?.weekIndex}-${schedule?.uqKey}-7`}>
+                    {schedule?.title}
+                </li>
+            </div>
+        </>
+    );
 };
 export default renderSchedule;
