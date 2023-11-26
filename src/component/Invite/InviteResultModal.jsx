@@ -1,4 +1,4 @@
-import { Modal } from "antd";
+import { Button, Modal } from "antd";
 import React from "react";
 
 /*
@@ -14,12 +14,18 @@ function InviteResultModal({ open, setOpen, email, isSuccess }) {
         setOpen(false);
     };
 
-    const handleCancel = () => {
-        setOpen(false);
-    };
-
     return (
-        <Modal centered title={title} open={open} onOk={handleOk} onCancel={handleCancel}>
+        <Modal
+            centered
+            title={title}
+            open={open}
+            footer={
+                <Button key="submit" type="primary" onClick={handleOk}>
+                    확인
+                </Button>
+            }
+            okText="확인"
+        >
             <p>
                 입력하신 {email}로 전송을 {isSuccess ? "성공" : "실패"} 하였습니다.
             </p>

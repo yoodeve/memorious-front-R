@@ -249,7 +249,7 @@ function AddScheduleModal({ open, setOpen, date }) {
     };
     return (
         <>
-            <SModal centered title="일정 생성" open={open} onOk={handleOk} onCancel={handleCancel} date={date}>
+            <SModal centered title="일정 생성" open={open} onOk={handleOk} onCancel={handleCancel} date={date} okText="추가" cancelText="취소">
                 <div css={SFlexBox}>
                     <STitleInput name="title" ref={inputRef} onChange={handleInputChange} value={scheduleInput.scheduleTitle} placeholder="제목을 입력해주세요.(필수)" size="large" />
                     <SColorPicker panelRender={panelRender} value={scheduleInput.labelColor} open={colorPickerOpen} onOpenChange={setColorPickerOpen} />
