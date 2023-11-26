@@ -5,7 +5,6 @@ function SpecificScheduleModal(open, setOpen) {
     const [title, setTitle] = useState("일정 조회");
 
     const handleOk = () => {
-        // useState 지우기 싫어서
         setTitle("일정 조회");
         setOpen(false);
     };
@@ -16,7 +15,7 @@ function SpecificScheduleModal(open, setOpen) {
 
     return (
         <div>
-            <Modal centered title={title} open={open} onOk={handleOk} onCancel={handleCancel}>
+            <Modal centered title={title} open={open} onOk={handleOk} onCancel={handleCancel} okText="추가" cancelText="취소">
                 zz
             </Modal>
         </div>

@@ -5,7 +5,6 @@ function Invitation() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const token = searchParams.get("");
-    // const token = new URL(window.location.href).searchParams.get("");
 
     useEffect(() => {
         if (token) {
