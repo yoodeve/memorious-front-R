@@ -101,7 +101,7 @@ export const bottomSettingMenuBox = css`
         margin-left: 10px;
     }
     .right-titles {
-        width: 60px;
+        width: 100px;
         margin-right: 20px;
         display: flex;
         justify-content: space-between;
@@ -115,17 +115,24 @@ export const bottomSettingMenuBox = css`
         cursor: pointer;
     }
     .profile-area {
+        width: 100%;
         display: flex;
         align-items: center;
 
         .profile-img {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: fit-content;
+            height: fit-content;
             margin-left: 10px;
-            border-radius: 100%;
+            border-radius: 50%;
             overflow: hidden;
-            border: 1px solid #6f6257;
             img {
-                width: 38px;
-                height: 338x;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background-color: #fffbf5;
             }
         }
     }
