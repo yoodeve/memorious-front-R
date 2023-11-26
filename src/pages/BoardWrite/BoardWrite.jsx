@@ -8,6 +8,7 @@ import { instance } from "../../config";
 import ReactSelect from "react-select";
 import { useNavigate } from "react-router-dom";
 import { Select } from "antd";
+import useMessage from "antd/es/message/useMessage";
 
 function BoardWrite() {
     const navigate = useNavigate();
