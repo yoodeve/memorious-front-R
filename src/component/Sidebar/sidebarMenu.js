@@ -1,8 +1,1 @@
-export const sidebarMenuList = [
-    { title: "Calendar", route: "/calendar" },
-    { title: "Memo", route: "/memo" },
-    { title: "Board", route: "/board" },
-    { title: "Check List", route: "/check-list" },
-    { title: "Graph", route: "/chart" },
-    { title: "Map", route: "/map" },
-];
+export const sidebarMenuList = [{ title: "CALENDAR", route: "/calendar" }, { title: "MEMO", route: "/memo" }, { title: "BOARD", route: "/board" }, { title: "CHECK-LIST" }, { title: "CHART", route: "/chart" }, { title: "MAP" }];

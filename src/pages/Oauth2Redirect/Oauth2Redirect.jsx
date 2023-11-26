@@ -1,26 +1,17 @@
+/* eslint-disable */
 import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { instance } from "../../config";
+import { useQueryClient } from "react-query";
+import { Navigate, useSearchParams } from "react-router-dom";
 
 function Oauth2Redirect({ type }) {
-    const navigate = useNavigate();
-    const token = new URL(window.location.href).searchParams.get("token");
-
+    const [searchParams, setSearchParams] = useSearchParams();
+    const queryClient = useQueryClient();
     useEffect(() => {
-        if (type === "naver") {
-            instance
-                .get("/api/auth/oauth2/signin", {
-                    headers: {
-                        Authorization: token,
-                    },
-                })
-                .then(res => {
-                    localStorage.setItem("accessToken", `Bearer ${res.data}`);
-                    navigate("/");
-                });
-        }
-    }, [type]);
-    return <>Redirecting</>;
+        localStorage.setItem("accessToken", "Bearer " + searchParams.get("token"));
+        window.location.replace("/");
+    }, []);
+    queryClient.refetchQueries(["getPrincipal"]);
+    return <></>;
 }
 
 export default Oauth2Redirect;

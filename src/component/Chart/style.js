@@ -77,13 +77,20 @@ export const profileWrapper = css`
     justify-content: space-around;
     align-items: center;
     .profile-img-wrapper {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background-color: #fff;
+        width: fit-content;
+        height: fit-content;
+        img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #fff;
+        }
     }
     button {
     }
+`;
+export const file = css`
+    display: none;
 `;
 
 export const chartMainContainer = css`
@@ -136,6 +143,18 @@ export const chartContainer = css`
     width: fit-content;
     height: 400px;
     overflow-y: scroll;
+    ::-webkit-scrollbar {
+        width: 3px;
+        opacity: 0.2;
+    }
+    ::-webkit-scrollbar-track {
+        background-color: #fffbf5;
+    }
+    ::-webkit-scrollbar-thumb {
+        background-color: #e6a156;
+        height: auto;
+        border-radius: 6px;
+    }
 `;
 export const chartWrapper = css`
     display: flex;

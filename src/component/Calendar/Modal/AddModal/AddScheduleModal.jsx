@@ -1,70 +1,104 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import dayjs from "dayjs";
 import React, { useEffect, useRef, useState } from "react";
-import { CyclePreset } from "../../../../constants/Calendar/CyclePreset";
-import { labelPreset } from "../../../../constants/Calendar/labelPreset";
+import { IoIosArrowRoundForward, IoMdArrowForward } from "react-icons/io";
+import { useMutation, useQueryClient } from "react-query";
+import { useRecoilState } from "recoil";
+import { instance } from "../../../../config";
+import { LabelColorPreset } from "../../../../constants/Calendar/LabelColorPreset";
+import { RepeatCyclePreset } from "../../../../constants/Calendar/RepeatCyclePreset";
 import LabelColorBadge from "./LabelColorBadge/LabelColorBadge";
-import { SAttendeeSelect, SCheckbox, SColorPicker, SCycleInput, SCycleSelect, SDatePicker, SDescriptionInput, SLocationInput, SModal, SRadio, SRadioRepeat, SRangePicker, SRepeatInput, SSelectOption, STimePicker, STitleInput } from "./StyledComponents/style";
-import { SFlexBox, SPanelBox } from "./style";
+import { SAttendeeSelect, SCheckbox, SColorPicker, SCycleInput, SCycleSelect, SDatePicker, SDescriptionInput, SLocationInput, SModal, SRadio, SRadioGroup, SRangePicker, SRepeatInput, SSelectOption, STimePicker, STitleInput } from "./StyledComponents/style";
+import { SCycleBox, SFlexBox, SPanelBox, SRepeatBox, SRepeatEnd, SRepeatTypeBox, STime } from "./style";
+import { calendarRecoil } from "../../../../store/atoms/calendarAtoms";
 /** @jsxImportSource @emotion/react */
 
 function AddScheduleModal({ open, setOpen, date }) {
     // 시간 선택시 UX를 위해 기본 시간을 중앙에 있는 값으로 변경
+    const queryClient = useQueryClient();
     const defaultStTime = date.set("hour", 12).set("m", 0).format("HH:mm");
     const defaultEndTime = date.set("hour", 13).set("m", 0).format("HH:mm");
+    // dayjs to String
     const formattedDate = date.format("YYYY-MM-DD");
-
-    const defaultScheduleInput = {
+    // 본인 정보를 가져옴
+    const principal = queryClient.getQueryState(["getPrincipal"]);
+    const defaultSchedule = {
         title: "",
-        labelColor: "f5222d",
+        labelColor: "#8977f4",
         startDate: formattedDate,
         endDate: formattedDate,
-        isDayAll: 1,
-        startTime: defaultStTime,
-        endTime: defaultEndTime,
-        attendee: [],
+        isAllDay: 1,
+        startTime: "",
+        endTime: "",
+        attendee: [], // id만 넘겨줌
         location: "",
-        cyclePeriod: CyclePreset[0].value,
         repeatType: "none",
+        repeatCycle: RepeatCyclePreset[0].value,
+        repeatEndDate: "0000:00:00",
         repeatCount: "",
-        repeatEndDate: formattedDate,
         description: "",
+        userId: principal?.data.data.userId,
     };
 
-    const [selectedLabel, setSelectedLabel] = useState(CyclePreset[0].label);
-    const [scheduleInput, setScheduleInput] = useState(defaultScheduleInput);
+    const [selectedRepeatLabel, setSelectedRepeatLabel] = useState(RepeatCyclePreset[0].label);
+    const [scheduleInput, setScheduleInput] = useState(defaultSchedule);
     const [colorPickerOpen, setColorPickerOpen] = useState(false);
+    const [repeatEndDate, setRepeatEndDate] = useState(formattedDate);
+    const [attendeeValue, setAttendeeValue] = useState([]);
+    const [familyList, setFamilyList] = useState([]);
+    // eslint-disable-next-line no-unused-vars
+    const [scheduleData, setScheduleData] = useRecoilState(calendarRecoil);
+    const inputRef = useRef(null);
 
-    // 가상의 가족 데이터(사이트 로드시 가족 정보를 불러온 값)
-    const mockUsers = [
-        { id: 1, name: "한유정" },
-        { id: 2, name: "우주영" },
-        { id: 3, name: "주성광" },
-    ];
-    const [users, setUsers] = useState(mockUsers);
+    // 본인 userId를 토대로 가족을 가져옴
+    const getFamilyList = async () => {
+        const response = await instance.get("/api/chart/family", { params: { familyId: principal?.data.data.familyId } });
+        setFamilyList(response.data);
+    };
+
+    const mutation = useMutation(data => instance.get(`/api/calendar/schedule/${date.format("YYYY-MM")}`, data), {
+        onSuccess: () => {
+            queryClient.refetchQueries(["getSchedule"]);
+        },
+    });
+
+    // 확인버튼 클릭시
+    const handleOk = async () => {
+        console.log("요청 값", scheduleInput);
+        if (scheduleInput.title === "") {
+            alert("제목을 입력해주세요");
+            return;
+        }
+        if (scheduleInput.title.length > 30) {
+            alert("30자 이하로 입력 해 주세요.");
+            return;
+        }
+        setOpen(false);
+        // insertSchedule 요청
+        try {
+            const response = await instance.post("/api/calendar/schedule", scheduleInput);
+            console.log("insert 요청 성공", response);
+        } catch (error) {
+            console.log(error);
+        }
+
+        // getSchedule
+        try {
+            const response = mutation.mutate({ userId: principal?.data.data.userId });
+            console.log("refetch 요청 성공");
+            setScheduleData(response.data);
+        } catch (error) {
+            console.log("error", error);
+        }
+    };
 
     // 제목입력에 focus 줌
-    const inputRef = useRef(null);
     useEffect(() => {
+        getFamilyList();
         if (inputRef.current) {
             inputRef.current.focus();
         }
     }, []);
-
-    const dataArray = [];
-    // 확인버튼 클릭시
-    const handleOk = () => {
-        // setOpen(false);
-        setScheduleInput({
-            ...scheduleInput,
-            startTime: scheduleInput.isDayAll === 1 ? "00:00" : scheduleInput.startTime,
-            endTime: scheduleInput.isDayAll === 1 ? "00:00" : scheduleInput.endTime,
-            repeatEndDate: scheduleInput.repeatType === "date" ? scheduleInput.repeatEndDate : "0000-00-00",
-        });
-        // console.log(scheduleInput);
-        dataArray.push(scheduleInput);
-        console.log(dataArray);
-    };
 
     const handleCancel = () => {
         setOpen(false);
@@ -91,7 +125,7 @@ function AddScheduleModal({ open, setOpen, date }) {
     const panelRender = () => {
         return (
             <div className="custom-panel" css={SPanelBox}>
-                {labelPreset.colors.map(color => (
+                {LabelColorPreset.colors.map(color => (
                     <LabelColorBadge color={color} onClick={() => handleLabelColorClick(color)} key={color} />
                 ))}
             </div>
@@ -112,7 +146,9 @@ function AddScheduleModal({ open, setOpen, date }) {
     const handleCheckboxChange = e => {
         setScheduleInput({
             ...scheduleInput,
-            isDayAll: e.target.checked ? 1 : 0,
+            isAllDay: e.target.checked ? 1 : 0,
+            startTime: defaultStTime,
+            endTime: defaultEndTime,
         });
     };
 
@@ -144,7 +180,7 @@ function AddScheduleModal({ open, setOpen, date }) {
         const timeDiff = endTime.diff(stTime, "minute");
 
         // 같은 날짜인데 종료시간이 시작시간보다 빠를 경우 시작시간을 종료시간의 한시간 전으로 바꿈
-        if (scheduleInput.startDate === scheduleInput.endDate && timeDiff < 60) {
+        if (scheduleInput.startDate === scheduleInput.endDate && timeDiff < 9) {
             setScheduleInput({
                 ...scheduleInput,
                 startTime: time.subtract(1, "hour").format("HH:mm"),
@@ -160,18 +196,20 @@ function AddScheduleModal({ open, setOpen, date }) {
 
     // <=====    참석자      =====>
     // 체크한 참석자들을 Input에 저장
-    const handleChange = attendeeArray => {
+    const handleChange = attendees => {
+        // attendees : key(userId) / name(username)
+        console.log("attendees", attendees);
+        const keys = attendees.map(attendee => attendee.key);
+        const options = attendees.map(attendee => ({
+            value: attendee.key,
+            label: attendee.label,
+        }));
+
+        setAttendeeValue(options);
         setScheduleInput({
             ...scheduleInput,
-            attendee: attendeeArray,
+            attendee: keys,
         });
-    };
-
-    // 서버로부터 받아올 사용자 데이터( [ { }, {} ] )에서 검색
-    const handleSearch = input => {
-        // mockUser의 user 중 input를 포함하는것
-        const filteredUsers = mockUsers.filter(user => user.name.toLowerCase().includes(input.toLowerCase()));
-        setUsers(filteredUsers);
     };
 
     // <=====    반복 RadioGroup 상태 변경      =====>
@@ -184,19 +222,21 @@ function AddScheduleModal({ open, setOpen, date }) {
 
     // <=====    반복 종료일자 변경      =====>
     const handleRepeatEndDateChange = value => {
+        setRepeatEndDate(value.format("YYYY-MM-DD"));
+
         setScheduleInput({
             ...scheduleInput,
             repeatEndDate: value.format("YYYY-MM-DD"),
         });
     };
 
-    // <=====    반복 Select변경시 Label과 value(period) 변경(CyclePreset)      =====>
+    // <=====    반복 Select변경시 Label과 value(period) 변경(RepeatCyclePreset)      =====>
     const handleCycleChange = menu => {
         // menu : value, label (cyclePreset 참고)
-        setSelectedLabel(menu.label);
+        setSelectedRepeatLabel(menu.label);
         setScheduleInput({
             ...scheduleInput,
-            cyclePeriod: menu.value,
+            repeatCycle: menu.value,
         });
     };
 
@@ -204,7 +244,7 @@ function AddScheduleModal({ open, setOpen, date }) {
     const handleCycleInputChange = e => {
         setScheduleInput({
             ...scheduleInput,
-            cyclePeriod: e.target.value,
+            repeatCycle: e.target.value,
         });
     };
     return (
@@ -216,59 +256,52 @@ function AddScheduleModal({ open, setOpen, date }) {
                 </div>
 
                 <div css={SFlexBox}>
-                    <SRangePicker size="large" onChange={handleDateChange} value={[dayjs(scheduleInput.startDate, "YYYY-MM-DD"), dayjs(scheduleInput.endDate, "YYYY-MM-DD")]} defaultValue={[date, date]} />
-                    <SCheckbox checked={scheduleInput.isDayAll} onChange={handleCheckboxChange}>
+                    <SRangePicker onChange={handleDateChange} value={[dayjs(scheduleInput.startDate, "YYYY-MM-DD"), dayjs(scheduleInput.endDate, "YYYY-MM-DD")]} defaultValue={[date, date]} size="large" separator={<IoMdArrowForward />} />
+                    <SCheckbox checked={scheduleInput.isAllDay} onChange={handleCheckboxChange}>
                         종일
                     </SCheckbox>
                 </div>
-                {!scheduleInput.isDayAll && (
-                    <div>
-                        <STimePicker onSelect={handleStartTimeChange} onChange={handleStartTimeChange} value={dayjs(scheduleInput.startTime, "HH:mm")} changeOnBlur="true" minuteStep="10" format="HH:mm" size="large" />
-                        ➡️
-                        <STimePicker onSelect={handleEndTimeChange} onChange={handleEndTimeChange} value={dayjs(scheduleInput.endTime, "HH:mm")} minuteStep="10" format="HH:mm" size="large" />
+                {!scheduleInput.isAllDay && (
+                    <div css={SFlexBox}>
+                        <STimePicker css={STime} onSelect={handleStartTimeChange} value={dayjs(scheduleInput.startTime, "HH:mm")} suffixIcon={<IoIosArrowRoundForward />} minuteStep="10" format="HH:mm" size="large" />
+                        <STimePicker css={STime} onSelect={handleEndTimeChange} value={dayjs(scheduleInput.endTime, "HH:mm")} minuteStep="10" format="HH:mm" size="large" />
                     </div>
                 )}
-                <SAttendeeSelect showSearch value={scheduleInput.attendee} mode="multiple" placeholder="참석자" filterOption={false} onSearch={handleSearch} onChange={handleChange} size="large">
-                    {users.map(user => (
-                        <SSelectOption key={user.id} value={user.name}>
-                            {user.name}
+                <SAttendeeSelect labelInValue showSearch key={attendeeValue.key} value={attendeeValue.value} label={attendeeValue.label} mode="multiple" placeholder="참석자" filterOption={false} onChange={handleChange} size="large">
+                    {familyList.map(user => (
+                        <SSelectOption key={user.userId} value={user.nickname}>
+                            {user.nickname}
                         </SSelectOption>
                     ))}
                 </SAttendeeSelect>
                 <SLocationInput name="location" onChange={handleInputChange} value={scheduleInput.location} placeholder="위치" size="large" />
-                <SCycleSelect labelInValue onChange={handleCycleChange} defaultValue={{ label: CyclePreset[0].label, value: CyclePreset[0].value }} options={CyclePreset} size="large" />
-                <div>
-                    {selectedLabel === CyclePreset[5].label ? ( // 선택된 라벨이 "직접 입력" 일 때
-                        <h1>
-                            반복 주기 <SCycleInput name="CycleInput" onChange={handleCycleInputChange} value={scheduleInput.cyclePeriod} defaultValue="0" />일
-                        </h1>
+                <SCycleSelect labelInValue onChange={handleCycleChange} defaultValue={{ label: RepeatCyclePreset[0].label, value: RepeatCyclePreset[0].value }} options={RepeatCyclePreset} size="large" />
+
+                <div css={SRepeatBox}>
+                    {selectedRepeatLabel === RepeatCyclePreset[5].label ? ( // 선택된 라벨이 "직접 입력" 일 때
+                        <div css={SCycleBox}>
+                            <span>반복 주기</span>
+                            <SCycleInput name="CycleInput" onChange={handleCycleInputChange} value={scheduleInput.repeatCycle} defaultValue="0" size="small" />
+                            <span>일</span>
+                        </div>
                     ) : null}
-                </div>
-                <div>
-                    {selectedLabel === CyclePreset[0].label ? null : ( // '반복안함'이 아닐 경우
+                    {selectedRepeatLabel === RepeatCyclePreset[0].label ? null : ( // '반복안함'이 아닐 경우
                         <div>
-                            <h1>반복 횟수</h1>
-                            <SRadioRepeat onChange={handleRepeatTypeChange} value={scheduleInput.repeatType}>
-                                <h1>
+                            <div css={SRepeatEnd}>종료</div>
+                            <SRadioGroup onChange={handleRepeatTypeChange} value={scheduleInput.repeatType}>
+                                <div css={SRepeatTypeBox}>
                                     <SRadio value="none">없음</SRadio>
-                                </h1>
-                                <h1>
-                                    <SRadio value="date">종료일자</SRadio>
-                                    {scheduleInput.repeatType === "date" ? (
-                                        <>
-                                            <SDatePicker onChange={handleRepeatEndDateChange} value={dayjs(scheduleInput.repeatEndDate)} showToday={false} />
-                                        </>
-                                    ) : null}
-                                </h1>
-                                <h1>
-                                    <SRadio value="count">반복횟수</SRadio>
-                                    {scheduleInput.repeatType === "count" ? (
-                                        <>
-                                            <SRepeatInput name="repeatCount" onChange={handleInputChange} value={scheduleInput.repeatCount} />번
-                                        </>
-                                    ) : null}
-                                </h1>
-                            </SRadioRepeat>
+                                </div>
+                                <div css={SRepeatTypeBox}>
+                                    <SRadio value="date">일자</SRadio>
+                                    <SDatePicker onChange={handleRepeatEndDateChange} value={dayjs(repeatEndDate)} disabled={scheduleInput.repeatType !== "date"} showToday={false} size="small" />
+                                </div>
+                                <div css={SRepeatTypeBox}>
+                                    <SRadio value="count">횟수</SRadio>
+                                    <SRepeatInput name="repeatCount" onChange={handleInputChange} value={scheduleInput.repeatCount} disabled={scheduleInput.repeatType !== "count"} size="small" />
+                                    <span>회ㅋㅋㅋㅋㅋ</span>
+                                </div>
+                            </SRadioGroup>
                         </div>
                     )}
                 </div>

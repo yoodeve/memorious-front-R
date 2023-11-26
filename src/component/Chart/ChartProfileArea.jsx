@@ -1,28 +1,30 @@
+/* eslint-disable no-unused-vars */
 import React, { useCallback, useLayoutEffect, useState } from "react";
+import { useRecoilState } from "recoil";
 // import { useRecoilState } from "recoil";
 import { profileContainer, profileWrapper, userSelectedButton } from "./style";
-// import { rcUserOnChartArray } from "../../store/atoms/chartAtoms";
-
+import { rcUserOnChartArray } from "../../store/atoms/chartAtoms";
 /** @jsxImportSource @emotion/react */
 
-function ChartProfileArea({ index, user, userList }) {
-    const [chartLabel, setChartLabel] = useState(userList);
+function ChartProfileArea({ index, user }) {
+    const [chartLabel, setChartLabel] = useRecoilState(rcUserOnChartArray);
     const [checked, setChecked] = useState(false);
 
     const onAddLabelList = useCallback(
-        nickname => () => {
-            setChartLabel(prevLabels => {
-                const updatedLabels = prevLabels.includes(nickname) ? prevLabels.filter(f => f !== nickname) : [...prevLabels, nickname];
-                return updatedLabels;
+        e => {
+            setChartLabel(el => {
+                return el.map((obj, i) => {
+                    return parseInt(e.target.id, 10) === i ? { ...obj, checked: !obj.checked } : obj;
+                });
             });
-            setChecked(chartLabel.includes(user));
         },
         [checked],
     );
 
     useLayoutEffect(() => {
-        console.log(chartLabel);
-        setChecked(chartLabel.includes(user));
+        chartLabel?.forEach(e => {
+            setChecked(e.checked);
+        });
     }, [chartLabel]);
 
     return (
@@ -33,7 +35,7 @@ function ChartProfileArea({ index, user, userList }) {
                 </div>
                 <span>{user.nickname}</span>
                 <div css={userSelectedButton}>
-                    <input id={index} type="checkbox" checked={checked} onChange={onAddLabelList(user)} />
+                    <input id={index} type="checkbox" checked={user.checked} onChange={onAddLabelList} />
                     <label htmlFor={index} />
                 </div>
             </div>

@@ -1,144 +1,172 @@
 /* eslint-disable */
-import React, { useState } from "react";
-// import { useQueryClient } from "react-query";
-// import ReactQuill from "react-quill";
-import Select from "react-select";
+import React, { useEffect, useState } from "react";
+import { useQueryClient } from "react-query";
+import ReactQuill from "react-quill";
 /** @jsxImportSource @emotion/react */
 import * as S from "./style";
 import { instance } from "../../config";
+import ReactSelect from "react-select";
+import { useNavigate } from "react-router-dom";
+import { Select } from "antd";
 
 function BoardWrite() {
-    const [boardContent, setBoardContent] = useState({
+    const navigate = useNavigate();
+    const [boardData, setBoardData] = useState({
         title: "",
         content: "",
-        categoryId: 0,
+        categoryId: null,
         categoryName: "",
     });
 
-    const [categories, setCategories] = useState([]);
-    const [newCategory, setNewCategory] = useState(""); // 셀렉트옵션에 추가할 새 카테고리
-    const [selectOptions, setSelectOptions] = useState([]); // 셀렉트옵션(카테고리)
-    const [selectedOption, setSelectedOption] = useState(selectOptions[0]); // 선택된 옵션(카테고리)
+    const [newCategory, setNewCategory] = useState("");
+    const [options, setOptions] = useState([]);
+    const [selectedOption, setSelectedOption] = useState(options[0]);
 
-    /*
     const queryClient = useQueryClient();
-    
+
+    // 로그인 안돼있을 시
+    const principalState = queryClient.getQueryState("getPrincipal");
+
+    if (!principalState?.data?.data) {
+        alert("로그인 후 이용 바랍니다.");
+        window.location.replace("/auth/oauth2/signin");
+    }
+
+    // get categoryList -> options
     useEffect(() => {
-        console.log("queryClient: " + queryClient);
-        const principal = queryClient.getQueryState("getPrincipal");
-        console.log("principal : " + principal);
-        
-        if(!principal.data) { //로그인 자체가 안된 상태일 경우
-            alert("로그인 후 게시글을 작성하세요.");
-            window.location.replace("/");
+        instance.get("api/board/categories").then(response => {
+            setOptions(
+                response.data.map(category => {
+                    return {
+                        value: category.boardCategoryId,
+                        label: category.boardCategoryName,
+                    };
+                }),
+            );
+        });
+    }, []);
+
+    // 카테고리 추가
+    const handleAddCategory = () => {
+        const categoryName = window.prompt("새로 추가할 카테고리를 입력하세요."); //모달창으로
+        if (!categoryName) {
             return;
         }
-        if(!principal?.data?.data.enabled) { //이메일 인증이 안된 유저이면
-            alert("이메일 인증 후 게시글을 작성하세요.");
-            window.location.replace("/account/mypage");
-        }
-    },[]);
-    
+        setNewCategory(categoryName);
+    };
+    const remove = value => {
+        setOptions(options.filter(option => option.value !== value));
+    };
     useEffect(() => {
-        instance.get("/board/categories")
-        .then((response) => {
-            setCategories(response.data);
-            setSelectOptions(
-                response.data.map(
-                    category => {
-                        return { value: category.boardCategoryId, label: category.boardCategoryName }
-                    }
-                )
-            )
-        })
-    }, [])
-    
-    useEffect(() => {
-        if (!!newCategory) { //새 카테고리가 공백이 아닐 경우에만 카테고리 추가
-            const newOption = { value: 0, label: newCategory }
+        if (newCategory) {
+            const newOption = { value: 0, label: newCategory };
 
             setSelectedOption(newOption);
-            if (!selectOptions.map(option => option.value).includes(newOption.value)) {
+            const tempOptions = [...options];
+            tempOptions[tempOptions.length] = newOption;
+            setOptions(tempOptions);
+            // 처음에 없을 경우
+            // setOptions([...options, newOption]);
 
-                setSelectOptions([
-                    ...selectOptions,
-                    newOption
-                ]);
-            }
+            // 쌤한테 물어보기: value를 0으로 뒀을 때, 두 개 이상 추가는 안되게
+
+            // const result = options.filter(option => option.value === 0);
+
+            // if (!result.length === 0) {
+            //     // value가 0인 옵션이 있음-> 그 요소를 제거함
+            //     setOptions(options.filter(option => option.value === 0))
+            // }
+            // setOptions([...options, newOption]);
+
+            // if (options.map(option => option.value).includes(newOption.value)) {
+            //     setOptions(options.filter(option => option.value === 0))
+            // }
+            // setOptions([...options, newOption]);
         }
     }, [newCategory]);
 
-    useEffect(() => {
-        setBoardContent({
-            ...boardContent,
-            categoryId: selectedOption?.value,
-            categoryName: selectedOption?.label
-        });
-    }, [selectedOption]);
-*/
+    //quill
     const modules = {
         toolbar: {
             container: [[{ header: [1, 2, 3, false] }], ["bold", "underline"], ["image"]],
         },
     };
 
+    // 셀렉트 옵션을 클릭하면 selectedOption을 set 해줌
+    const handleSelectChange = (value, option) => {
+        console.log("선택된 option", option);
+        setSelectedOption(option);
+        // console.log("selectedOption >> ", selectedOption);
+
+        // setBoardData({
+        //     ...boardData,
+        //     categoryId: option.value,
+        //     categoryName: option.label,
+        // });
+        // console.log("옵션선택 후 boardData >> ", boardData);
+    };
+
+    useEffect(() => {
+        setBoardData({
+            ...boardData,
+            categoryId: selectedOption?.value,
+            categoryName: selectedOption?.label,
+        });
+    }, [selectedOption]);
+
     const handleTitleInput = e => {
-        setBoardContent({
-            ...boardContent,
+        setBoardData({
+            ...boardData,
             title: e.target.value,
         });
     };
 
     const handleContentInput = value => {
-        setBoardContent({
-            ...boardContent,
+        setBoardData({
+            ...boardData,
             content: value,
         });
     };
 
-    const handleSelectChange = option => {
-        setSelectedOption(option);
-    };
-
-    const handleCategoryAdd = () => {
-        const categoryName = window.prompt("새로 추가할 카테고리를 입력하세요.");
-        if (!categoryName) {
+    // 게시글 작성 submit
+    const handleWriteSubmit = async () => {
+        if (!window.confirm("게시글을 작성하시겠습니까?")) {
             return;
         }
-        setNewCategory(categoryName);
-    };
 
-    const handleWriteSubmit = async () => {
         try {
-            const option = {
-                headers: {
-                    Authorization: localStorage.getItem("accessToken"),
-                },
-            };
-            console.log(boardContent);
-            await instance.post("/board/content", boardContent, option);
+            console.log("options >> ", options);
+            console.log("selectedOption >> ", selectedOption);
+            console.log("boardData >> ", boardData);
+            await instance.post("api/board/content", boardData);
+            alert("게시글 작성이 완료되었습니다.");
+            navigate("/board");
         } catch (error) {
-            console.error(error);
+            alert("게시글 업로드에 실패하였습니다.");
+            console.log(error.response.data);
         }
     };
 
     return (
         <>
-            <div>
-                <h1>글쓰기</h1>
+            <div css={S.layout}>
                 <div css={S.categoryContainer}>
                     <div css={S.selectBox}>
-                        <Select options={selectOptions} onChange={handleSelectChange} value={selectedOption} defaultValue={selectedOption} />
+                        <Select style={{ width: "150px", height: "40px" }} options={options} onChange={handleSelectChange} value={selectedOption} placeholder="카테고리 선택" />
                     </div>
-                    <button onClick={handleCategoryAdd}>카테고리 추가</button>
+                    <button css={S.addCategory} onClick={handleAddCategory}>
+                        카테고리 추가
+                    </button>
                 </div>
                 <div>
                     <input css={S.titleInput} type="text" name="title" placeholder="제목" onChange={handleTitleInput} />
                 </div>
                 {/* 게시글쓰기 라이브러리 */}
-                {/* <ReactQuill style={{ width: "928px", height: "500px" }} onChange={handleContentInput} /> */}
+                <ReactQuill className="quill-container" modules={modules} onChange={handleContentInput} />
                 <div css={S.buttonContainer}>
-                    <button onClick={handleWriteSubmit}>작성하기</button>
+                    <button css={S.writeBoardButton} onClick={handleWriteSubmit}>
+                        글 작성하기
+                    </button>
                 </div>
             </div>
         </>

@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
-import React, { useEffect } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
-import { useQuery } from "react-query";
 import { css } from "@emotion/react";
+import React from "react";
+import { useQuery } from "react-query";
+import { Outlet } from "react-router-dom";
 import { Reset } from "styled-reset";
 import SidebarContainer from "../../component/Sidebar";
 import { instance } from "../../config";
@@ -24,6 +24,8 @@ export const mainContainer = css`
         font-family: "Pretendard-Medium";
         font-size: 14px;
         pre {
+            font-size: 0.9rem;
+            line-height: 1rem;
             white-space: pre-wrap;
         }
     }
@@ -38,7 +40,6 @@ const contentsContainer = css`
 `;
 
 function SideBar() {
-    const navigate = useNavigate();
     const getPrincipal = useQuery(
         ["getPrincipal"],
         async () => {
@@ -48,8 +49,10 @@ function SideBar() {
                         Authorization: localStorage.getItem("accessToken"),
                     },
                 };
+
                 return await instance.get("/api/account/principal", option);
             } catch (err) {
+                window.location.replace("/auth/oauth2/signin");
                 throw new Error(err);
             }
         },
@@ -60,24 +63,15 @@ function SideBar() {
         },
     );
 
-    /* @라우팅 */
-    useEffect(() => {
-        instance
-            .get("/api/auth/authenticate")
-            .then(() => {})
-            .catch(() => {
-                navigate("/auth/oauth2/signup", { replace: false });
-            });
-    }, []);
-    return (
+    return getPrincipal.isSuccess ? (
         <>
             <Reset />
             <div id="parent-container" css={mainContainer}>
-                <SidebarContainer />
+                <SidebarContainer principal={!getPrincipal.isLoading && getPrincipal.data.data} />
                 <div css={contentsContainer}>{!getPrincipal.isLoading && <Outlet />}</div>
             </div>
         </>
-    );
+    ) : null;
 }
 
 export default SideBar;

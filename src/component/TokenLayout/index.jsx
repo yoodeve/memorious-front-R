@@ -6,7 +6,7 @@ function TokenLayout() {
     const token = localStorage.getItem("accessToken");
     useEffect(() => {
         if (!token) {
-            navigate("/auth/oauth2/signup", { replace: false });
+            navigate("/auth/oauth2/signin", { replace: false });
         } else {
             navigate("/", { replace: false });
         }

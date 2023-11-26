@@ -9,7 +9,7 @@ todo : 이메일 정규식 검증 및 req/resp
 */
 function InviteModal({ open, setOpen }) {
     const defaultEmail = {
-        local: "jusgb",
+        local: "",
         domain: "",
         domainSelectBox: emailOptions[0].value,
     };
