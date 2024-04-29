@@ -68,27 +68,27 @@ Java 11, Spring boot, MySQL, Amazon RDS
 ![image](https://github.com/KoreaIt-J-23-2-4/memorious-front/assets/96562253/994cdc1b-e214-4d8c-8110-f88020fdfd4e)
 
 ### 기능 설명
-- 소셜 로그인 / 회원가입
+- 소셜 로그인 / 회원가입<br/>
 ![image](https://github.com/KoreaIt-J-23-2-4/memorious-front/assets/96562253/98381652-93bb-4ac1-921d-ff5d626c0ad4)
 
 사용자가 로그인이 되어있지 않을 시 표시되는 로그인 화면입니다.
 네이버, 카카오를 통한 로그인을 지원합니다.
 소셜 계정으로 로그인 시도했을 시 회원가입이 되어있지 않을 경우 추가 입력(회원가입) 화면으로 이동합니다.
 
-- 가족 페이지 생성
+- 가족 페이지 생성<br/>
 ![image](https://github.com/KoreaIt-J-23-2-4/memorious-front/assets/96562253/cc47879b-f67a-475a-be75-8c30fe89392c)
 
 가족 구성원과의 추억과 일정 등을 기록할 우리 가족만의 페이지를 만드는 기능입니다.
 로그인 후 소속된 가족이 없을 경우 다음 화면이 표시됩니다.
 
-- 가족 초대
+- 가족 초대<br/>
 ![image](https://github.com/KoreaIt-J-23-2-4/memorious-front/assets/96562253/f0f4475b-84ec-4e56-a45b-d885afcda6c4)
 
 가족의 이메일을 입력하여 가족을 초대할 수 있으며, 입력한 이메일로 초대 메일이 전송됩니다.
 
 초대를 받은 회원은 가족이 입력한 이메일을 사용하여 회원가입하면 초대가 완료됩니다.
 
-- 캘린더
+- 캘린더<br/>
 ![image](https://github.com/KoreaIt-J-23-2-4/memorious-front/assets/96562253/543d73b8-591a-4cc7-acb4-02f9f41fa61d)
 
 한 달 간의 가족 일정을 조회할 수 있으며 각각의 일정은 알고리즘이 정한 순서에 따라 보기좋게 배치됩니다.
@@ -97,21 +97,21 @@ Java 11, Spring boot, MySQL, Amazon RDS
 한 날짜에 모든 일정을 보여주지 못할 경우 'n개 더보기'를 표시하고, 해당 날짜의 전체 일정을 확인할 수 있는 모달창을 띄어줍니다.
 '일정 추가' 버튼 또는 일정 셀을 클릭해 클릭한 날짜에 일정을 추가할 수 있습니다.
 
-- 메모
+- 메모<br/>
 ![image](https://github.com/KoreaIt-J-23-2-4/memorious-front/assets/96562253/b62cd125-e555-4530-aeec-9eed05aa3f46)
 
 포스트잇과 비슷한 형태의 메모를 작성할 수 있습니다.
 최신 일정순으로 정렬되며 무한스크롤을 지원합니다.
 작성자 본인만이 메모를 수정하거나 삭제 할 수 있습니다.
 내용에 포함된 키워드로 검색할 수 있으며 새로고침 버튼을 통해 새로운 메모를 조회할 수 있습니다.
-- 게시판
-![image](https://github.com/KoreaIt-J-23-2-4/memorious-front/assets/96562253/444030aa-3c87-4e3c-87f6-d5b57a97073d)
-![image](https://github.com/KoreaIt-J-23-2-4/memorious-front/assets/96562253/d2234480-cdfe-458b-90bb-ce30cd4f0afb)
+- 게시판<br/>
+![image](https://github.com/KoreaIt-J-23-2-4/memorious-front/assets/96562253/444030aa-3c87-4e3c-87f6-d5b57a97073d)<br/>
+![image](https://github.com/KoreaIt-J-23-2-4/memorious-front/assets/96562253/d2234480-cdfe-458b-90bb-ce30cd4f0afb)<br/>
 
 가족 구성원이 회의록, 식단, 건의사항 등 카테고리를 지정하고 사진과 글을 포스팅할 수 있는 기능입니다.
 전체 글 목록이 게시판 형태로 표시됩니다.
 카테고리별로 게시글을 조회할 수 있고, 또한 검색 범위와 입력한 검색어에 따른 검색이 가능합니다.
-- 건강 차트
+- 건강 차트<br/>
 ![image](https://github.com/KoreaIt-J-23-2-4/memorious-front/assets/96562253/512630f8-e29b-4777-a769-bd83e2cbc4eb)
 
 혈당, 걸음수, 맥박 데이터를 그래프로 직관적으로 표시합니다.
